@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Relay</string>
+
+    <!-- bottom navigation -->
+    <string name="menu_mypage">마이페이지</string>
+    <string name="menu_running">러닝</string>
+    <string name="menu_group">그룹</string>
+    <string name="menu_timetable">시간표</string>
 </resources>
