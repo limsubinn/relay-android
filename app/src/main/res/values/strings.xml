@@ -7,10 +7,21 @@
     <string name="menu_group">그룹</string>
     <string name="menu_timetable">시간표</string>
 
-    <!-- settings activity -->
+    <!-- settings -->
     <string name="cancel">취소</string>
     <string name="edit">변경</string>
     <string name="change_pw">비밀번호 변경하기</string>
     <string name="setting_alarm">알림 허용</string>
     <string name="withdrawal">탈퇴하기</string>
+
+    <!-- login & signUp -->
+    <string name="login">로그인</string>
+    <string name="signup"><u>회원가입</u></string>
+    <string name="id_phone_email">전화번호 / 이메일</string>
+    <string name="pw">비밀번호</string>
+    <string name="check_pw">비밀번호 확인</string>
+    <string name="forget_pw">비밀번호를 잊으셨나요?</string>
+    <string name="name">이름</string>
+    <string name="email">이메일</string>
+    <string name="phone_number">전화번호</string>
 </resources>
