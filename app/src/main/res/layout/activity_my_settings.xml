@@ -158,14 +158,13 @@
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent="0.35"
+                app:layout_constraintWidth_percent="0.4"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:backgroundTint="@color/white"
-                style="?android:attr/borderlessButtonStyle"
                 android:thumb="@drawable/switch_thumb"
-                android:track="@drawable/switch_track_selector"/>
+                android:track="@drawable/switch_track_selector" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
