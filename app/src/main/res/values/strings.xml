@@ -6,4 +6,11 @@
     <string name="menu_running">러닝</string>
     <string name="menu_group">그룹</string>
     <string name="menu_timetable">시간표</string>
+
+    <!-- settings activity -->
+    <string name="cancel">취소</string>
+    <string name="edit">변경</string>
+    <string name="change_pw">비밀번호 변경하기</string>
+    <string name="setting_alarm">알림 허용</string>
+    <string name="withdrawal">탈퇴하기</string>
 </resources>
