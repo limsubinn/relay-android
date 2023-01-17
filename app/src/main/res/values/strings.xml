@@ -15,8 +15,11 @@
     <string name="withdrawal">탈퇴하기</string>
 
     <!-- login & signUp -->
+    <string name="next">다음</string>
     <string name="login">로그인</string>
-    <string name="signup"><u>회원가입</u></string>
+    <string name="sns_login">다음으로 로그인하기</string>
+    <string name="signup">회원가입</string>
+    <string name="signup_unbar"><u>회원가입</u></string>
     <string name="id_phone_email">전화번호 / 이메일</string>
     <string name="pw">비밀번호</string>
     <string name="check_pw">비밀번호 확인</string>
