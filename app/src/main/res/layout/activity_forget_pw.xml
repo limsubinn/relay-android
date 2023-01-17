@@ -4,62 +4,50 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".login.PrivacyConditionActivity">
+    tools:context=".login.ForgetPwActivity">
 
     <TextView
-        android:id="@+id/tv_info"
+        android:id="@+id/tv_forget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="24sp"
-        android:text="@string/person_info"
+        android:text="@string/forget_pw"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/scroll_text"
-        app:layout_constraintVertical_bias="0.7"/>
+        app:layout_constraintBottom_toTopOf="@id/et_phone_email"
+        android:layout_marginBottom="35dp"/>
 
-    <ScrollView
-        android:id="@+id/scroll_text"
+    <EditText
+        android:id="@+id/et_phone_email"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="50dp"
+        android:hint="@string/id_phone_email"
         app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.8"
-        app:layout_constraintHeight_default="percent"
-        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintWidth_percent="0.85"
         android:background="@drawable/text_gray_inside_shadow"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:scrollbars="none">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="15dp"
-            android:text="@string/info_text"/>
-    </ScrollView>
+        android:paddingHorizontal="15dp"/>
 
     <android.widget.Button
-        android:id="@+id/btn_agree"
+        android:id="@+id/btn_send"
         android:layout_width="0dp"
         android:layout_height="45dp"
         app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="0.8"
+        app:layout_constraintWidth_percent="0.85"
         android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="18sp"
-        android:text="@string/agree"
+        android:text="@string/send_certi"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/scroll_text"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintTop_toBottomOf="@id/et_phone_email"
         android:background="@drawable/btn_orange2"
         style="?android:attr/borderlessButtonStyle"
-        android:layout_marginVertical="25dp"/>
-
+        android:layout_marginVertical="35dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

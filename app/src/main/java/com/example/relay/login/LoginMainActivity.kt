@@ -24,6 +24,11 @@ class LoginMainActivity : AppCompatActivity() {
             finish()
         }
 
+        viewBinding.btnFindPw.setOnClickListener {
+            val intent = Intent(this, ForgetPwActivity::class.java)
+            startActivity(intent)
+        }
+
         viewBinding.btnSignup.setOnClickListener {
             val intent = Intent(this, SignupActivity::class.java)
             startActivity(intent)

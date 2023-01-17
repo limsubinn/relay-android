@@ -28,6 +28,7 @@
     <string name="name">이름</string>
     <string name="email">이메일</string>
     <string name="phone_number">전화번호</string>
+    <string name="send_certi">인증번호 보내기</string>
     <string name="person_info">개인정보 이용처리</string>
     <string name="info_text">1. 입력받는 정보\n
     가.정보항목
