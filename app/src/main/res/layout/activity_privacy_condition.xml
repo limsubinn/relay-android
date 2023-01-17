@@ -48,6 +48,7 @@
         android:layout_height="45dp"
         app:layout_constraintWidth_default="percent"
         app:layout_constraintWidth_percent="0.8"
+        android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="18sp"
         android:text="@string/agree"
