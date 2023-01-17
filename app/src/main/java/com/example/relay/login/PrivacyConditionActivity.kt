@@ -1,5 +1,6 @@
 package com.example.relay.login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
@@ -13,5 +14,10 @@ class PrivacyConditionActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
+        viewBinding.btnAgree.setOnClickListener{
+            val intent = Intent(this, LastCheckActivity::class.java)
+            startActivity(intent)
+        }
     }
 }
