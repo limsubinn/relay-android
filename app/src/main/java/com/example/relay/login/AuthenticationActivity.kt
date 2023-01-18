@@ -1,8 +1,10 @@
 package com.example.relay.login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 
 import com.example.relay.databinding.ActivityAuthenticationBinding
 
@@ -20,12 +22,10 @@ class AuthenticationActivity : AppCompatActivity() {
         }
 
         viewBinding.btnCheck.setOnClickListener{
-            val num1 = viewBinding.etNum1.text.toString()
-            val num2 = viewBinding.etNum2.text.toString()
-            val num3 = viewBinding.etNum3.text.toString()
-            val num4 = viewBinding.etNum4.text.toString()
-
-            //Log.d("toString", "auth num = $num1$num2$num3$num4")
+            // ! 연결 액티비티 확인 후 변경 필요 !
+            val intent = Intent(this, NewPwActivity::class.java)
+            Toast.makeText(this, "인증 기능 없음.", Toast.LENGTH_SHORT).show()
+            startActivity(intent)
         }
     }
 }
