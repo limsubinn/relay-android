@@ -1,5 +1,6 @@
 package com.example.relay.login
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 
@@ -14,6 +15,9 @@ class ForgetPwActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-
+        viewBinding.btnSend.setOnClickListener{
+            val intent = Intent(this, AuthenticationActivity::class.java)
+            startActivity(intent)
+        }
     }
 }

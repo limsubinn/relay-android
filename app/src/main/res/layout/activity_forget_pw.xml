@@ -42,7 +42,7 @@
         android:textStyle="bold"
         android:textColor="@color/white"
         android:textSize="18sp"
-        android:text="@string/send_certi"
+        android:text="@string/send_auth"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/et_phone_email"
