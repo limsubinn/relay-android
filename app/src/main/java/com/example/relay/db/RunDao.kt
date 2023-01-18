@@ -18,4 +18,7 @@ interface RunDao {
 
     @Query("SELECT * FROM running_table ORDER BY timestamp")
     fun getAllRunSortedByDate(): LiveData<List<Run>>
+
+//    @Query("SELECT SUM(timeInMillis) FROM running_table")
+//    fun getTotalTimeInMillis(): LiveData<Long>
 }
