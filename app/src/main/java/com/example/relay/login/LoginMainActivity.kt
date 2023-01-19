@@ -3,9 +3,18 @@ package com.example.relay.login
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 
 import com.example.relay.MainActivity
+import com.example.relay.RetrofitClient
 import com.example.relay.databinding.ActivityLoginMainBinding
+import com.example.relay.login.data.localLogInData
+import com.example.relay.login.response.localLogInRes
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
 
 class LoginMainActivity : AppCompatActivity() {
 
@@ -13,15 +22,41 @@ class LoginMainActivity : AppCompatActivity() {
         ActivityLoginMainBinding.inflate(layoutInflater)
     }
 
+    private val retrofit: Retrofit = RetrofitClient.getInstance() // RetrofitClient 의 instance 불러오기
+    private val loginApi: loginService = retrofit.create(loginService::class.java) // retrofit 이 interface 구현
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        // 로그인 버튼 클릭 -> MainActivity 로 이동 (임시)
+        val id = viewBinding.etLoginId.text.toString()
+        val pw = viewBinding.etLoginPw.text.toString()
+
         viewBinding.btnLogin.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
+            if (id.isBlank() || pw.isBlank()){
+                Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
+            } else {
+                Runnable {
+                    loginApi.logInLocal(localLogInData(id, pw)).enqueue(object : Callback<localLogInRes>{
+                        // 전송 성공
+                        override fun onResponse(call: Call<localLogInRes>, response: Response<localLogInRes>) {
+                            Log.d("태그", "response : ${response.body()?.code}") // 정상출력
+
+                            // 전송은 성공 but 서버 4xx 에러
+                            Log.d("태그: 에러바디", "response : ${response.errorBody()}")
+                            Log.d("태그: 메시지", "response : ${response.message()}")
+                            Log.d("태그: 코드", "response : ${response.code()}")
+                        }
+                        // 전송 실패
+                        override fun onFailure(call: Call<localLogInRes>, t: Throwable) {
+                            Log.d("태그", t.message!!)
+                        }
+                    })
+                }.run()
+                val intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
         }
 
         viewBinding.btnFindPw.setOnClickListener {
