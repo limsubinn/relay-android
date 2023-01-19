@@ -40,12 +40,20 @@ class LoginMainActivity : AppCompatActivity() {
                     loginApi.logInLocal(localLogInData(id, pw)).enqueue(object : Callback<localLogInRes>{
                         // 전송 성공
                         override fun onResponse(call: Call<localLogInRes>, response: Response<localLogInRes>) {
-                            Log.d("태그", "response : ${response.body()?.code}") // 정상출력
-
-                            // 전송은 성공 but 서버 4xx 에러
-                            Log.d("태그: 에러바디", "response : ${response.errorBody()}")
-                            Log.d("태그: 메시지", "response : ${response.message()}")
-                            Log.d("태그: 코드", "response : ${response.code()}")
+                            if(response.isSuccessful) { // <--> response.code == 200
+                                // 성공 처리
+                                Log.d("태그", "response : ${response.body()?.code}")
+                                Toast.makeText(this@LoginMainActivity, "로컬 로그인 성공" , Toast.LENGTH_SHORT).show()
+                                val intent = Intent(this@LoginMainActivity, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else {
+                                // 전송은 성공 but 4xx 에러
+                                Log.d("태그: 에러바디", "response : ${response.errorBody()}")
+                                Log.d("태그: 메시지", "response : ${response.message()}")
+                                Log.d("태그: 코드", "response : ${response.code()}")
+                                Toast.makeText(this@LoginMainActivity, "로컬 로그인 실패" , Toast.LENGTH_SHORT).show()
+                            }
                         }
                         // 전송 실패
                         override fun onFailure(call: Call<localLogInRes>, t: Throwable) {
@@ -53,9 +61,6 @@ class LoginMainActivity : AppCompatActivity() {
                         }
                     })
                 }.run()
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-                finish()
             }
         }
 
