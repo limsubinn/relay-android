@@ -29,11 +29,10 @@ class SignupActivity : AppCompatActivity() {
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             else if (!emailPattern.matcher(email).matches())
                 Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            else if (pw.length < 8)
+                Toast.makeText(this, "비밀번호는 8글자 이상이어야 합니다.", Toast.LENGTH_SHORT).show()
             else if (pw != viewBinding.etCheckPw.text.toString()){
                 Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
-            } else if (false){
-                // (미구현) 서버와 통신해서 계정이 있는지 확인하기
-                Toast.makeText(this, "계정이 존재하는 이메일입니다.", Toast.LENGTH_SHORT).show()
             } else {
                 val intent = Intent(this, PrivacyConditionActivity::class.java)
                 intent.putExtra("name", name)

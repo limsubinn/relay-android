@@ -1,7 +1,8 @@
 package com.example.relay.login.response
 
-data class localLogInRes(
-    val isSuccess: Boolean,
+data class LocalLogInRes(
     val code: Int,
-    val message: String
+    val isSuccess: Boolean,
+    val message: String,
+    val result: List<String>
 )

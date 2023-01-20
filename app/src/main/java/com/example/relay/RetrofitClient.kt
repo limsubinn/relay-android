@@ -26,7 +26,7 @@ object RetrofitClient {
                 .build()
 
             instance = Retrofit.Builder()
-                .baseUrl("baseUrl 작성")
+                .baseUrl("http://3.38.32.124/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client) // Retrofit 객체에 OkHttpClient 적용
                 .build()

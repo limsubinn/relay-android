@@ -9,8 +9,8 @@ import android.widget.Toast
 import com.example.relay.MainActivity
 import com.example.relay.RetrofitClient
 import com.example.relay.databinding.ActivityLoginMainBinding
-import com.example.relay.login.data.localLogInData
-import com.example.relay.login.response.localLogInRes
+import com.example.relay.login.data.logInLocalData
+import com.example.relay.login.response.LocalLogInRes
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -23,7 +23,7 @@ class LoginMainActivity : AppCompatActivity() {
     }
 
     private val retrofit: Retrofit = RetrofitClient.getInstance() // RetrofitClient 의 instance 불러오기
-    private val loginApi: loginService = retrofit.create(loginService::class.java) // retrofit 이 interface 구현
+    private val loginApi: LoginService = retrofit.create(LoginService::class.java) // retrofit 이 interface 구현
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +37,9 @@ class LoginMainActivity : AppCompatActivity() {
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Runnable {
-                    loginApi.logInLocal(localLogInData(id, pw)).enqueue(object : Callback<localLogInRes>{
+                    loginApi.logInLocal(logInLocalData(id, pw)).enqueue(object : Callback<LocalLogInRes>{
                         // 전송 성공
-                        override fun onResponse(call: Call<localLogInRes>, response: Response<localLogInRes>) {
+                        override fun onResponse(call: Call<LocalLogInRes>, response: Response<LocalLogInRes>) {
                             if(response.isSuccessful) { // <--> response.code == 200
                                 // 성공 처리
                                 Log.d("태그", "response : ${response.body()?.code}")
@@ -56,7 +56,7 @@ class LoginMainActivity : AppCompatActivity() {
                             }
                         }
                         // 전송 실패
-                        override fun onFailure(call: Call<localLogInRes>, t: Throwable) {
+                        override fun onFailure(call: Call<LocalLogInRes>, t: Throwable) {
                             Log.d("태그", t.message!!)
                         }
                     })
