@@ -85,15 +85,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <devs.mulham.horizontalcalendar.HorizontalCalendarView
+    <com.michalsvec.singlerowcalendar.calendar.SingleRowCalendar
         android:id="@+id/sel_calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
         android:layout_marginTop="15dp"
-        app:textColorNormal="#AFAFAF"
-        app:selectorColor="@color/black"
-        app:textColorSelected="@color/black"
+        app:deselection="false"
+        app:longPress="false"
+        app:multiSelection="false"
         app:layout_constraintTop_toBottomOf="@id/btn_calendar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
