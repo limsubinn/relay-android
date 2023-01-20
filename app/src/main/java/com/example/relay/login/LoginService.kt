@@ -1,7 +1,6 @@
 package com.example.relay.login
 
 import com.example.relay.login.data.*
-import com.example.relay.login.response.*
 import retrofit2.Call
 import retrofit2.http.POST
 import retrofit2.http.Body
@@ -10,10 +9,10 @@ import retrofit2.http.PATCH
 
 interface LoginService {
     @POST("users/logIn")
-    fun logInLocal(@Body Info: LogInLocalData): Call<BaseRes>
+    fun logInLocal(@Body Info: LogInLocalReq): Call<BaseRes>
 
     @POST("users/sign-in")
-    fun signInLocal(@Body Info: SignInLocalData): Call<BaseRes>
+    fun signInLocal(@Body Info: SignInLocalReq): Call<BaseRes>
 
     @POST("users/logIn/Google")
     fun logInGoogle(): Call<BaseRes>

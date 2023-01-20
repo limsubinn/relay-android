@@ -9,15 +9,14 @@ import android.widget.Toast
 import com.example.relay.MainActivity
 import com.example.relay.RetrofitClient
 import com.example.relay.databinding.ActivityLoginMainBinding
-import com.example.relay.login.data.LogInLocalData
-import com.example.relay.login.response.BaseRes
+import com.example.relay.login.data.BaseRes
+import com.example.relay.login.data.LogInLocalReq
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 
 class LoginMainActivity : AppCompatActivity() {
-
     private val viewBinding: ActivityLoginMainBinding by lazy{
         ActivityLoginMainBinding.inflate(layoutInflater)
     }
@@ -37,7 +36,7 @@ class LoginMainActivity : AppCompatActivity() {
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Runnable {
-                    loginApi.logInLocal(LogInLocalData(id, pw)).enqueue(object : Callback<BaseRes>{
+                    loginApi.logInLocal(LogInLocalReq(id, pw)).enqueue(object : Callback<BaseRes>{
                         // 전송 성공
                         override fun onResponse(call: Call<BaseRes>, response: Response<BaseRes>) {
                             if(response.isSuccessful) { // <--> response.code == 200

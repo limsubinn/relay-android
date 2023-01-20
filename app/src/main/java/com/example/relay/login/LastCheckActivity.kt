@@ -5,14 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import com.example.relay.MainActivity
 import com.example.relay.MyApplication
 import com.example.relay.RetrofitClient
 
 import com.example.relay.databinding.ActivityLastCheckBinding
-import com.example.relay.login.data.LogInLocalData
-import com.example.relay.login.data.SignInLocalData
-import com.example.relay.login.response.BaseRes
+import com.example.relay.login.data.BaseRes
+import com.example.relay.login.data.SignInLocalReq
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -43,7 +41,7 @@ class LastCheckActivity : AppCompatActivity() {
                 Toast.makeText(this@LastCheckActivity, "prefs 오류" , Toast.LENGTH_SHORT).show()
             else {
                 Runnable {
-                    signupApi.signInLocal(SignInLocalData(name, email, pw))
+                    signupApi.signInLocal(SignInLocalReq(name, email, pw))
                         .enqueue(object : Callback<BaseRes> {
                             // 전송 성공
                             override fun onResponse(

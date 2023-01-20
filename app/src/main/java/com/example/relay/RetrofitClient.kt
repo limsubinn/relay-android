@@ -26,7 +26,7 @@ object RetrofitClient {
         }
     }
 
-    fun okHttpClient(interceptor: AppInterceptor): OkHttpClient {
+    private fun okHttpClient(interceptor: AppInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(interceptor) // okHttp 에 인터셉터 추가
             .addInterceptor(HttpLoggingInterceptor().apply {
@@ -38,16 +38,6 @@ object RetrofitClient {
 
     fun getInstance() : Retrofit {
         if(instance == null){
-            // 로깅인터셉터 세팅
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-
-            // OKHttpClient에 로깅인터셉터 등록
-            //val client = OkHttpClient.Builder()
-            //    .addInterceptor(interceptor)
-            //    .connectTimeout(CONNECT_TIMEOUT_SEC, TimeUnit.SECONDS)
-            //    .build()
-
             instance = Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
