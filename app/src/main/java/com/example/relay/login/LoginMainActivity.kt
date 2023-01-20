@@ -29,10 +29,10 @@ class LoginMainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
-        val id = viewBinding.etLoginId.text.toString()
-        val pw = viewBinding.etLoginPw.text.toString()
-
         viewBinding.btnLogin.setOnClickListener {
+            val id:String = viewBinding.etLoginId.text.toString()
+            val pw:String = viewBinding.etLoginPw.text.toString()
+
             if (id.isBlank() || pw.isBlank()){
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             } else {
@@ -42,7 +42,8 @@ class LoginMainActivity : AppCompatActivity() {
                         override fun onResponse(call: Call<BaseRes>, response: Response<BaseRes>) {
                             if(response.isSuccessful) { // <--> response.code == 200
                                 // 성공 처리
-                                Log.d("태그", "response : ${response.body()?.code}")
+                                Log.d("LoginLocal","accessToken : ${response.body()?.result?.accessToken}" )
+                                Log.d("LoginLocal","refreshToken : ${response.body()?.result?.refreshToken}" )
                                 Toast.makeText(this@LoginMainActivity, "로컬 로그인 성공" , Toast.LENGTH_SHORT).show()
                                 val intent = Intent(this@LoginMainActivity, MainActivity::class.java)
                                 startActivity(intent)
