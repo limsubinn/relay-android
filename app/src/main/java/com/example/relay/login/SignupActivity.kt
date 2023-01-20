@@ -4,9 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-
+import com.example.relay.MyApplication
 import com.example.relay.databinding.ActivitySignupBinding
-import java.util.regex.Pattern
 
 class SignupActivity : AppCompatActivity() {
     private val viewBinding: ActivitySignupBinding by lazy {
@@ -35,10 +34,11 @@ class SignupActivity : AppCompatActivity() {
                 Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 val intent = Intent(this, PrivacyConditionActivity::class.java)
-                intent.putExtra("name", name)
-                intent.putExtra("email", email)
-                intent.putExtra("phone", phone)
-                intent.putExtra("pw", pw)
+                MyApplication.prefs.setString("name", name)
+                MyApplication.prefs.setString("name", name)
+                MyApplication.prefs.setString("email", email)
+                MyApplication.prefs.setString("phone", phone)
+                MyApplication.prefs.setString("pw", pw)
                 startActivity(intent)
             }
         }
