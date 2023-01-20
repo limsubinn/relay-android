@@ -10,10 +10,10 @@ import retrofit2.http.PATCH
 
 interface LoginService {
     @POST("users/logIn")
-    fun logInLocal(@Body Info: logInLocalData): Call<LocalLogInRes>
+    fun logInLocal(@Body Info: LogInLocalData): Call<BaseRes>
 
     @POST("users/sign-in")
-    fun signInLocal(@Body Info: signInLocalData): Call<SignInLocalRes>
+    fun signInLocal(@Body Info: SignInLocalData): Call<BaseRes>
 
     @POST("users/logIn/Google")
     fun logInGoogle(): Call<BaseRes>

@@ -9,8 +9,8 @@ import android.widget.Toast
 import com.example.relay.MainActivity
 import com.example.relay.RetrofitClient
 import com.example.relay.databinding.ActivityLoginMainBinding
-import com.example.relay.login.data.logInLocalData
-import com.example.relay.login.response.LocalLogInRes
+import com.example.relay.login.data.LogInLocalData
+import com.example.relay.login.response.BaseRes
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,9 +37,9 @@ class LoginMainActivity : AppCompatActivity() {
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             } else {
                 Runnable {
-                    loginApi.logInLocal(logInLocalData(id, pw)).enqueue(object : Callback<LocalLogInRes>{
+                    loginApi.logInLocal(LogInLocalData(id, pw)).enqueue(object : Callback<BaseRes>{
                         // 전송 성공
-                        override fun onResponse(call: Call<LocalLogInRes>, response: Response<LocalLogInRes>) {
+                        override fun onResponse(call: Call<BaseRes>, response: Response<BaseRes>) {
                             if(response.isSuccessful) { // <--> response.code == 200
                                 // 성공 처리
                                 Log.d("태그", "response : ${response.body()?.code}")
@@ -56,7 +56,7 @@ class LoginMainActivity : AppCompatActivity() {
                             }
                         }
                         // 전송 실패
-                        override fun onFailure(call: Call<LocalLogInRes>, t: Throwable) {
+                        override fun onFailure(call: Call<BaseRes>, t: Throwable) {
                             Log.d("태그", t.message!!)
                         }
                     })
