@@ -1,28 +1,31 @@
 package com.example.relay.mypage
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.DatePicker
 import androidx.fragment.app.Fragment
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
 import com.example.relay.databinding.ItemSelectedCalendarBinding
+import com.example.relay.databinding.ItemUnselectedCalendarBinding
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
-import com.michalsvec.singlerowcalendar.utils.DateUtils
 import java.util.*
 
+
 class MypageFragment: Fragment() {
-    private val fragmentMyPageBinding: FragmentMypageBinding by lazy {
+    private val binding: FragmentMypageBinding by lazy {
         FragmentMypageBinding.inflate(layoutInflater)
     }
-    private val itemSelectedCalendarBinding: ItemSelectedCalendarBinding by lazy {
-        ItemSelectedCalendarBinding.inflate(layoutInflater)
-    }
+    private lateinit var itemSelectedCalendarBinding: ItemSelectedCalendarBinding
+    private lateinit var itemUnselectedCalendarBinding: ItemUnselectedCalendarBinding
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
 
@@ -31,13 +34,31 @@ class MypageFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-
-        return fragmentMyPageBinding.root
+        itemSelectedCalendarBinding = ItemSelectedCalendarBinding.inflate(layoutInflater, container, false)
+        itemUnselectedCalendarBinding = ItemUnselectedCalendarBinding.inflate(layoutInflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val c = Calendar.getInstance()
+
+        // 우선 기본 선택은 현재 날짜로 설정
+        // 가로 달력이 해결되면 기본 선택 위치 조정
+        // 달력 디자인 수정 필요
+        binding.btnCalendar.setOnClickListener {
+            val today = GregorianCalendar()
+            val year: Int = today.get(Calendar.YEAR)
+            val month: Int = today.get(Calendar.MONTH)
+            val date: Int = today.get(Calendar.DATE)
+            val dlg = DatePickerDialog(requireContext(), object : DatePickerDialog.OnDateSetListener {
+                override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+                    Log.d("cal", "${year}년 ${month+1}월 ${dayOfMonth}일")
+                }
+            }, year, month, date)
+            dlg.show()
+        }
 
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
@@ -87,7 +108,7 @@ class MypageFragment: Fragment() {
                 return true
             }
         }
-        fragmentMyPageBinding.selCalendar.apply {
+        binding.selCalendar.apply {
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = rowCalendarChangesObserver
             calendarSelectionManager = rowSelectionManager
