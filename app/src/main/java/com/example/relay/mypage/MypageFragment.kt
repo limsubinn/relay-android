@@ -1,6 +1,5 @@
 package com.example.relay.mypage
 
-import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
@@ -17,6 +17,7 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
+import com.michalsvec.singlerowcalendar.utils.DateUtils
 import java.util.*
 
 
@@ -34,15 +35,14 @@ class MypageFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        itemSelectedCalendarBinding = ItemSelectedCalendarBinding.inflate(layoutInflater, container, false)
-        itemUnselectedCalendarBinding = ItemUnselectedCalendarBinding.inflate(layoutInflater, container, false)
+        itemSelectedCalendarBinding = ItemSelectedCalendarBinding.inflate(layoutInflater)
+        itemUnselectedCalendarBinding = ItemUnselectedCalendarBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val c = Calendar.getInstance()
 
         // 우선 기본 선택은 현재 날짜로 설정
         // 가로 달력이 해결되면 기본 선택 위치 조정
@@ -64,9 +64,7 @@ class MypageFragment: Fragment() {
         calendar.time = Date()
         currentMonth = calendar[Calendar.MONTH]
 
-        // calendar view manager is responsible for our displaying logic
-        val myCalendarViewManager = object :
-            CalendarViewManager {
+        val myCalendarViewManager = object : CalendarViewManager {
             override fun setCalendarViewResourceId(
                 position: Int,
                 date: Date,
@@ -74,48 +72,48 @@ class MypageFragment: Fragment() {
             ): Int {
                 val cal = Calendar.getInstance()
                 cal.time = date
-                return if (isSelected) // 선택o 날짜
-                    when (cal[Calendar.DAY_OF_WEEK]) {
-                        else -> R.layout.item_selected_calendar
 
-                    }
-                else // 선택x 날짜
-                    when (cal[Calendar.DAY_OF_WEEK]) {
-                        else -> R.layout.item_unselected_calendar
-                    }
+                return if (isSelected) R.layout.item_selected_calendar
+                else R.layout.item_unselected_calendar
             }
+
             override fun bindDataToCalendarView(
                 holder: SingleRowCalendarAdapter.CalendarViewHolder,
                 date: Date,
                 position: Int,
                 isSelected: Boolean
             ) {
-                // bind data to calendar view
+                // bind data to calendar item views
+                // findViewId 안 쓰고 싶은데 자꾸 바인딩이 안 된다 ㅠㅠ,,,,,
+                holder.itemView.findViewById<TextView>(R.id.tv_date_calendar_item).text = DateUtils.getDayNumber(date)
 
-                // holder.itemView.tv_date_calendar_item.text = DateUtils.getDayNumber(date)
-                // holder.itemView.tv_month_calendar_item.text = DateUtils.getDay3LettersName(date)
+                if (isSelected) {
+                    holder.itemView.findViewById<TextView>(R.id.tv_month_calendar_item).text = DateUtils.getMonth3LettersName(date)
+                    holder.itemView.findViewById<TextView>(R.id.tv_year_calendar_item).text = DateUtils.getYear(date)
+                }
+
             }
         }
 
-        val rowCalendarChangesObserver = object: CalendarChangesObserver {
-            @SuppressLint("SetTextI18n")
-            override fun whenSelectionChanged(isSelected: Boolean, position: Int, date: Date) {
-                super.whenSelectionChanged(isSelected, position, date)
-            }
-        }
-        val rowSelectionManager = object : CalendarSelectionManager {
+        val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
                 return true
             }
         }
-        binding.selCalendar.apply {
-            calendarViewManager = myCalendarViewManager
-            calendarChangesObserver = rowCalendarChangesObserver
-            calendarSelectionManager = rowSelectionManager
-            setDates(getFutureDatesOfCurrentMonth())
-            init()
+
+        val myCalendarChangesObserver = object : CalendarChangesObserver {
+            override fun whenSelectionChanged(isSelected: Boolean, position: Int, date: Date) {
+                super.whenSelectionChanged(isSelected, position, date)
+            }
         }
 
+        val singleRowCalendar = binding.selCalendar.apply {
+            calendarViewManager = myCalendarViewManager
+            calendarChangesObserver = myCalendarChangesObserver
+            calendarSelectionManager = mySelectionManager
+            includeCurrentDate = true
+            init()
+        }
     }
 
     private fun getFutureDatesOfCurrentMonth(): List<Date> {
