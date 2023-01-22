@@ -18,6 +18,7 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import java.time.Month
 import java.util.*
 
 
@@ -25,8 +26,7 @@ class MypageFragment: Fragment() {
     private val binding: FragmentMypageBinding by lazy {
         FragmentMypageBinding.inflate(layoutInflater)
     }
-    private lateinit var itemSelectedCalendarBinding: ItemSelectedCalendarBinding
-    private lateinit var itemUnselectedCalendarBinding: ItemUnselectedCalendarBinding
+
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
 
@@ -35,30 +35,16 @@ class MypageFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        itemSelectedCalendarBinding = ItemSelectedCalendarBinding.inflate(layoutInflater)
-        itemUnselectedCalendarBinding = ItemUnselectedCalendarBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-        // 우선 기본 선택은 현재 날짜로 설정
-        // 가로 달력이 해결되면 기본 선택 위치 조정
-        // 달력 디자인 수정 필요
-        binding.btnCalendar.setOnClickListener {
-            val today = GregorianCalendar()
-            val year: Int = today.get(Calendar.YEAR)
-            val month: Int = today.get(Calendar.MONTH)
-            val date: Int = today.get(Calendar.DATE)
-            val dlg = DatePickerDialog(requireContext(), object : DatePickerDialog.OnDateSetListener {
-                override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-                    Log.d("cal", "${year}년 ${month+1}월 ${dayOfMonth}일")
-                }
-            }, year, month, date)
-            dlg.show()
-        }
+        val today = GregorianCalendar()
+        var year: Int = today.get(Calendar.YEAR)
+        var month: Int = today.get(Calendar.MONTH)
+        var date: Int = today.get(Calendar.DATE)
 
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
@@ -111,8 +97,30 @@ class MypageFragment: Fragment() {
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
-            includeCurrentDate = true
+            // includeCurrentDate = true
+            setDates(getFutureDatesOfCurrentMonth())
+            initialPositionIndex = date-3
             init()
+            select(date-1) // 오늘 날짜 선택
+        }
+
+        // 달력 디자인 수정 필요
+        // 프래그먼트가 재개됐을 때의 액션 구현 필요
+        binding.btnCalendar.setOnClickListener {
+            val dlg = DatePickerDialog(requireContext(), object : DatePickerDialog.OnDateSetListener {
+                override fun onDateSet(view: DatePicker?, y: Int, m: Int, d: Int) {
+                    date = d
+                    month = m
+                    year = y
+
+                    // 선택된 날짜로 가로 달력 교체
+                    singleRowCalendar.setDates(getFutureDatesOfSelectMonth(m))
+                    singleRowCalendar.initialPositionIndex = d-3
+                    singleRowCalendar.init()
+                    singleRowCalendar.select(d-1)
+                }
+            }, year, month, date)
+            dlg.show()
         }
     }
 
@@ -120,6 +128,12 @@ class MypageFragment: Fragment() {
         currentMonth = calendar[Calendar.MONTH]
         return getDates(mutableListOf())
     }
+
+    private fun getFutureDatesOfSelectMonth(month: Int): List<Date> {
+        currentMonth = month
+        return getDates(mutableListOf())
+    }
+
     private fun getDates(list: MutableList<Date>): List<Date> {
         calendar.set(Calendar.MONTH, currentMonth)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
