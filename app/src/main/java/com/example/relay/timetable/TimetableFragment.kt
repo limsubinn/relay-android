@@ -6,8 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
 import com.example.relay.mypage.MySettingsActivity
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class TimetableFragment: Fragment() {
     private var viewBinding: FragmentTimetableBinding? = null
@@ -24,9 +27,10 @@ class TimetableFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewBinding!!.btnTmp.setOnClickListener{
-            val intent = Intent(activity, MySettingsActivity::class.java)
-            startActivity(intent)
+        val bottomSheetFragment = BottomSheetBtnsFragment(requireActivity())
+
+        viewBinding!!.btnBottomSheet.setOnClickListener{
+            bottomSheetFragment.show((activity as FragmentActivity).supportFragmentManager, bottomSheetFragment.tag)
         }
     }
 
