@@ -43,7 +43,7 @@ dependencies {
 
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.appcompat:appcompat:1.6.0'
-    implementation 'com.google.android.material:material:1.7.0'
+    //implementation 'com.google.android.material:material:1.7.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
@@ -51,7 +51,7 @@ dependencies {
 
 
     // Material Design
-    implementation 'com.google.android.material:material:1.8.0-rc01'
+    implementation 'com.google.android.material:material:1.9.0-alpha01'
 
     // Architectural Components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
@@ -80,9 +80,13 @@ dependencies {
     kapt 'com.github.bumptech.glide:compiler:4.12.0'
 
     // Google Maps Location Services
+//    implementation 'com.google.android.gms:play-services:12.0.1'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-auth:20.4.1'
     implementation 'io.github.ParkSangGwon:tedpermission-normal:3.3.0'
+
+    implementation 'com.android.support:multidex:1.0.3'
 
     // Dagger Core
     implementation "com.google.dagger:dagger:2.35.1"
@@ -119,4 +123,6 @@ dependencies {
 
 
 //    implementation("com.google.android.gms:play-services-ads:21.4.0")
+
+    implementation 'com.github.roiacult:BackdropLayout:1.0'
 }
