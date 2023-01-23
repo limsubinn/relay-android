@@ -1,6 +1,7 @@
 package com.example.relay.mypage
 
 import android.app.DatePickerDialog
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,17 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
-import com.example.relay.databinding.ItemSelectedCalendarBinding
-import com.example.relay.databinding.ItemUnselectedCalendarBinding
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
-import java.time.Month
 import java.util.*
 
 
@@ -38,6 +38,7 @@ class MypageFragment: Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -121,6 +122,8 @@ class MypageFragment: Fragment() {
                 }
             }, year, month, date)
             dlg.show()
+            dlg.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
+            dlg.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
         }
     }
 
