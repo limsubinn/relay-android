@@ -13,46 +13,93 @@ class MainActivity : AppCompatActivity() {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
+    private var mypageFragment: MypageFragment? = null
+    private var runningFragment: RunningFragment? = null
+    private var groupFragment: GroupFragment? = null
+    private var timetableFragment: TimetableFragment? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        runningFragment = RunningFragment()
+
         supportFragmentManager
             .beginTransaction()
-            .replace(binding.containerFragment.id, RunningFragment())
+            .replace(binding.containerFragment.id, runningFragment!!)
             .commitAllowingStateLoss()
 
         binding.navBottom.run {
             setOnItemSelectedListener {
                 when (it.itemId) {
                     R.id.menu_mypage -> {
-                        supportFragmentManager
-                            .beginTransaction()
-                            .replace(binding.containerFragment.id, MypageFragment())
-                            .commitAllowingStateLoss()
+                        if(mypageFragment == null) {
+                            mypageFragment = MypageFragment()
+                            supportFragmentManager
+                                .beginTransaction()
+                                .add(binding.containerFragment.id, mypageFragment!!)
+                                .commitAllowingStateLoss()
+                        } else supportFragmentManager.beginTransaction().show(mypageFragment!!).commitAllowingStateLoss()
+
+                        if (runningFragment != null) supportFragmentManager.beginTransaction().hide(runningFragment!!).commitAllowingStateLoss()
+
+                        if (groupFragment != null) supportFragmentManager.beginTransaction().hide(groupFragment!!).commitAllowingStateLoss()
+
+                        if (timetableFragment != null) supportFragmentManager.beginTransaction().hide(timetableFragment!!).commitAllowingStateLoss()
+
+                        return@setOnItemSelectedListener true
                     }
                     R.id.menu_running -> {
-                        supportFragmentManager
-                            .beginTransaction()
-                            .replace(binding.containerFragment.id, RunningFragment())
-                            .commitAllowingStateLoss()
+                        if(runningFragment == null) {
+                            runningFragment = RunningFragment()
+                            supportFragmentManager
+                                .beginTransaction()
+                                .add(binding.containerFragment.id, runningFragment!!)
+                                .commitAllowingStateLoss()
+                        } else supportFragmentManager.beginTransaction().show(runningFragment!!).commitAllowingStateLoss()
+
+                        if (mypageFragment != null) supportFragmentManager.beginTransaction().hide(mypageFragment!!).commitAllowingStateLoss()
+
+                        if (groupFragment != null) supportFragmentManager.beginTransaction().hide(groupFragment!!).commitAllowingStateLoss()
+
+                        if (timetableFragment != null) supportFragmentManager.beginTransaction().hide(timetableFragment!!).commitAllowingStateLoss()
+
                     }
                     R.id.menu_group -> {
-                        supportFragmentManager
-                            .beginTransaction()
-                            .replace(binding.containerFragment.id, GroupFragment())
-                            .commitAllowingStateLoss()
+                        if(groupFragment == null) {
+                            groupFragment = GroupFragment()
+                            supportFragmentManager
+                                .beginTransaction()
+                                .add(binding.containerFragment.id, groupFragment!!)
+                                .commitAllowingStateLoss()
+                        } else supportFragmentManager.beginTransaction().show(groupFragment!!).commitAllowingStateLoss()
+
+                        if (mypageFragment != null) supportFragmentManager.beginTransaction().hide(mypageFragment!!).commitAllowingStateLoss()
+
+                        if (runningFragment != null) supportFragmentManager.beginTransaction().hide(runningFragment!!).commitAllowingStateLoss()
+
+                        if (timetableFragment != null) supportFragmentManager.beginTransaction().hide(timetableFragment!!).commitAllowingStateLoss()
+
                     }
                     R.id.menu_timetable -> {
-                        supportFragmentManager
-                            .beginTransaction()
-                            .replace(binding.containerFragment.id, TimetableFragment())
-                            .commitAllowingStateLoss()
+                        if(timetableFragment == null) {
+                            timetableFragment = TimetableFragment()
+                            supportFragmentManager
+                                .beginTransaction()
+                                .add(binding.containerFragment.id, timetableFragment!!)
+                                .commitAllowingStateLoss()
+                        } else supportFragmentManager.beginTransaction().show(timetableFragment!!).commitAllowingStateLoss()
+
+                        if (mypageFragment != null) supportFragmentManager.beginTransaction().hide(mypageFragment!!).commitAllowingStateLoss()
+
+                        if (runningFragment != null) supportFragmentManager.beginTransaction().hide(runningFragment!!).commitAllowingStateLoss()
+
+                        if (groupFragment != null) supportFragmentManager.beginTransaction().hide(groupFragment!!).commitAllowingStateLoss()
                     }
                 }
                 true
             }
-            // 처음 실행했을 때 자동으로 menu_home에 해당하는 아이템을 가리킨다.
+
             selectedItemId = R.id.menu_running
         }
     }

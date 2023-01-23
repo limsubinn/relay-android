@@ -1,15 +1,12 @@
 package com.example.relay.mypage
 
 import android.app.DatePickerDialog
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.relay.R
@@ -23,9 +20,8 @@ import java.util.*
 
 
 class MypageFragment: Fragment() {
-    private val binding: FragmentMypageBinding by lazy {
-        FragmentMypageBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentMypageBinding? = null
+    private val binding get() = _binding!!
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
@@ -35,10 +31,10 @@ class MypageFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentMypageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -98,15 +94,13 @@ class MypageFragment: Fragment() {
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
-            // includeCurrentDate = true
+
             setDates(getFutureDatesOfCurrentMonth())
             initialPositionIndex = date-3
             init()
             select(date-1) // 오늘 날짜 선택
         }
 
-        // 달력 디자인 수정 필요
-        // 프래그먼트가 재개됐을 때의 액션 구현 필요
         binding.btnCalendar.setOnClickListener {
             val dlg = DatePickerDialog(requireContext(), object : DatePickerDialog.OnDateSetListener {
                 override fun onDateSet(view: DatePicker?, y: Int, m: Int, d: Int) {
@@ -115,16 +109,23 @@ class MypageFragment: Fragment() {
                     year = y
 
                     // 선택된 날짜로 가로 달력 교체
-                    singleRowCalendar.setDates(getFutureDatesOfSelectMonth(m))
-                    singleRowCalendar.initialPositionIndex = d-3
-                    singleRowCalendar.init()
-                    singleRowCalendar.select(d-1)
+                    singleRowCalendar.apply {
+                        setDates(getFutureDatesOfSelectMonth(m))
+                        initialPositionIndex = d-3
+                        init()
+                        select(d-1)
+                    }
                 }
             }, year, month, date)
             dlg.show()
             dlg.getButton(DatePickerDialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
             dlg.getButton(DatePickerDialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(requireActivity(), R.color.black))
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun getFutureDatesOfCurrentMonth(): List<Date> {
