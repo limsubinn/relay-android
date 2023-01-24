@@ -18,8 +18,14 @@ class MypageService(val mypageInterface: MypageInterface) {
         retrofit.getProfileRes().enqueue(object : Callback<UserProfileResponse>{
             override fun onResponse(call: Call<UserProfileResponse>, response: Response<UserProfileResponse>) {
                 Log.d("UserProfileResponse", "success")
-                Log.d("UserProfileResponse", response.body().toString())
-                mypageInterface.onGetUserProfileSuccess(response.body() as UserProfileResponse)
+                // Log.d("UserProfileResponse", response.body().toString())
+
+                if (response.code() == 200) {
+                    mypageInterface.onGetUserProfileSuccess(response.body() as UserProfileResponse)
+                } else {
+                    Log.d("UserProfileResponse", "4xx error")
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
             }
 
             override fun onFailure(call: Call<UserProfileResponse>, t: Throwable) {
@@ -34,8 +40,13 @@ class MypageService(val mypageInterface: MypageInterface) {
         retrofit.getClubRes(userIdx).enqueue(object : Callback<UserClubResponse>{
             override fun onResponse(call: Call<UserClubResponse>, response: Response<UserClubResponse>) {
                 Log.d("UserClubResponse", "success")
-                Log.d("UserClubResponse", response.body().toString())
-                mypageInterface.onGetUserClubSuccess(response.body() as UserClubResponse)
+                // Log.d("UserClubResponse", response.body().toString())
+                if (response.code() == 200) {
+                    mypageInterface.onGetUserClubSuccess(response.body() as UserClubResponse)
+                } else {
+                    Log.d("UserClubResponse", "4xx error")
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
             }
 
             override fun onFailure(call: Call<UserClubResponse>, t: Throwable) {
