@@ -38,11 +38,6 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    allprojects {
-        repositories {
-            maven { url 'https://jitpack.io' }
-        }
-    }
 }
 
 dependencies {
@@ -73,4 +68,7 @@ dependencies {
     // RoomDB
     implementation "androidx.room:room-runtime:2.5.0"
     kapt "androidx.room:room-compiler:2.5.0"
+
+    // Timetable
+    implementation 'com.github.islandparadise14:Mintable:1.5.1'
 }
