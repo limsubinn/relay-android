@@ -5,24 +5,20 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.example.relay.ApplicationClass.Companion.sRetrofit
 
 import com.example.relay.MainActivity
-import com.example.relay.RetrofitClient
 import com.example.relay.databinding.ActivityLoginMainBinding
 import com.example.relay.login.data.BaseRes
 import com.example.relay.login.data.LogInLocalReq
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 
 class LoginMainActivity : AppCompatActivity() {
     private val viewBinding: ActivityLoginMainBinding by lazy{
         ActivityLoginMainBinding.inflate(layoutInflater)
     }
 
-    private val retrofit: Retrofit = RetrofitClient.getInstance() // RetrofitClient 의 instance 불러오기
-    private val loginApi: LoginService = retrofit.create(LoginService::class.java) // retrofit 이 interface 구현
+    private val loginApi: LoginService = sRetrofit.create(LoginService::class.java) // retrofit 이 interface 구현
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
