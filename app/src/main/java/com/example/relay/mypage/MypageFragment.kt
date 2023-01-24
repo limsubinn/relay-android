@@ -19,7 +19,6 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
-import retrofit2.Retrofit
 import java.util.*
 
 

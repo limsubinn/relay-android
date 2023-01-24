@@ -9,9 +9,7 @@ import retrofit2.http.Query
 
 interface MypageRetrofit {
     @GET("/users/profileList")
-    fun getProfileRes(
-        @Header("Authorization") accessToken: String
-    ) : Call<UserProfileResponse>
+    fun getProfileRes() : Call<UserProfileResponse>
 
     @GET("/users/clubs/accepted")
     fun getClubRes(

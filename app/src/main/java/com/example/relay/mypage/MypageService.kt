@@ -13,24 +13,21 @@ import retrofit2.Response
 class MypageService(val mypageInterface: MypageInterface) {
 
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
-    private val accessToken: String? = prefs.getString("accessToken", "")
 
     fun tryGetUserProfile(){
-        if (accessToken != null) {
-            retrofit.getProfileRes(accessToken).enqueue(object : Callback<UserProfileResponse>{
-                override fun onResponse(call: Call<UserProfileResponse>, response: Response<UserProfileResponse>) {
-                    Log.d("UserProfileResponse", "success")
-                    Log.d("UserProfileResponse", response.body().toString())
-                    mypageInterface.onGetUserProfileSuccess(response.body() as UserProfileResponse)
-                }
+        retrofit.getProfileRes().enqueue(object : Callback<UserProfileResponse>{
+            override fun onResponse(call: Call<UserProfileResponse>, response: Response<UserProfileResponse>) {
+                Log.d("UserProfileResponse", "success")
+                Log.d("UserProfileResponse", response.body().toString())
+                mypageInterface.onGetUserProfileSuccess(response.body() as UserProfileResponse)
+            }
 
-                override fun onFailure(call: Call<UserProfileResponse>, t: Throwable) {
-                    Log.d("UserProfileResponse", "fail")
-                    t.printStackTrace()
-                    mypageInterface.onGetUserProfileFailure(t.message ?: "통신 오류")
-                }
-            })
-        }
+            override fun onFailure(call: Call<UserProfileResponse>, t: Throwable) {
+                Log.d("UserProfileResponse", "fail")
+                t.printStackTrace()
+                mypageInterface.onGetUserProfileFailure(t.message ?: "통신 오류")
+            }
+        })
     }
 
     fun tryGetUserClub(userIdx: Long){

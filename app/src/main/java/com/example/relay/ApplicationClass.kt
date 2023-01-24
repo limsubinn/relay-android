@@ -40,7 +40,7 @@ class ApplicationClass : Application() {
             .readTimeout(5000, TimeUnit.MILLISECONDS)
             .connectTimeout(5000, TimeUnit.MILLISECONDS)
             .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-            // .addNetworkInterceptor(XAccessTokenInterceptor()) // JWT 자동 헤더 전송
+            .addNetworkInterceptor(XAccessTokenInterceptor()) // 자동 헤더 전송
             .build()
 
 
