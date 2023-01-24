@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import com.example.relay.MyApplication
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivitySignupBinding
 
 class SignupActivity : AppCompatActivity() {
@@ -34,11 +34,14 @@ class SignupActivity : AppCompatActivity() {
                 Toast.makeText(this, "비밀번호가 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
             } else {
                 val intent = Intent(this, PrivacyConditionActivity::class.java)
-                MyApplication.prefs.setString("name", name)
-                MyApplication.prefs.setString("name", name)
-                MyApplication.prefs.setString("email", email)
-                MyApplication.prefs.setString("phone", phone)
-                MyApplication.prefs.setString("pw", pw)
+                val editor = prefs.edit()
+
+                editor.putString("name", name)
+                editor.putString("email", email)
+                editor.putString("phone", phone)
+                editor.putString("pw", pw)
+                editor.apply()
+
                 startActivity(intent)
             }
         }
