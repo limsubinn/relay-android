@@ -1,6 +1,7 @@
 package com.example.relay.mypage
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -127,6 +128,12 @@ class MypageFragment: Fragment(), MypageInterface {
 
         // 유저 정보 받아오기
         MypageService(this).tryGetUserProfile()
+
+        // 설정 버튼
+        binding.btnMySettings.setOnClickListener {
+            val intent = Intent(activity, MySettingsActivity::class.java)
+            startActivity(intent);
+        }
     }
 
     override fun onDestroyView() {
