@@ -178,13 +178,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <android.widget.Button
+            android:id="@+id/btn_logout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@color/main_color_text"
-            android:text="@string/withdrawal"
+            android:text="@string/logout"
             android:gravity="center_vertical"
             style="?android:attr/borderlessButtonStyle"
             android:paddingHorizontal="8dp"/>
