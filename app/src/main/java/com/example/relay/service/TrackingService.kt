@@ -18,8 +18,9 @@ import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
+import com.example.relay.Constants.ACTION_RESUME_SERVICE
 import com.example.relay.Constants.ACTION_SHOW_TRACKING_FRAGMENT
-import com.example.relay.Constants.ACTION_START_OR_RESUME_SERVICE
+import com.example.relay.Constants.ACTION_START_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
 import com.example.relay.Constants.FASTEST_LOCATION_INTERVAL
 import com.example.relay.Constants.LOCATION_UPDATE_INTERVAL
@@ -93,14 +94,15 @@ class TrackingService : LifecycleService() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         intent?.let{
             when(it.action){
-                ACTION_START_OR_RESUME_SERVICE -> {
+                ACTION_START_SERVICE -> {
                     if(isFirstRun) {
                         startForegroundService()
                         isFirstRun = false
-                    } else {
-                        Timber.d("Resuming service...")
-                        startTimer()
                     }
+                }
+                ACTION_RESUME_SERVICE -> {
+                    Timber.d("Resuming service...")
+                    startTimer()
                 }
                 ACTION_PAUSE_SERVICE -> {
                     Timber.d("Paused service")
@@ -156,7 +158,7 @@ class TrackingService : LifecycleService() {
             PendingIntent.getService(this, 1, pauseIntent, FLAG_MUTABLE)
         } else {
             val resumeIntent = Intent(this, TrackingService::class.java).apply {
-                action = ACTION_START_OR_RESUME_SERVICE
+                action = ACTION_RESUME_SERVICE
             }
             PendingIntent.getService(this, 2, resumeIntent, FLAG_MUTABLE)
         }
