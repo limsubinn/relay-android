@@ -2,17 +2,19 @@ package com.example.relay.login
 
 import com.example.relay.login.data.*
 import retrofit2.Call
-import retrofit2.http.POST
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.PATCH
+import retrofit2.http.*
 
-interface LoginService {
+interface LogInRetrofit {
     @POST("users/logIn")
-    fun logInLocal(@Body Info: LogInLocalReq): Call<BaseRes>
+    fun postLogInLocalReq(
+        // @Header("Authorization") accessToken: String?,
+        @Body Info: LogInLocalReq
+    ): Call<LogInLocalRes>
 
     @POST("users/sign-in")
-    fun signInLocal(@Body Info: SignInLocalReq): Call<BaseRes>
+    fun postSignUpLocalReq(
+        @Body Info: SignUpLocalReq
+    ): Call<SignUpLocalRes>
 
     @POST("users/logIn/Google")
     fun logInGoogle(): Call<BaseRes>
