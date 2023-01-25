@@ -18,6 +18,15 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
+        val prefsId = prefs.getString("id", "")
+        val prefsPw = prefs.getString("pw", "")
+
+        // 자동 로그인
+        if (prefsId!!.isNotBlank() and prefsPw!!.isNotBlank())
+            LogInService(this).tryPostLocalLogIn()
+        else
+            Toast.makeText(this, "로컬 자동로그인 불가", Toast.LENGTH_SHORT).show()
+
         viewBinding.btnLogin.setOnClickListener {
             val id:String = viewBinding.etLoginId.text.toString()
             val pw:String = viewBinding.etLoginPw.text.toString()
