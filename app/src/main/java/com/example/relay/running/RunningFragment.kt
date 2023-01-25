@@ -1,16 +1,12 @@
 package com.example.relay.running
 
-import android.os.Build
-import android.os.Bundle
 import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.text.style.EasyEditSpan
-import android.util.Log
+import android.os.Build
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -20,26 +16,25 @@ import com.example.relay.Constants.MAP_ZOOM
 import com.example.relay.Constants.POLYLINE_COLOR
 import com.example.relay.Constants.POLYLINE_WIDTH
 import com.example.relay.Constants.REQUEST_CODE_LOCATION_PERMISSION
+import com.example.relay.OnBottomSheetCallbacks
+import com.example.relay.R
 import com.example.relay.TrackingUtility
 import com.example.relay.databinding.FragmentRunningBinding
-import com.example.relay.db.RunDao
 import com.example.relay.service.Polyline
 import com.example.relay.service.TrackingService
 import com.example.relay.ui.viewmodels.RunningViewModel
-import com.google.android.gms.common.api.GoogleApi
-import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.gun0912.tedpermission.PermissionListener
-import com.gun0912.tedpermission.normal.TedPermission
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_running.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
-import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
@@ -51,6 +46,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+
+    private var curTimeInMillis = 0L
+
+    private var listener: OnBottomSheetCallbacks? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,8 +85,12 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         subscribeToObservers()
 
         binding.btnStart.setOnClickListener {
+            binding.layoutTimer.visibility = View.VISIBLE
             startRun()
         }
+
+//        supportActionBar?.elevation = 0f
+//        configureBackdrop()
 
         return binding.root
     }
@@ -102,6 +105,12 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             addLatestPolyline()
             moveCameraToUser()
         })
+
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+            curTimeInMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+            binding.tvTimer.text = formattedTime
+        })
     }
 
     private fun startRun() {
@@ -115,10 +124,14 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
         if(!isTracking) {
-            binding.btnStart.text = "시작하기"
-       } else {
-            binding.btnStart.text = "멈추기"
-       }
+            binding.layoutTimer.visibility = View.VISIBLE
+
+        } else {
+//            configureBackdrop()
+//            val bottomSheet = WindowFragment()
+//            bottomSheet.show(childFragmentManager,bottomSheet.tag)
+//            binding.tvStart.text = "중단"
+        }
     }
 
     private fun moveCameraToUser() {
@@ -147,6 +160,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         if(pathPoints.isNotEmpty() && pathPoints.last().size > 1){
             val preLastLating = pathPoints.last()[pathPoints.last().size - 2]
             val lastLatLng = pathPoints.last().last()
+            val markerOptions = MarkerOptions()
+            markerOptions.position(lastLatLng)
             val polylineOptions = PolylineOptions()
                 .color(POLYLINE_COLOR)
                 .width(POLYLINE_WIDTH)
@@ -242,4 +257,37 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             it.action = action
             requireContext().startService(it)
         }
+
+    fun setOnBottomSheetCallbacks(onBottomSheetCallbacks: OnBottomSheetCallbacks) {
+        this.listener = onBottomSheetCallbacks
+    }
+
+    fun closeBottomSheet() {
+        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
+    }
+
+    fun openBottomSheet() {
+        mBottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
+    private var mBottomSheetBehavior: BottomSheetBehavior<View?>? = null
+
+    private fun configureBackdrop() {
+        val fragment = childFragmentManager.findFragmentById(R.id.filter_fragment)
+
+        fragment?.view?.let {
+            BottomSheetBehavior.from(it).let { bs ->
+                bs.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        listener?.onStateChanged(bottomSheet, newState)
+                    }
+                })
+
+                bs.state = BottomSheetBehavior.STATE_EXPANDED
+                mBottomSheetBehavior = bs
+            }
+        }
+    }
 }
