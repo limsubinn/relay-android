@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
-import com.example.relay.Constants.ACTION_START_OR_RESUME_SERVICE
+import com.example.relay.Constants.ACTION_RESUME_SERVICE
 import com.example.relay.Constants.MAP_ZOOM
 import com.example.relay.Constants.POLYLINE_COLOR
 import com.example.relay.Constants.POLYLINE_WIDTH
@@ -78,6 +78,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         //map 생명주기
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync {
+            moveCameraToUser()
             map = it
             addAllPolylines()
         }
@@ -90,7 +91,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
 
 //        supportActionBar?.elevation = 0f
-//        configureBackdrop()
+        //configureBackdrop()
 
         return binding.root
     }
@@ -116,8 +117,12 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
     private fun startRun() {
         if(isTracking) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
+            binding.btnStart.setImageResource(R.drawable.img_btn_restart)
+            //configureBackdrop()
         } else {
-            sendCommandToService(ACTION_START_OR_RESUME_SERVICE)
+            sendCommandToService(ACTION_RESUME_SERVICE)
+            binding.btnStart.setImageResource(R.drawable.img_btn_pause)
+            //configureBackdrop()
         }
     }
 
@@ -127,12 +132,13 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             binding.layoutTimer.visibility = View.VISIBLE
 
         } else {
-//            configureBackdrop()
 //            val bottomSheet = WindowFragment()
 //            bottomSheet.show(childFragmentManager,bottomSheet.tag)
 //            binding.tvStart.text = "중단"
         }
     }
+
+
 
     private fun moveCameraToUser() {
         if(pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()){
