@@ -23,7 +23,7 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
 
         // 자동 로그인
         if (prefsId!!.isNotBlank() and prefsPw!!.isNotBlank())
-            LogInService(this).tryPostLocalLogIn()
+            LogInService(this).tryPostLocalLogIn(prefsId, prefsPw)
         else
             Toast.makeText(this, "로컬 자동로그인 불가", Toast.LENGTH_SHORT).show()
 
@@ -34,10 +34,7 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
             if (id.isBlank() || pw.isBlank()){
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             } else {
-                val editor = prefs.edit()
-                editor.putString("id", id).apply()
-                editor.putString("pw", pw).apply()
-                LogInService(this).tryPostLocalLogIn()
+                LogInService(this).tryPostLocalLogIn(id, pw)
             }
         }
 
@@ -62,7 +59,8 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
     override fun onPostLocalLogInTokenExpire(response: LogInLocalRes) {
         val editor = prefs.edit()
         editor.putString("accessToken", response.result.refreshToken).apply()
-        LogInService(this).tryPostLocalLogIn()
+        LogInService(this)
+            .tryPostLocalLogIn(viewBinding.etLoginId.text.toString(), viewBinding.etLoginPw.text.toString())
     }
 
     override fun onPostLocalLogInFailure(message: String) {

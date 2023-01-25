@@ -14,9 +14,7 @@ import retrofit2.Response
 class LogInService(val logInInterface: LogInInterface) {
     private val retrofit: LogInRetrofit = sRetrofit.create(LogInRetrofit::class.java)
 
-    fun tryPostLocalLogIn(){
-        val id = prefs.getString("id","")
-        val pw = prefs.getString("pw","")
+    fun tryPostLocalLogIn(id:String, pw:String){
         val accessToken = prefs.getString("accessToken", "")
 
         Log.d("LogInLocalPrefs","accessToken: $accessToken")
@@ -32,6 +30,9 @@ class LogInService(val logInInterface: LogInInterface) {
                     if (response.isSuccessful) { // <--> response.code == 200
                         // 성공 처리
                         if (response.body()?.isSuccess == true) {
+                            val editor = prefs.edit()
+                            editor.putString("id", id).apply()
+                            editor.putString("pw", pw).apply()
                             logInInterface.onPostLocalLogInSuccess(response.body() as LogInLocalRes)
                         } else {
                             //if (response.body()?.result?.refreshToken != null)
