@@ -70,5 +70,5 @@ dependencies {
     kapt "androidx.room:room-compiler:2.5.0"
 
     // Timetable
-    implementation 'com.github.islandparadise14:Mintable:1.5.1'
+    implementation 'com.github.LeeGa00:Android-Timetable:1.0.2'
 }

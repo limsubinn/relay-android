@@ -26,8 +26,7 @@ class TimetableFragment: Fragment() {
         viewBinding =  FragmentTimetableBinding.inflate(layoutInflater)
         with(viewBinding!!.timetable){
             initTable(day)
-            baseSetting(20, 50, 60)
-
+            baseSetting(20, 40, 60)
         }
         return viewBinding!!.root
     }
