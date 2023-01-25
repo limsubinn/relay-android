@@ -13,7 +13,7 @@ class GroupPagerAdapter(fragmentActivity: FragmentActivity) :
         val viewIdx = getPosition(position)
         return when (viewIdx) {
             0 -> GroupMainFragment()
-            1 -> GroupAllFragment()
+            1 -> GroupListFragment()
             else -> GroupMainFragment()
         }
     }
