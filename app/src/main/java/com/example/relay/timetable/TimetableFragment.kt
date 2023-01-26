@@ -5,11 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commitNow
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
-import kotlinx.android.synthetic.main.fragment_mypage.view.*
-import kotlinx.android.synthetic.main.fragment_timetable.*
 
 
 class TimetableFragment: Fragment() {
@@ -21,7 +18,7 @@ class TimetableFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewBinding =  FragmentTimetableBinding.inflate(layoutInflater)
+        viewBinding = FragmentTimetableBinding.inflate(layoutInflater)
         with(viewBinding!!.timetable){
             initTable(day)
             baseSetting(20, 40, 60)
