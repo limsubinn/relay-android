@@ -3,6 +3,7 @@ package com.example.relay
 import android.app.Application
 import android.content.SharedPreferences
 import android.util.Log
+import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -10,6 +11,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 // 앱이 실행될때 1번만 실행
+@HiltAndroidApp
 class ApplicationClass : Application() {
     val API_URL = "http://3.38.32.124/"
 

@@ -17,4 +17,5 @@
     <color name="btn_background_gray">#F8FAFC</color>
     <color name="et_purple">#7B1FA2</color>
     <color name="et_focus_purple">#680093</color>
+    <color name="main">#FFFF3E00</color>
 </resources>
