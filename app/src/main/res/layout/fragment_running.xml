@@ -105,16 +105,5 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.fragment.app.FragmentContainerView
-        android:elevation="1dp"
-        app:behavior_peekHeight="70dp"
-        android:id="@+id/filter_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:behavior_skipCollapsed="true"
-        app:layout_behavior=".GestureLockedBottomSheetBehavior"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
