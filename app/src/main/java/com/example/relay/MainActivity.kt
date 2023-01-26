@@ -1,7 +1,7 @@
 package com.example.relay
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.GroupFragment
 import com.example.relay.mypage.MypageFragment
