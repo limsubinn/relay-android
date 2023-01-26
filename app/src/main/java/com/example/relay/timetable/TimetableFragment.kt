@@ -34,11 +34,6 @@ class TimetableFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bottomSheetFragment = BottomSheetBtnsFragment(requireActivity())
-        viewBinding!!.btnBottomSheet.setOnClickListener{
-            bottomSheetFragment.show((activity as FragmentActivity).supportFragmentManager, bottomSheetFragment.tag)
-        }
-
         viewBinding!!.btnMyTimetable.setOnClickListener{
 
         }

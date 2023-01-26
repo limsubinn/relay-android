@@ -30,7 +30,7 @@
             android:id="@+id/btn_bottom_sheet"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:background="@drawable/ic_plus"
+            android:background="@drawable/ic_edit"
             app:layout_constraintEnd_toStartOf="@id/btn_my_timetable"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -54,10 +54,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/container_title"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/container_edit"
         android:scrollbars="none"
         android:overScrollMode="never"
-        android:layout_marginBottom="10dp">
+        android:layout_marginBottom="5dp">
 
         <com.islandparadise14.mintable.MinTimeTableView
             android:id="@+id/timetable"
@@ -72,5 +72,13 @@
             app:yEndLine="true"/>
 
     </ScrollView>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/container_edit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
