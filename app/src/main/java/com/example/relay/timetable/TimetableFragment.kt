@@ -1,18 +1,16 @@
 package com.example.relay.timetable
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.commitNow
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
-import com.example.relay.mypage.MySettingsActivity
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_mypage.view.*
 import kotlinx.android.synthetic.main.fragment_timetable.*
+
 
 class TimetableFragment: Fragment() {
     private var viewBinding: FragmentTimetableBinding? = null
@@ -37,6 +35,14 @@ class TimetableFragment: Fragment() {
         viewBinding!!.btnMyTimetable.setOnClickListener{
 
         }
+
+        viewBinding!!.btnEdit.setOnClickListener{
+            val editFragment = TimetableEditFragment()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.container_edit, editFragment)
+                .commit()
+        }
     }
 
     // 메모리 누수 방지 (fragment 의 생명주기 > view 의 생명주기)
@@ -44,4 +50,5 @@ class TimetableFragment: Fragment() {
         super.onDestroyView()
         viewBinding = null
     }
+
 }
