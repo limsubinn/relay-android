@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".login.NewPwActivity">
+
+    <TextView
+        android:id="@+id/tv_title_new_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:text="@string/new_pw1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_new_pw"
+        android:layout_marginBottom="50dp"/>
+
+    <TextView
+        android:id="@+id/tv_new_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/new_pw2"
+        app:layout_constraintStart_toStartOf="@id/et_new_pw"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.38"
+        android:layout_marginHorizontal="15dp"/>
+
+    <EditText
+        android:id="@+id/et_new_pw"
+        android:layout_width="0dp"
+        android:layout_height="46dp"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.65"
+        android:background="@drawable/et_new_pw"
+        android:textColor="@color/text_dark_gray"
+        android:textSize="16sp"
+        android:hint="@string/least_pw_length_en"
+        android:inputType="textPassword"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_new_pw"
+        android:layout_marginVertical="10dp"
+        android:paddingHorizontal="15dp"/>
+
+    <TextView
+        android:id="@+id/tv_check_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="@string/check_pw"
+        app:layout_constraintStart_toStartOf="@id/et_new_pw"
+        app:layout_constraintTop_toBottomOf="@id/et_new_pw"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="15dp"/>
+
+    <EditText
+        android:id="@+id/et_check_pw"
+        android:layout_width="0dp"
+        android:layout_height="46dp"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.65"
+        android:background="@drawable/et_new_pw"
+        android:textColor="@color/text_dark_gray"
+        android:textSize="16sp"
+        android:hint="********"
+        android:inputType="textPassword"
+        android:gravity="center_vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_check_pw"
+        android:layout_marginVertical="10dp"
+        android:paddingHorizontal="15dp"/>
+
+    <android.widget.Button
+        android:id="@+id/btn_next"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        app:layout_constraintWidth_default="percent"
+        app:layout_constraintWidth_percent="0.65"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:text="@string/next"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_check_pw"
+        android:background="@drawable/btn_orange3"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_marginVertical="35dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
