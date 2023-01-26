@@ -5,9 +5,10 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import com.example.relay.ApplicationClass.Companion.prefs
-import com.example.relay.MainActivity
+import com.example.relay.ui.MainActivity
 import com.example.relay.databinding.ActivityLoginMainBinding
 import com.example.relay.login.data.LogInLocalRes
+import com.example.relay.running.RunningFragment
 
 class LoginMainActivity : AppCompatActivity(), LogInInterface {
     private val viewBinding: ActivityLoginMainBinding by lazy{
@@ -27,6 +28,11 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
         else
             Toast.makeText(this, "로컬 자동로그인 불가", Toast.LENGTH_SHORT).show()
 
+        viewBinding.tvAppLogo.setOnClickListener {
+            val intent = Intent(this@LoginMainActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
         viewBinding.btnLogin.setOnClickListener {
             val id:String = viewBinding.etLoginId.text.toString()
             val pw:String = viewBinding.etLoginPw.text.toString()
