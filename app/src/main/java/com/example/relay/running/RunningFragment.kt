@@ -3,6 +3,7 @@ package com.example.relay.running
 import android.Manifest
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -163,7 +164,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
     private fun addAllPolylines() {
         for(polyline in pathPoints) {
             val polylineOptions = PolylineOptions()
-                .color(POLYLINE_COLOR)
+                .color(Color.parseColor("#FFFF3E00"))
                 .width(POLYLINE_WIDTH)
                 .addAll(polyline)
             map?.addPolyline(polylineOptions)
@@ -178,7 +179,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             val markerOptions = MarkerOptions()
             markerOptions.position(lastLatLng)
             val polylineOptions = PolylineOptions()
-                .color(POLYLINE_COLOR)
+                .color(Color.parseColor("#FFFF3E00"))
                 .width(POLYLINE_WIDTH)
                 .add(preLastLating)
                 .add(lastLatLng)
