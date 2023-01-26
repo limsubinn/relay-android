@@ -2,6 +2,7 @@ package com.example.relay.running
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -26,10 +27,9 @@ import com.example.relay.ui.viewmodels.RunningViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.gun0912.tedpermission.provider.TedPermissionProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_running.*
 import pub.devrel.easypermissions.AppSettingsDialog
@@ -50,6 +50,14 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
     private var curTimeInMillis = 0L
 
     private var listener: OnBottomSheetCallbacks? = null
+
+    var currentMarker: Marker? = null
+    var markerView: View? = null
+
+    var markerIcon = BitmapFactory.decodeResource(
+        TedPermissionProvider.context.resources,
+        R.drawable.img_marker
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -82,6 +90,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             map = it
             addAllPolylines()
         }
+        //setCustomMarkerView()
 
         subscribeToObservers()
 
@@ -174,6 +183,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
                 .add(preLastLating)
                 .add(lastLatLng)
             map?.addPolyline(polylineOptions)
+            setCurrentLocation(lastLatLng)
 
         }
     }
@@ -278,22 +288,37 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var mBottomSheetBehavior: BottomSheetBehavior<View?>? = null
 
-    private fun configureBackdrop() {
-        val fragment = childFragmentManager.findFragmentById(R.id.filter_fragment)
+//    private fun configureBackdrop() {
+//        val fragment = childFragmentManager.findFragmentById(R.id.filter_fragment)
+//
+//        fragment?.view?.let {
+//            BottomSheetBehavior.from(it).let { bs ->
+//                bs.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+//                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+//
+//                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+//                        listener?.onStateChanged(bottomSheet, newState)
+//                    }
+//                })
+//
+//                bs.state = BottomSheetBehavior.STATE_EXPANDED
+//                mBottomSheetBehavior = bs
+//            }
+//        }
+//    }
 
-        fragment?.view?.let {
-            BottomSheetBehavior.from(it).let { bs ->
-                bs.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
-                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+    fun setCurrentLocation(location: LatLng) {
+        if (currentMarker != null) currentMarker!!.remove()
+        val currentLatLng = LatLng(location.latitude, location.longitude)
+        val markerOptions = MarkerOptions()
+        markerOptions.position(currentLatLng)
+        markerOptions.draggable(true)
+        currentMarker = map?.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon)))
+        val cameraUpdate = CameraUpdateFactory.newLatLng(currentLatLng)
+        map?.moveCamera(cameraUpdate)
+    }
 
-                    override fun onStateChanged(bottomSheet: View, newState: Int) {
-                        listener?.onStateChanged(bottomSheet, newState)
-                    }
-                })
-
-                bs.state = BottomSheetBehavior.STATE_EXPANDED
-                mBottomSheetBehavior = bs
-            }
-        }
+    private fun setCustomMarkerView() {
+        markerView = LayoutInflater.from(context).inflate(com.example.relay.R.drawable.marker,null)
     }
 }

@@ -5,47 +5,41 @@ import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_MUTABLE
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.location.LocationRequest
 import android.os.Build
 import android.os.Looper
 import androidx.annotation.RequiresApi
-import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_RESUME_SERVICE
-import com.example.relay.Constants.ACTION_SHOW_TRACKING_FRAGMENT
 import com.example.relay.Constants.ACTION_START_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
 import com.example.relay.Constants.FASTEST_LOCATION_INTERVAL
 import com.example.relay.Constants.LOCATION_UPDATE_INTERVAL
 import com.example.relay.Constants.NOTIFICATION_CHANNEL_ID
 import com.example.relay.Constants.NOTIFICATION_CHANNEL_NAME
-import com.example.relay.Constants.NOTIFICATION_ID
 import com.example.relay.Constants.TIMER_UPDATE_INTERVAL
-import com.example.relay.R
 import com.example.relay.TrackingUtility
-import com.example.relay.ui.MainActivity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.location.LocationServices
-import dagger.Provides
+import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
+
 
 typealias Polyline = MutableList<LatLng>
 typealias Polylines = MutableList<Polyline>
@@ -200,6 +194,7 @@ class TrackingService : LifecycleService() {
                         locations ->
                     for (location in locations) {
                         addPathPoint(location)
+
                         Timber.d("NEW LOCATION: ${location.latitude}, ${location.longitude}")
                     }
                 }
@@ -254,4 +249,6 @@ class TrackingService : LifecycleService() {
         )
         notificationManager.createNotificationChannel(channel)
     }
+
+
 }
