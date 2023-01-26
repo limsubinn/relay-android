@@ -38,6 +38,10 @@ class TimetableFragment: Fragment() {
         viewBinding!!.btnBottomSheet.setOnClickListener{
             bottomSheetFragment.show((activity as FragmentActivity).supportFragmentManager, bottomSheetFragment.tag)
         }
+
+        viewBinding!!.btnMyTimetable.setOnClickListener{
+
+        }
     }
 
     // 메모리 누수 방지 (fragment 의 생명주기 > view 의 생명주기)
