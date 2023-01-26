@@ -49,6 +49,11 @@ class GroupListFragment: Fragment(), ListInterface {
         })
     }
 
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
     override fun onGetClubListSuccess(response: GroupListResponse) {
         val res = response.result
 
@@ -71,6 +76,6 @@ class GroupListFragment: Fragment(), ListInterface {
     }
 
     override fun onGetClubListFailure(message: String) {
-        TODO("Not yet implemented")
+        // 에러 발생
     }
 }
