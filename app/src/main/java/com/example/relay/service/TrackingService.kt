@@ -129,7 +129,6 @@ class TrackingService : LifecycleService() {
         lapTime = 0
         timeRunInSeconds.postValue(0)
         lastSecondTimestamp = 0
-        timeStarted = 0
         CoroutineScope(Dispatchers.Main).launch {
             while (isTracking.value!!) {
                 //달리기 시작으로부터 지금까지 시간
