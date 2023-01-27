@@ -10,6 +10,7 @@ import android.content.Intent
 import android.location.Location
 import android.os.Build
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
@@ -49,7 +50,7 @@ class TrackingService : LifecycleService() {
 
     var isFirstRun = true
 
-//    @Inject
+    //    @Inject
     lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val timeRunInSeconds = MutableLiveData<Long>()
@@ -60,13 +61,13 @@ class TrackingService : LifecycleService() {
 //    lateinit var curNotificationBuilder: NotificationCompat.Builder
 
     companion object {
-        val timeRunInMillis = MutableLiveData<Long>()
+        var timeRunInMillis = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
         //val pathPoints = MutableLiveData<MutableList<MutableList<LatLng>>>()
     }
 
-    private fun postInitialValues(){
+    fun postInitialValues(){
         isTracking.postValue(false)
         pathPoints.postValue(mutableListOf())
         timeRunInSeconds.postValue(0L)
@@ -104,6 +105,8 @@ class TrackingService : LifecycleService() {
                 }
                 ACTION_STOP_SERVICE -> {
                     Timber.d("Stopped service")
+                    Log.d("isFirstRun","${isFirstRun}")
+                    isFirstRun = true
                 }
             }
         }
@@ -121,6 +124,12 @@ class TrackingService : LifecycleService() {
         isTracking.postValue(true)
         timeStarted = System.currentTimeMillis()
         isTimerEnabled = true
+        timeRunInMillis.postValue(0)
+        timeRun = 0
+        lapTime = 0
+        timeRunInSeconds.postValue(0)
+        lastSecondTimestamp = 0
+        timeStarted = 0
         CoroutineScope(Dispatchers.Main).launch {
             while (isTracking.value!!) {
                 //달리기 시작으로부터 지금까지 시간
@@ -221,6 +230,7 @@ class TrackingService : LifecycleService() {
     private fun startForegroundService() {
 
 //        addEmptyPolyline()
+        postInitialValues()
         startTimer()
         isTracking.postValue(true)
 
