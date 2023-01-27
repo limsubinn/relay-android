@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
+import com.example.relay.databinding.FragmentTimetableEditBinding
 import com.example.relay.timetable.models.Schedule
 import com.islandparadise14.mintable.model.ScheduleDay
 import com.islandparadise14.mintable.model.ScheduleEntity
-
+import kotlinx.android.synthetic.main.fragment_timetable_edit.*
 
 class TimetableFragment: Fragment() {
     private var viewBinding: FragmentTimetableBinding? = null
@@ -43,10 +46,11 @@ class TimetableFragment: Fragment() {
                 .beginTransaction()
                 .replace(R.id.container_edit, editFragment)
                 .commit()
+
         }
 
-        // 테스트 더미
         val scheduleList = mutableListOf<Schedule>()
+        // 테스트 더미
         scheduleList.apply {
             add(Schedule("월", "1:00", "8:00", "20"))
             add(Schedule("화", "5:00", "10:00", "20"))
@@ -55,6 +59,7 @@ class TimetableFragment: Fragment() {
             add(Schedule("금", "12:00", "17:00", "20"))
             add(Schedule("일", "11:00", "20:00", "20"))
         }
+
         onPostMyTimetableSuccess(scheduleList)
     }
 
@@ -95,5 +100,4 @@ class TimetableFragment: Fragment() {
         }
         return day
     }
-
 }

@@ -1,19 +1,20 @@
 package com.example.relay.timetable
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
 import com.example.relay.timetable.models.Schedule
+import java.sql.Time
 
 class TimetableEditFragment : Fragment() {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
-    val scheduleList = mutableListOf<Schedule>()
+    var scheduleList = mutableListOf<Schedule>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,7 +27,7 @@ class TimetableEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val scheduleRvAdapter = ScheduleRvAdapter(scheduleList)
+        val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
         // 테스트 더미
         scheduleList.apply {
@@ -46,7 +47,14 @@ class TimetableEditFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener{
+            // 테스트 코드
+            scheduleList = scheduleRvAdapter.getUpdatedSchedules()
 
+            val emptyFragment = TimetableEmptyFragment()
+            parentFragmentManager
+                .beginTransaction()
+                .replace(R.id.container_edit, emptyFragment)
+                .commit()
         }
 
         binding.btnBack.setOnClickListener{
@@ -57,5 +65,9 @@ class TimetableEditFragment : Fragment() {
                 .replace(R.id.container_edit, emptyFragment)
                 .commit()
         }
+    }
+
+    fun testScheduleList():MutableList<Schedule>{
+        return scheduleList
     }
 }
