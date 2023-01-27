@@ -5,6 +5,7 @@ import android.content.Context
 import android.location.Location
 import android.os.Build
 import com.example.relay.service.Polyline
+import com.google.android.gms.maps.model.LatLng
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
 
@@ -44,6 +45,23 @@ object TrackingUtility {
             )
             distance += result[0]
         }
+        return distance
+    }
+
+    fun calculateEachPolylineLength(polyline: Polyline) : Float {
+        var distance = 0f
+            val pos1 = polyline[polyline.size - 1]
+            val pos2 = polyline[polyline.size]
+
+            val result = FloatArray(1)
+            Location.distanceBetween(
+                pos1.latitude,
+                pos1.longitude,
+                pos2.latitude,
+                pos2.longitude,
+                result
+            )
+            distance += result[0]
         return distance
     }
 

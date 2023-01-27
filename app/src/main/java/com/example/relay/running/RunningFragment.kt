@@ -13,8 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
@@ -215,6 +213,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
                 distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
                 binding.tvDistance.text = distanceInMeters.toString()
             }
+            var nowDistanceInMeters = 0
+            nowDistanceInMeters = TrackingUtility.calculateEachPolylineLength(pathPoints.last()).toInt()
+            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            binding.tvPace1.text = nowSpeed.toString()
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
             binding.tvPace2.text = avgSpeed.toString()
             val dateTimestamp = Calendar.getInstance().timeInMillis
