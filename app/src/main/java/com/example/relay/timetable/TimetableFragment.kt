@@ -83,8 +83,7 @@ class TimetableFragment: Fragment() {
     }
 
     private fun dayToInt(daySt:String): Int{
-        var day:Int = 0
-        day = when(daySt){
+        var day = when(daySt){
             "월" -> 0
             "화" -> 1
             "수" -> 2

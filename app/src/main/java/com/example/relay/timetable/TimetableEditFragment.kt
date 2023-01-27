@@ -46,8 +46,10 @@ class TimetableEditFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener{
-            // 통신 코드 추가 필요
 
+        }
+
+        binding.btnBack.setOnClickListener{
             // 빈 Fragment 로 변경
             val emptyFragment = TimetableEmptyFragment()
             parentFragmentManager
