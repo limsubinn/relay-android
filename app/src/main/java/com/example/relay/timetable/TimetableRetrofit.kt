@@ -1,7 +1,10 @@
 package com.example.relay.timetable
 
+import com.example.relay.BaseResponse
 import com.example.relay.timetable.models.GroupTimetableRes
+import com.example.relay.timetable.models.Schedule
 import retrofit2.Call
+import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -15,6 +18,7 @@ interface TimetableRetrofit {
     @POST("clubs/{idx}/timetables/{idx}")
     fun postMyTimetable(
         @Path("clubIdx") clubIdx:Int,
-        @Path("timetableIdx") timetableIdx:Int
-    )
+        @Path("timetableIdx") timetableIdx:Int,
+        @Field("mySchedules") mySchedules: List<Schedule>
+    ) : Call<BaseResponse>
 }

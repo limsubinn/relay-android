@@ -11,10 +11,9 @@ import com.example.relay.databinding.FragmentTimetableEditBinding
 import com.example.relay.timetable.models.Schedule
 import java.sql.Time
 
-class TimetableEditFragment : Fragment() {
+class TimetableEditFragment : Fragment(), TimetableInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
-    var scheduleList = mutableListOf<Schedule>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -27,6 +26,7 @@ class TimetableEditFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var scheduleList = mutableListOf<Schedule>()
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
         // 테스트 더미
@@ -49,6 +49,7 @@ class TimetableEditFragment : Fragment() {
         binding.btnSave.setOnClickListener{
             // 테스트 코드
             scheduleList = scheduleRvAdapter.getUpdatedSchedules()
+            TimetableService(this).tryPostMySchedules(1,1, scheduleList)
 
             val emptyFragment = TimetableEmptyFragment()
             parentFragmentManager
@@ -67,7 +68,11 @@ class TimetableEditFragment : Fragment() {
         }
     }
 
-    fun testScheduleList():MutableList<Schedule>{
-        return scheduleList
+    override fun onPostMyTimetableSuccess() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPostMyTimetableFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }
