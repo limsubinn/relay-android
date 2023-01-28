@@ -99,6 +99,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
 
         binding.btnStart1.setOnClickListener {
+            startActivity(Intent(context,RunSplashActivity::class.java))
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
             startRun()
@@ -162,7 +163,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
-        binding.layoutTimer.visibility = View.VISIBLE
+        binding.layoutTimer.visibility = View.GONE
         binding.layoutBottomSheet.visibility = View.GONE
         binding.btnPause.visibility = View.VISIBLE
         binding.layoutWhilePause.visibility = View.GONE
@@ -213,10 +214,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
                 distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
                 binding.tvDistance.text = distanceInMeters.toString()
             }
-            var nowDistanceInMeters = 0
-            nowDistanceInMeters = TrackingUtility.calculateEachPolylineLength(pathPoints.last()).toInt()
-            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
-            binding.tvPace1.text = nowSpeed.toString()
+//            var nowDistanceInMeters = 0
+//            nowDistanceInMeters = TrackingUtility.calculateEachPolylineLength(pathPoints.last()).toInt()
+//            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+//            binding.tvPace1.text = nowSpeed.toString()
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
             binding.tvPace2.text = avgSpeed.toString()
             val dateTimestamp = Calendar.getInstance().timeInMillis
