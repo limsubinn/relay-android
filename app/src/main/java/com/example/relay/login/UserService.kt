@@ -3,10 +3,7 @@ package com.example.relay.login
 import android.util.Log
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.ApplicationClass.Companion.sRetrofit
-import com.example.relay.login.data.LogInLocalReq
-import com.example.relay.login.data.LogInLocalRes
-import com.example.relay.login.data.SignUpLocalReq
-import com.example.relay.login.data.SignUpLocalRes
+import com.example.relay.login.data.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -93,4 +90,30 @@ class SignUpService(val signUpInterface: SignUpInterface) {
             }))
         }
     }
+
+    // 프로필 신규 생성
+    fun tryPostUserProfile(name: String, imgUrl: String, isAlarmOn: String, nickname: String, statusMsg: String){
+        retrofit.postUserProfileReq(name, UserProfileReq(imgUrl, isAlarmOn, nickname, statusMsg)).enqueue((object : Callback<UserProfileRes>{
+            // 전송 성공
+            override fun onResponse(call: Call<UserProfileRes>, response: Response<UserProfileRes>) {
+                if (response.isSuccessful) { // <--> response.code == 200
+                    // 성공 처리
+                    Log.d("UserProfile","success")
+                    signUpInterface.onPostUserProfileSuccess(response.body() as UserProfileRes)
+                } else {
+                    // 전송은 성공 but 4xx 에러
+                    Log.d("UserProfile", "failure")
+                }
+            }
+
+            // 전송 실패
+            override fun onFailure(call: Call<UserProfileRes>, t: Throwable) {
+                Log.d("태그", t.message!!)
+                t.printStackTrace()
+                signUpInterface.onPostUserProfileFailure(t.message ?: "통신 오류")
+            }
+        }))
+    }
+
+
 }
