@@ -8,6 +8,7 @@ import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivityLastCheckBinding
 import com.example.relay.login.data.SignUpLocalRes
 import com.example.relay.login.data.UserProfileRes
+import java.util.*
 
 
 class LastCheckActivity : AppCompatActivity(), SignUpInterface {
@@ -42,7 +43,8 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
         prefs.edit().putString("accessToken", response.result.accessToken).apply()
 
         val name = prefs.getString("name", "")
-        val url = "res/drawable-v24/img_user_profile.png" // 경로 맞는지 모르겠음..
+        val url = "https://i.ibb.co/g6QJDkL/Avatar-6.png" // 이미지 임시로 설정
+
         if (name != null) {
             SignUpService(this).tryPostUserProfile(name, url, "n", name, "" )
         }
