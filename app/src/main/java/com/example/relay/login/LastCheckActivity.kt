@@ -39,11 +39,6 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
     }
 
     override fun onPostLocalSignUpInSuccess(response: SignUpLocalRes) {
-        Toast.makeText(
-            this@LastCheckActivity,
-            "로컬 회원가입 성공",
-            Toast.LENGTH_SHORT
-        ).show()
         prefs.edit().putString("accessToken", response.result.accessToken).apply()
 
         val name = prefs.getString("name", "")
@@ -62,6 +57,12 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
     }
 
     override fun onPostUserProfileSuccess(response: UserProfileRes) {
+        Toast.makeText(
+            this@LastCheckActivity,
+            "로컬 회원가입 성공",
+            Toast.LENGTH_SHORT
+        ).show()
+
         val intent = Intent(
             this@LastCheckActivity,
             LoginMainActivity::class.java

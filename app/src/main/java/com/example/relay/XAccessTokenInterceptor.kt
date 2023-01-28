@@ -13,7 +13,7 @@ class XAccessTokenInterceptor : Interceptor {
         val builder: Request.Builder = chain.request().newBuilder()
         val accessToken: String? = prefs.getString("accessToken", "")
         if (accessToken != null) {
-            builder.addHeader("Authorization", accessToken)
+            builder.addHeader("Authorization", "Bearer $accessToken")
         }
         return chain.proceed(builder.build())
     }
