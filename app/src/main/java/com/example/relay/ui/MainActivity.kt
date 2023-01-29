@@ -7,7 +7,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
-import com.example.relay.group.GroupFragment
+import com.example.relay.group.GroupListFragment
+import com.example.relay.group.GroupMainFragment
+import com.example.relay.group.GroupMemberFragment
 import com.example.relay.mypage.MyRecordFragment
 import com.example.relay.mypage.MypageFragment
 import com.example.relay.running.RunningFragment
@@ -55,7 +57,7 @@ class MainActivity : AppCompatActivity() {
                     R.id.menu_group -> {
                         supportFragmentManager
                             .beginTransaction()
-                            .replace(binding.containerFragment.id, GroupFragment())
+                            .replace(binding.containerFragment.id, GroupMainFragment())
                             .commitAllowingStateLoss()
                     }
                     R.id.menu_timetable -> {
@@ -121,6 +123,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun groupFragmentChange(index: Int) {
+        if (index == 0) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupMainFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 1) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupListFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 2) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupMemberFragment())
+                .commitAllowingStateLoss()
+        }
+    }
 }
 
 

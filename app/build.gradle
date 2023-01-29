@@ -77,10 +77,6 @@ dependencies {
     implementation "androidx.room:room-runtime:2.5.0"
     kapt "androidx.room:room-compiler:2.5.0"
 
-    // viewPager
-    implementation "androidx.viewpager2:viewpager2:1.0.0"
-    implementation 'me.relex:circleindicator:2.1.4'
-
     // Timetable
     implementation 'com.github.LeeGa00:Android-Timetable:1.0.3'
 
@@ -155,4 +151,8 @@ dependencies {
     // material calender view
     implementation 'com.github.prolificinteractive:material-calendarview:1.4.3'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+
+    // fragment result api
+    implementation "androidx.fragment:fragment:1.5.3"
+    implementation "androidx.fragment:fragment-ktx:1.5.3"
 }
