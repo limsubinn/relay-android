@@ -2,22 +2,38 @@ package com.example.relay.group
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.databinding.FragmentGroupListBinding
 import com.example.relay.group.models.GroupListResponse
 import com.example.relay.group.models.GroupListResult
-import com.softsquared.template.kotlin.src.main.myPage.GroupListRVAdapter
-import android.view.inputmethod.InputMethodManager
+import com.example.relay.ui.MainActivity
 
 class GroupListFragment: Fragment(), GroupListInterface {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
+
+    private var mainActivity: MainActivity? = null
+
+    override fun onAttach(context: Context) {
+        if (context != null) {
+            super.onAttach(context)
+        }
+        mainActivity = activity as MainActivity?
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mainActivity = null
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -73,6 +89,24 @@ class GroupListFragment: Fragment(), GroupListInterface {
         if (listAdapter.itemCount == 0) {
             Toast.makeText(activity, "검색된 결과가 없습니다.", Toast.LENGTH_SHORT).show()
         }
+
+        // 리사이클러뷰 아이템 클릭 이벤트
+        listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener{
+            override fun onItemClick(view: View, position: Int) {
+                val clubIdx = clubList[position].clubIdx
+                val content = clubList[position].content
+                val imgURL = clubList[position].imgURL
+                val name = clubList[position].name
+                val recruitStatus = clubList[position].recruitStatus
+
+                parentFragmentManager.setFragmentResult("list_to_main",
+                    bundleOf("clubIdx" to clubIdx, "content" to content,
+                    "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
+                Log.d("list_to_main", "here is list")
+                mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
+            }
+        })
+
     }
 
     override fun onGetClubListFailure(message: String) {

@@ -151,4 +151,8 @@ dependencies {
     // material calender view
     implementation 'com.github.prolificinteractive:material-calendarview:1.4.3'
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.1'
+
+    // fragment result api
+    implementation "androidx.fragment:fragment:1.5.3"
+    implementation "androidx.fragment:fragment-ktx:1.5.3"
 }
