@@ -5,9 +5,9 @@ import android.content.Context
 import android.location.Location
 import android.os.Build
 import com.example.relay.service.Polyline
-import com.google.android.gms.maps.model.LatLng
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
+import kotlin.math.round
 
 object TrackingUtility {
     fun hasLocationPermissions(context: Context) =
@@ -45,13 +45,51 @@ object TrackingUtility {
             )
             distance += result[0]
         }
+        distance = round((distance / 1000) * 10) / 100f
         return distance
     }
 
-    fun calculateEachPolylineLength(polyline: Polyline) : Float {
+    fun calculateAvgPace(polyline: Polyline, ms: Long, includeMillis: Boolean) : String {
         var distance = 0f
-            val pos1 = polyline[polyline.size - 1]
-            val pos2 = polyline[polyline.size]
+        var distance2 = 0f
+        var speed2 = 0f
+        var avgPace = 0f
+        var speed = 0f
+        if (polyline.size >= 2) {
+            for (i in 0..polyline.size -2) {
+                val pos1 = polyline[i]
+                val pos2 = polyline[i + 1]
+
+                val result = FloatArray(1)
+                Location.distanceBetween(
+                    pos1.latitude,
+                    pos1.longitude,
+                    pos2.latitude,
+                    pos2.longitude,
+                    result
+                )
+                distance += result[0]
+            }
+            distance2 = distance
+            distance = round((distance / 1000) * 10) / 100f
+            speed2 = Math.round((distance2 / 1000f) / (ms / 1000f / 60 / 60) * 10) / 10f
+            speed = round((distance / ((TimeUnit.MILLISECONDS.toHours(ms) * 10) / 100f)) * 10) / 100f
+            avgPace = round((1 / speed2) * 10) / 100f
+        } else return "0.0"
+
+//        if(!includeMillis) {
+//            return "0.0"
+//        }
+        return avgPace.toString()
+    }
+
+    fun calculateNowPace(polyline: Polyline, ms: Long, includeMillis: Boolean) : String {
+        var distance = 0f
+        var nowPace = 0f
+        var speed = 0f
+        if (polyline.size >= 2) {
+            val pos1 = polyline[polyline.size - 2]
+            val pos2 = polyline[polyline.size - 1]
 
             val result = FloatArray(1)
             Location.distanceBetween(
@@ -62,8 +100,16 @@ object TrackingUtility {
                 result
             )
             distance += result[0]
-        return distance
+            speed = Math.round((distance / 1000f) / (ms / 1000f / 60 / 60) * 10) / 10f
+            nowPace = round((1 / speed) * 10) / 100f
+        } else return "0.0"
+
+//       if(!includeMillis) {
+//            return "0.0"
+//        }
+        return nowPace.toString()
     }
+
 
     fun getFormattedStopWatchTime(ms: Long, includeMillis: Boolean = false): String {
         var milliseconds = ms

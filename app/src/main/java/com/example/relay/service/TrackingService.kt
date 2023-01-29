@@ -62,6 +62,7 @@ class TrackingService : LifecycleService() {
 
     companion object {
         var timeRunInMillis = MutableLiveData<Long>()
+        var distance = MutableLiveData<Long>()
         val isTracking = MutableLiveData<Boolean>()
         val pathPoints = MutableLiveData<Polylines>()
         //val pathPoints = MutableLiveData<MutableList<MutableList<LatLng>>>()
@@ -72,6 +73,7 @@ class TrackingService : LifecycleService() {
         pathPoints.postValue(mutableListOf())
         timeRunInSeconds.postValue(0L)
         timeRunInMillis.postValue(0L)
+        distance.postValue(0L)
     }
 
     override fun onCreate() {
@@ -118,6 +120,8 @@ class TrackingService : LifecycleService() {
     private var timeRun = 0L   //총 달린 시간
     private var timeStarted = 0L   //시작 시간
     private var lastSecondTimestamp = 0L
+    private var lapDistance = 0L
+
 
     private fun startTimer() {
         addEmptyPolyline()
@@ -135,6 +139,7 @@ class TrackingService : LifecycleService() {
                 lapTime = System.currentTimeMillis() - timeStarted
                 //lapTime 새로 설정
                 timeRunInMillis.postValue(timeRun + lapTime)
+//            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
 
                 if (timeRunInMillis.value!! >= lastSecondTimestamp + 1000L) {
                     timeRunInSeconds.postValue(timeRunInSeconds.value!! + 1)

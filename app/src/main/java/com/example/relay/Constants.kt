@@ -17,7 +17,7 @@ object Constants {
 
     const val TIMER_UPDATE_INTERVAL = 50L
 
-    const val LOCATION_UPDATE_INTERVAL = 10000L
+    const val LOCATION_UPDATE_INTERVAL = 8000L
     const val FASTEST_LOCATION_INTERVAL = 5000L
 
     const val POLYLINE_COLOR = R.color.main

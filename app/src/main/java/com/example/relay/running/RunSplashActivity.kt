@@ -33,10 +33,11 @@ class RunSplashActivity : AppCompatActivity() {
         }, 3000)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container_fragment, RunningFragment())
-                .commit()
+            finish()
+//            supportFragmentManager
+//                .beginTransaction()
+//                .replace(R.id.container_fragment, RunningFragment())
+//                .commit()
         }, 3000)
     }
 }

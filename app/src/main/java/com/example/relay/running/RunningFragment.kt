@@ -1,6 +1,7 @@
 package com.example.relay.running
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -11,6 +12,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -54,6 +56,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var curTimeInMillis = 0L
 
+    private var curDistance = 0L
+
     private var listener: OnBottomSheetCallbacks? = null
 
     var currentMarker: Marker? = null
@@ -88,17 +92,17 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         mapView = binding.mapView
 //        mapView = MapView(requireContext())
-        //map 생명주기
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync {
             moveCameraToUser()
             map = it
             addAllPolylines()
         }
-        //setCustomMarkerView()
+//        setCustomMarkerView()
 
 
         binding.btnStart1.setOnClickListener {
+            startActivity(Intent(context,RunSplashActivity::class.java))
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
             startRun()
@@ -116,9 +120,21 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             endRunAndSaveToDB()
         }
 
+        binding.tvLookBig.setOnClickListener {
+            val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_running, null)
+            val mBuilder = AlertDialog.Builder(context)
+                .setView(mDialogView)
+            val  mAlertDialog = mBuilder.show()
+
+            val Button = mDialogView.findViewById<ImageView>(R.id.img_close)
+                Button.setOnClickListener {
+                mAlertDialog.dismiss()
+            }
+        }
+
         subscribeToObservers()
 //        supportActionBar?.elevation = 0f
-        //configureBackdrop()
+//        configureBackdrop()
 
         return binding.root
     }
@@ -132,12 +148,19 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
+            val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
+            val formattedAvgDistance = TrackingUtility.calculateAvgPace(pathPoints.last(),curTimeInMillis, true)
+            val formattedNowDistance = TrackingUtility.calculateNowPace(pathPoints.last(),curTimeInMillis, true)
+            binding.tvDistance.text = formattedDistance.toString()
+            binding.tvPace2.text = formattedAvgDistance
+            binding.tvPace1.text = formattedNowDistance
         })
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
             curTimeInMillis = it
+            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis, true)
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
-            binding.tvTimer.text = formattedTime
+            binding.tvTimer.text = formattedGoalTime
             binding.tvTime.text = formattedTime
         })
     }
@@ -162,7 +185,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
-        binding.layoutTimer.visibility = View.VISIBLE
+        binding.layoutTimer.visibility = View.GONE
         binding.layoutBottomSheet.visibility = View.GONE
         binding.btnPause.visibility = View.VISIBLE
         binding.layoutWhilePause.visibility = View.GONE
@@ -211,14 +234,9 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             var distanceInMeters = 0
             for(polyline in pathPoints) {
                 distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
-                binding.tvDistance.text = distanceInMeters.toString()
+                //binding.tvDistance.text = distanceInMeters.toString()
             }
-            var nowDistanceInMeters = 0
-            nowDistanceInMeters = TrackingUtility.calculateEachPolylineLength(pathPoints.last()).toInt()
-            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
-            binding.tvPace1.text = nowSpeed.toString()
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
-            binding.tvPace2.text = avgSpeed.toString()
             val dateTimestamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
@@ -256,6 +274,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         }
     }
+
+
 
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {
