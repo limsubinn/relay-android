@@ -122,6 +122,25 @@ class MainActivity : AppCompatActivity() {
                 .commitAllowingStateLoss()
         }
     }
+
+    fun groupFragmentChange(index: Int) {
+        if (index == 0) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupMainFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 1) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupListFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 2) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupMemberFragment())
+                .commitAllowingStateLoss()
+        }
+    }
 }
 
 

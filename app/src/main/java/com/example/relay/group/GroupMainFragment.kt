@@ -1,5 +1,6 @@
 package com.example.relay.group
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMainBinding
+import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
@@ -21,6 +23,20 @@ class GroupMainFragment: Fragment() {
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+
+    private var mainActivity: MainActivity? = null
+
+    override fun onAttach(context: Context) {
+        if (context != null) {
+            super.onAttach(context)
+        }
+        mainActivity = activity as MainActivity?
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mainActivity = null
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,6 +112,15 @@ class GroupMainFragment: Fragment() {
             select(date-1) // 오늘 날짜 선택
         }
 
+        // 그룹 목록 버튼
+        binding.btnRight.setOnClickListener{
+            mainActivity?.groupFragmentChange(1)
+        }
+
+        // 모두 보기 버튼
+        binding.btnTeamAll.setOnClickListener {
+            mainActivity?.groupFragmentChange(2);
+        }
 
     }
 
