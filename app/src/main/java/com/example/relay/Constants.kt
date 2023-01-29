@@ -21,7 +21,7 @@ object Constants {
     const val FASTEST_LOCATION_INTERVAL = 5000L
 
     const val POLYLINE_COLOR = R.color.main
-    const val POLYLINE_WIDTH = 10f
+    const val POLYLINE_WIDTH = 20f
     const val MAP_ZOOM = 15f
 
     const val NOTIFICATION_CHANNEL_ID = "tracking_channel"

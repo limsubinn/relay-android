@@ -82,7 +82,7 @@ dependencies {
     implementation 'me.relex:circleindicator:2.1.4'
 
     // Timetable
-    implementation 'com.github.LeeGa00:Android-Timetable:1.0.2'
+    implementation 'com.github.LeeGa00:Android-Timetable:1.0.3'
 
     // Architectural Components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"

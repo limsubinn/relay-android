@@ -4,24 +4,28 @@ import android.Manifest
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_RESUME_SERVICE
+import com.example.relay.Constants.ACTION_STOP_SERVICE
 import com.example.relay.Constants.MAP_ZOOM
-import com.example.relay.Constants.POLYLINE_COLOR
 import com.example.relay.Constants.POLYLINE_WIDTH
 import com.example.relay.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.TrackingUtility
 import com.example.relay.databinding.FragmentRunningBinding
+import com.example.relay.db.Run
 import com.example.relay.service.Polyline
 import com.example.relay.service.TrackingService
 import com.example.relay.ui.viewmodels.RunningViewModel
@@ -32,9 +36,9 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gun0912.tedpermission.provider.TedPermissionProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_running.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
+import java.lang.Math.round
 
 
 @AndroidEntryPoint
@@ -93,13 +97,26 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
         //setCustomMarkerView()
 
-        subscribeToObservers()
 
-        binding.btnStart.setOnClickListener {
+        binding.btnStart1.setOnClickListener {
             binding.layoutTimer.visibility = View.VISIBLE
+            binding.layoutBottomSheet.visibility = View.VISIBLE
             startRun()
         }
 
+        binding.btnPause.setOnClickListener {
+            startRun()
+        }
+
+        binding.btnRestart.setOnClickListener {
+            startRun()
+        }
+
+        binding.btnEnd.setOnClickListener {
+            endRunAndSaveToDB()
+        }
+
+        subscribeToObservers()
 //        supportActionBar?.elevation = 0f
         //configureBackdrop()
 
@@ -121,19 +138,47 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             curTimeInMillis = it
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             binding.tvTimer.text = formattedTime
+            binding.tvTime.text = formattedTime
         })
     }
 
     private fun startRun() {
         if(isTracking) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
-            binding.btnStart.setImageResource(R.drawable.img_btn_restart)
+            binding.btnPause.visibility = View.GONE
+            binding.layoutWhilePause.visibility = View.VISIBLE
+            binding.layoutBottomSheet.visibility = View.VISIBLE
+            binding.btnStart1.setImageResource(R.drawable.img_btn_restart)
             //configureBackdrop()
         } else {
             sendCommandToService(ACTION_RESUME_SERVICE)
-            binding.btnStart.setImageResource(R.drawable.img_btn_pause)
+            binding.btnPause.visibility = View.VISIBLE
+            binding.layoutWhilePause.visibility = View.GONE
+            binding.layoutBottomSheet.visibility = View.VISIBLE
+            binding.btnStart1.setImageResource(R.drawable.img_btn_pause)
             //configureBackdrop()
         }
+    }
+
+    private fun stopRun() {
+        sendCommandToService(ACTION_STOP_SERVICE)
+        binding.layoutTimer.visibility = View.VISIBLE
+        binding.layoutBottomSheet.visibility = View.GONE
+        binding.btnPause.visibility = View.VISIBLE
+        binding.layoutWhilePause.visibility = View.GONE
+        binding.btnStart1.setImageResource(R.drawable.img_btn_start)
+        curTimeInMillis = 0
+        TrackingService.timeRunInMillis.value = 0
+        val time = TrackingService.timeRunInMillis.value
+        Log.d("timeRunInMillis", "${time}")
+        Log.d("curTimeInMillis", "${curTimeInMillis}")
+
+//        binding.tvTimer.text = "00:00:00"
+//        binding.tvTime.text = "00:00:00"
+        pathPoints.clear()
+        map?.clear()
+//        val ft = fragmentManager!!.beginTransaction()
+//        ft.detach(this).attach(this).commit()
     }
 
     private fun updateTracking(isTracking: Boolean) {
@@ -158,6 +203,29 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
                     MAP_ZOOM
                 )
             )
+        }
+    }
+
+    private fun endRunAndSaveToDB() {
+        map?.snapshot { bmp ->
+            var distanceInMeters = 0
+            for(polyline in pathPoints) {
+                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
+                binding.tvDistance.text = distanceInMeters.toString()
+            }
+            var nowDistanceInMeters = 0
+            nowDistanceInMeters = TrackingUtility.calculateEachPolylineLength(pathPoints.last()).toInt()
+            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            binding.tvPace1.text = nowSpeed.toString()
+            val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            binding.tvPace2.text = avgSpeed.toString()
+            val dateTimestamp = Calendar.getInstance().timeInMillis
+            val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
+            val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
+            viewModel.insertRun(run)
+            val showToast = Toast.makeText(context, "DB 저장",Toast.LENGTH_LONG)
+            showToast.show()
+            stopRun()
         }
     }
 
