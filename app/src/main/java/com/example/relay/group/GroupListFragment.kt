@@ -12,10 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.databinding.FragmentGroupListBinding
 import com.example.relay.group.models.GroupListResponse
 import com.example.relay.group.models.GroupListResult
-import com.softsquared.template.kotlin.src.main.myPage.ListRVAdapter
+import com.softsquared.template.kotlin.src.main.myPage.GroupListRVAdapter
 import android.view.inputmethod.InputMethodManager
 
-class GroupListFragment: Fragment(), ListInterface {
+class GroupListFragment: Fragment(), GroupListInterface {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
 
@@ -32,14 +32,14 @@ class GroupListFragment: Fragment(), ListInterface {
         super.onViewCreated(view, savedInstanceState)
 
         // 클럽 리스트 받아오기 (전체)
-        ListService(this).tryGetClubList("")
+        GroupListService(this).tryGetClubList("")
 
         // EditText에서 엔터 키를 누르면 검색한 클럽의 리스트를 가져온다.
         binding.etGroupSearch.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
             when (keyCode) {
                 KeyEvent.KEYCODE_ENTER -> {
                     val search = binding.etGroupSearch.text.toString()
-                    ListService(this).tryGetClubList(search)
+                    GroupListService(this).tryGetClubList(search)
 
                     val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
@@ -59,7 +59,7 @@ class GroupListFragment: Fragment(), ListInterface {
 
         // 리사이클러뷰
         val clubList: ArrayList<GroupListResult> = arrayListOf()
-        val listAdapter = ListRVAdapter(clubList)
+        val listAdapter = GroupListRVAdapter(clubList)
 
         binding.rvGroupAll.adapter = listAdapter
         binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)

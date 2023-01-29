@@ -7,7 +7,7 @@ import com.bumptech.glide.Glide
 import com.example.relay.databinding.ItemGroupListBinding
 import com.example.relay.group.models.GroupListResult
 
-class ListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerView.Adapter<ListRVAdapter.DataViewHolder>() {
+class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerView.Adapter<GroupListRVAdapter.DataViewHolder>() {
 
     // ViewHolder 객체
     inner class DataViewHolder(val binding: ItemGroupListBinding) :
