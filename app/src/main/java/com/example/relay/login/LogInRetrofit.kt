@@ -33,4 +33,10 @@ interface LogInRetrofit {
 
     @PATCH("users/profilePwd")
     fun changePw(): Call<BaseRes>
+
+    @POST("users/profile") // 프로필 신규 생성
+    fun postUserProfileReq(
+        @Query("name") name: String,
+        @Body Info: UserProfileReq
+    ): Call<UserProfileRes>
 }
