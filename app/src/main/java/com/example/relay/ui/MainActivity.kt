@@ -1,20 +1,19 @@
 package com.example.relay.ui
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.View
-import com.example.relay.ApplicationClass.Companion.prefs
+import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.GroupFragment
+import com.example.relay.mypage.MyRecordFragment
 import com.example.relay.mypage.MypageFragment
 import com.example.relay.running.RunningFragment
 import com.example.relay.timetable.TimetableFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
-
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -29,6 +28,8 @@ class MainActivity : AppCompatActivity() {
     private var runningFragment: RunningFragment? = null
     private var groupFragment: GroupFragment? = null
     private var timetableFragment: TimetableFragment? = null
+
+    private var myrecordFragment: MyRecordFragment? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -152,6 +153,32 @@ class MainActivity : AppCompatActivity() {
 //            }
 //        }
 //    }
+
+    // 인덱스를 통해 해당되는 프래그먼트를 띄운다.
+    fun mypageFragmentChange(index: Int) {
+        if (index == 0) {
+            if(mypageFragment == null) {
+                mypageFragment = MypageFragment()
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(binding.containerFragment.id, mypageFragment!!)
+                    .commitAllowingStateLoss()
+            } else supportFragmentManager.beginTransaction().show(mypageFragment!!).commitAllowingStateLoss()
+
+            if (myrecordFragment != null) supportFragmentManager.beginTransaction().hide(myrecordFragment!!).commitAllowingStateLoss()
+        } else if (index == 1) {
+            if(myrecordFragment == null) {
+                myrecordFragment = MyRecordFragment()
+                supportFragmentManager
+                    .beginTransaction()
+                    .add(binding.containerFragment.id, myrecordFragment!!)
+                    .commitAllowingStateLoss()
+            } else supportFragmentManager.beginTransaction().show(myrecordFragment!!).commitAllowingStateLoss()
+
+            if (mypageFragment != null) supportFragmentManager.beginTransaction().hide(mypageFragment!!).commitAllowingStateLoss()
+        }
+    }
+
 }
 
 
