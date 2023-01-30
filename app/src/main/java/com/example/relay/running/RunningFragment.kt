@@ -13,10 +13,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.relay.Constants
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_RESUME_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
@@ -38,6 +40,7 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gun0912.tedpermission.provider.TedPermissionProvider
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.dialog_running.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.lang.Math.round
@@ -126,10 +129,27 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
                 .setView(mDialogView)
             val  mAlertDialog = mBuilder.show()
 
-            val Button = mDialogView.findViewById<ImageView>(R.id.img_close)
-                Button.setOnClickListener {
+            val button = mDialogView.findViewById<ImageView>(R.id.img_close)
+                button.setOnClickListener {
                 mAlertDialog.dismiss()
             }
+            TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+                curTimeInMillis = it
+                val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+                mDialogView.findViewById<TextView>(R.id.tv_big_time).text = formattedTime
+//            var bigTime = CustomDialog(requireContext()).findViewById<View>(R.id.tv_big_time)
+//            bigTime = formattedTime
+            })
+            TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
+                pathPoints = it
+                val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
+                val formattedAvgDistance = TrackingUtility.calculateAvgPace(pathPoints.last(),curTimeInMillis, true)
+                val formattedNowDistance = TrackingUtility.calculateNowPace(pathPoints.last(),curTimeInMillis, true)
+                mDialogView.findViewById<TextView>(R.id.tv_big_km).text = formattedDistance.toString()
+                mDialogView.findViewById<TextView>(R.id.tv_big_avg_pace).text = formattedAvgDistance
+                mDialogView.findViewById<TextView>(R.id.tv_big_now_pace).text = formattedNowDistance
+            })
+//            CustomDialog(requireContext()).show()
         }
 
         subscribeToObservers()
@@ -158,7 +178,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
             curTimeInMillis = it
-            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis, true)
+            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             binding.tvTimer.text = formattedGoalTime
             binding.tvTime.text = formattedTime
@@ -174,7 +194,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             binding.btnStart1.setImageResource(R.drawable.img_btn_restart)
             //configureBackdrop()
         } else {
-            sendCommandToService(ACTION_RESUME_SERVICE)
+            sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE)
             binding.btnPause.visibility = View.VISIBLE
             binding.layoutWhilePause.visibility = View.GONE
             binding.layoutBottomSheet.visibility = View.VISIBLE

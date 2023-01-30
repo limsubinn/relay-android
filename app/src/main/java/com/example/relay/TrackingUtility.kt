@@ -75,12 +75,12 @@ object TrackingUtility {
             speed2 = Math.round((distance2 / 1000f) / (ms / 1000f / 60 / 60) * 10) / 10f
             speed = round((distance / ((TimeUnit.MILLISECONDS.toHours(ms) * 10) / 100f)) * 10) / 100f
             avgPace = round((1 / speed2) * 10) / 100f
+            return if (avgPace < 0){
+                "0.0"
+            } else {
+                avgPace.toString()
+            }
         } else return "0.0"
-
-//        if(!includeMillis) {
-//            return "0.0"
-//        }
-        return avgPace.toString()
     }
 
     fun calculateNowPace(polyline: Polyline, ms: Long, includeMillis: Boolean) : String {
@@ -102,12 +102,12 @@ object TrackingUtility {
             distance += result[0]
             speed = Math.round((distance / 1000f) / (ms / 1000f / 60 / 60) * 10) / 10f
             nowPace = round((1 / speed) * 10) / 100f
+            return if (nowPace < 0){
+                "0.0"
+            } else {
+                nowPace.toString()
+            }
         } else return "0.0"
-
-//       if(!includeMillis) {
-//            return "0.0"
-//        }
-        return nowPace.toString()
     }
 
 
