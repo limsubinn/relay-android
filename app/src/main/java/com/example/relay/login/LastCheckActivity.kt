@@ -49,7 +49,7 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
             prefs.edit().putString("accessToken", response.result.accessToken).apply()
 
             val name = prefs.getString("name", "")
-            val url = "https://i.ibb.co/g6QJDkL/Avatar-6.png" // 이미지 임시로 설정
+            val url = "https://i.ibb.co/ySXTrQS/Avatar-6.png" // 이미지 임시로 설정
 
             if (name != null) {
                 SignUpService(this).tryPostUserProfile(name, url, "n", name, "")

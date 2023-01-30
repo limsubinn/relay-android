@@ -176,7 +176,7 @@ class MypageFragment: Fragment(), MypageInterface {
         val res = response.result
 
         // 닉네임 & 그룹 이름 받아오기
-        if ((res.clubName == null) || (res.clubName == "")) {
+        if (res.clubIdx == 0L) {
             binding.profileName.text = "${res.nickname} / -"
         } else {
             binding.profileName.text = "${res.nickname} / ${res.clubName}"
@@ -186,6 +186,7 @@ class MypageFragment: Fragment(), MypageInterface {
         // 프로필 사진
         Glide.with(binding.profileImg.context)
             .load(res.imgUrl)
+            .override(90,90) // 사이즈 조정
             .into(binding.profileImg)
     }
 
