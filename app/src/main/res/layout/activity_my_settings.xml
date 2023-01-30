@@ -84,6 +84,7 @@
         android:layout_marginHorizontal="25dp">
 
         <TextView
+            android:id="@+id/tv_email"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -102,6 +103,7 @@
             android:background="@drawable/rectangle_bottom_gray_border">
 
             <TextView
+                android:id="@+id/tv_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 app:layout_constraintWidth_default="percent"
@@ -114,6 +116,7 @@
                 android:paddingHorizontal="8dp"/>
 
             <Button
+                android:id="@+id/btn_change_info"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textStyle="bold"
@@ -131,6 +134,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <android.widget.Button
+            android:id="@+id/btn_change_pwd"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -164,6 +168,7 @@
                 android:paddingHorizontal="8dp"/>
 
             <Switch
+                android:id="@+id/sw_alarm"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 app:layout_constraintWidth_default="percent"

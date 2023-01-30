@@ -76,7 +76,7 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
             this@LastCheckActivity,
             LoginMainActivity::class.java
         )
-        prefs.edit().putLong("profileIdx", response.result).apply()
+        // prefs.edit().putLong("profileIdx", response.result).apply()
 
         finishAffinity()        // 스택에 쌓인 액티비티 비우기
         startActivity(intent)
