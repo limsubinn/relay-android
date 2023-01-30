@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivitySignupBinding
 
@@ -12,9 +14,21 @@ class SignupActivity : AppCompatActivity() {
         ActivitySignupBinding.inflate(layoutInflater)
     }
 
+    private lateinit var getResultText: ActivityResultLauncher<Intent>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
+        // 회원가입 실패
+        getResultText = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val mString = result.data?.getStringExtra("sign-up-fail")
+                Toast.makeText(this, mString, Toast.LENGTH_SHORT).show()
+            }
+        }
 
         // 개인정보이용동의 약관 액티비티로 전송 ( or sharedPreferences 사용 )
         viewBinding.btnNext.setOnClickListener{
@@ -42,7 +56,8 @@ class SignupActivity : AppCompatActivity() {
                 editor.putString("pw", pw)
                 editor.apply()
 
-                startActivity(intent)
+                // startActivity(intent)
+                getResultText.launch(intent)
             }
         }
     }
