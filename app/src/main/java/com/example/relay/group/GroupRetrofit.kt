@@ -1,5 +1,6 @@
 package com.example.relay.group
 
+import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupListResponse
 import retrofit2.Call
 import retrofit2.http.GET
@@ -11,4 +12,10 @@ interface GroupRetrofit {
     fun getClubListRes(
         @Query("search") search: String
     ) : Call<GroupListResponse>
+
+    // 속한 그룹의 이름 가져오기
+    @GET("/users/clubs/accepted")
+    fun getUserProfileClubRes(
+        @Query("id") id: Long
+    ) : Call<GroupAcceptedResponse>
 }

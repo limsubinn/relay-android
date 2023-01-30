@@ -2,7 +2,7 @@ package com.example.relay.group
 
 import com.example.relay.group.models.GroupListResponse
 
-interface ListInterface {
+interface GroupListInterface {
     fun onGetClubListSuccess(response: GroupListResponse)
     fun onGetClubListFailure(message: String)
 }

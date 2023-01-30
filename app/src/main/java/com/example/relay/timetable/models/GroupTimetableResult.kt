@@ -1,8 +1,8 @@
-package com.example.relay.mypage.models
+package com.example.relay.timetable.models
 
 import com.google.gson.annotations.SerializedName
 
-data class UserClubResult (
+data class GroupTimetableResult(
     @SerializedName("clubIdx")  val clubIdx: Long,
     @SerializedName("name") val name: String
 )

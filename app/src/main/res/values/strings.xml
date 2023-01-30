@@ -11,6 +11,7 @@
     <string name="add">추가하기</string>
     <string name="delete">삭제하기</string>
     <string name="timetable_team">팀 시간표</string>
+    <string name="goal">목표</string>
 
     <!-- settings -->
     <string name="cancel">취소</string>

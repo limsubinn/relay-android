@@ -8,7 +8,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class ListService(val listInterface: ListInterface) {
+class GroupListService(val listInterface: GroupListInterface) {
 
     private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
 

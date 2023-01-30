@@ -1,13 +1,27 @@
-package com.softsquared.template.kotlin.src.main.myPage
+package com.example.relay.group
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.relay.databinding.ItemGroupListBinding
 import com.example.relay.group.models.GroupListResult
 
-class ListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerView.Adapter<ListRVAdapter.DataViewHolder>() {
+class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerView.Adapter<GroupListRVAdapter.DataViewHolder>() {
+
+    // 아이템 클릭 인터페이스
+    interface ItemClickListener {
+        fun onItemClick(view: View, position: Int)
+    }
+
+    // 아이템 클릭 리스너
+    private lateinit var itemClickListner: ItemClickListener
+
+    // 아이템 클릭 리스너 등록
+    fun setItemClickListener(itemClickListener: ItemClickListener) {
+        this.itemClickListner = itemClickListener
+    }
 
     // ViewHolder 객체
     inner class DataViewHolder(val binding: ItemGroupListBinding) :
@@ -32,6 +46,11 @@ class ListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerV
     // ViewHolder가 실제로 데이터를 표시해야 할 때 호출되는 함수
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         holder.bind(dataList[position])
+
+        // 아이템 클릭 리스너
+        holder.itemView.setOnClickListener {
+            itemClickListner.onItemClick(it, position)
+        }
     }
 
     // 표현할 Item의 총 개수

@@ -1,26 +1,50 @@
 package com.example.relay.group
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import com.bumptech.glide.Glide
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMainBinding
+import com.example.relay.group.models.GroupAcceptedResponse
+import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
 import java.util.*
+import kotlin.concurrent.schedule
 
-class GroupMainFragment: Fragment() {
+class GroupMainFragment: Fragment(), GroupMainInterface {
     private var _binding: FragmentGroupMainBinding? = null
     private val binding get() = _binding!!
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+
+    private var mainActivity: MainActivity? = null
+
+    override fun onAttach(context: Context) {
+        if (context != null) {
+            super.onAttach(context)
+        }
+        mainActivity = activity as MainActivity?
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mainActivity = null
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,6 +120,46 @@ class GroupMainFragment: Fragment() {
             select(date-1) // 오늘 날짜 선택
         }
 
+        // 그룹 목록 버튼
+        binding.btnRight.setOnClickListener{
+            mainActivity?.groupFragmentChange(1)
+        }
+
+        // 모두 보기 버튼
+        binding.btnTeamAll.setOnClickListener {
+            mainActivity?.groupFragmentChange(2)
+        }
+
+        // 리스트 -> 메인
+        setFragmentResultListener("list_to_main") {requestKey, bundle ->
+            Log.d("list_to_main", "here is main")
+
+            val clubIdx = bundle.getLong("clubIdx")
+            val content = bundle.getString("content")
+            val imgURL = bundle.getString("imgURL")
+            val name = bundle.getString("name")
+            val recruitStatus = bundle.getString("recruitStatus")
+
+            if (recruitStatus.equals("finished")) {
+                binding.btnJoinTeam.visibility = View.GONE
+            } else {
+                binding.btnJoinTeam.visibility = View.VISIBLE
+            }
+
+            binding.profileTeam.text = name
+            binding.tvIntro.text = content
+            Glide.with(binding.profileImg.context)
+                .load(imgURL)
+                .into(binding.profileImg)
+        }
+
+        // 사용자 그룹명 가져오기
+        Handler(Looper.getMainLooper()).postDelayed({
+            val profileIdx = prefs.getLong("profileIdx", 0L)
+            if (binding.profileTeam.text.isEmpty()) {
+                GroupMainService(this).tryGetUserClub(profileIdx)
+            }
+        }, 10)
 
     }
 
@@ -125,5 +189,21 @@ class GroupMainFragment: Fragment() {
         }
         calendar.add(Calendar.DATE, -1)
         return list
+    }
+
+    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
+        val res = response.result
+
+        // 유저가 가입된 그룹이 존재하면 화면에 띄우고, 존재하지 않으면 그룹의 목록을 보여준다.
+        if ((res != null) && (res.clubIdx != 0L)) {
+            binding.tvTeam.text = res.name
+            binding.btnJoinTeam.visibility = View.GONE
+        } else {
+            mainActivity?.groupFragmentChange(1)
+        }
+    }
+
+    override fun onGetUserClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }
