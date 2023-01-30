@@ -136,7 +136,7 @@ class TrackingService : LifecycleService() {
         CoroutineScope(Dispatchers.Main).launch {
             while (isTracking.value!!) {
                 //달리기 시작으로부터 지금까지 시간
-                lapTime = System.currentTimeMillis() - timeStarted
+                lapTime = (System.currentTimeMillis() - 3000L) - timeStarted
                 //lapTime 새로 설정
                 timeRunInMillis.postValue(timeRun + lapTime)
 //            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f

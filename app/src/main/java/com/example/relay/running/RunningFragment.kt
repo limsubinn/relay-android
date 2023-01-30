@@ -177,7 +177,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
             curTimeInMillis = it
-            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis, true)
+            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             binding.tvTimer.text = formattedGoalTime
             binding.tvTime.text = formattedTime
