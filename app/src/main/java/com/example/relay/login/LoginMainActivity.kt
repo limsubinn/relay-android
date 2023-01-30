@@ -52,6 +52,9 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
 
     override fun onPostLocalLogInSuccess(res: LogInLocalRes) {
         Toast.makeText(this@LoginMainActivity,"로컬 로그인 성공", Toast.LENGTH_SHORT).show()
+
+        prefs.edit().putString("accessToken", res.result.accessToken).apply()
+
         val intent = Intent(this@LoginMainActivity, MainActivity::class.java)
         startActivity(intent)
         finish()

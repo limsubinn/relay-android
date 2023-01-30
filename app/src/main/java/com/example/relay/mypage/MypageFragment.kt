@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
+import com.example.relay.mypage.models.UserInfoResponse
+import com.example.relay.mypage.models.UserProfileListResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
@@ -135,13 +137,7 @@ class MypageFragment: Fragment(), MypageInterface {
         }
 
         // 유저 정보 받아오기
-        MypageService(this).tryGetUserProfile()
-
-        // 설정 버튼
-        binding.btnMySettings.setOnClickListener {
-            val intent = Intent(activity, MySettingsActivity::class.java)
-            startActivity(intent);
-        }
+        MypageService(this).tryGetUserInfo()
     }
 
     override fun onDestroyView() {
@@ -172,11 +168,32 @@ class MypageFragment: Fragment(), MypageInterface {
         return list
     }
 
+    override fun onGetUserInfoSuccess(response: UserInfoResponse) {
+        // 유저 프로필 리스트 가져오기
+        MypageService(this).tryGetProfileList(response.result.name)
+    }
+
+    override fun onGetUserInfoFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetProfileListSuccess(response: UserProfileListResponse) {
+        val res = response.result[1] // 수정 필요 !!!
+        val userIdx = res.userIdx
+        val name = res.userName
+
+        MypageService(this).tryGetUserProfile(userIdx, name)
+    }
+
+    override fun onGetProfileListFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun onGetUserProfileSuccess(response: UserProfileResponse) {
         val res = response.result
 
         // 닉네임 & 그룹 이름 받아오기
-        if ((res.clubName == null) || (res.clubName == "")) {
+        if (res.clubIdx == 0L) {
             binding.profileName.text = "${res.nickname} / -"
         } else {
             binding.profileName.text = "${res.nickname} / ${res.clubName}"
@@ -186,7 +203,21 @@ class MypageFragment: Fragment(), MypageInterface {
         // 프로필 사진
         Glide.with(binding.profileImg.context)
             .load(res.imgUrl)
+            .override(90,90) // 사이즈 조정
             .into(binding.profileImg)
+
+        // 설정 버튼
+        binding.btnMySettings.setOnClickListener {
+            val intent = Intent(activity, MySettingsActivity::class.java)
+            intent.apply {
+                putExtra("imgUrl", res.imgUrl)
+                putExtra("name", res.nickname)
+                putExtra("email", res.email)
+                putExtra("statusMsg", res.statusMsg)
+                putExtra("isAlarmOn", res.isAlarmOn)
+            }
+            startActivity(intent);
+        }
     }
 
     override fun onGetUserProfileFailure(message: String) {
