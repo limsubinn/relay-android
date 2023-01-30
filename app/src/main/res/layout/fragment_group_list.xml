@@ -48,9 +48,59 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toRightOf="@id/btn_search" />
-
-
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/btn_create"
+            android:layout_width="70dp"
+            android:layout_height="25dp"
+            android:text="그룹 생성"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:background="@drawable/bg_team_label"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintVertical_bias="0.85"
+            app:layout_constraintHorizontal_bias="0.45"/>
+
+        <TextView
+            android:id="@+id/btn_level"
+            android:layout_width="70dp"
+            android:layout_height="25dp"
+            android:text="레벨 \u142F"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:background="@drawable/bg_team_label"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintVertical_bias="0.85"
+            app:layout_constraintHorizontal_bias="0.7"/>
+
+        <TextView
+            android:id="@+id/btn_time"
+            android:layout_width="70dp"
+            android:layout_height="25dp"
+            android:text="시간"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:background="@drawable/bg_team_label"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintVertical_bias="0.85"
+            app:layout_constraintHorizontal_bias="0.95"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -57,6 +57,7 @@ class GroupListFragment: Fragment(), GroupListInterface {
                     val search = binding.etGroupSearch.text.toString()
                     GroupListService(this).tryGetClubList(search)
 
+                    // 키보드 내리기
                     val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
                 }
@@ -99,10 +100,10 @@ class GroupListFragment: Fragment(), GroupListInterface {
                 val name = clubList[position].name
                 val recruitStatus = clubList[position].recruitStatus
 
-                parentFragmentManager.setFragmentResult("list_to_main",
+                // 리스트 -> 메인
+                parentFragmentManager.setFragmentResult("go_to_main",
                     bundleOf("clubIdx" to clubIdx, "content" to content,
                     "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
-                Log.d("list_to_main", "here is list")
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
         })

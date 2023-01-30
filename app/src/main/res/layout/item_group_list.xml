@@ -13,11 +13,11 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <de.hdodenhof.circleimageview.CircleImageView
+        <ImageView
             android:id="@+id/team_img"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:src="@drawable/ic_baseline_account_box_24"
+            android:src="@drawable/img_team_profile"
             app:civ_border_overlay="true"
             app:civ_border_width="1dp"
             app:civ_border_color="@color/black"
@@ -25,21 +25,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintHorizontal_bias="0.05"
             app:layout_constraintVertical_bias="0.2"/>
-
-        <TextView
-            android:id="@+id/team_week"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="WEEK 27"
-            android:textColor="#7F7F7F"
-            android:textSize="10sp"
-            android:layout_marginLeft="15dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/team_img"
-            app:layout_constraintVertical_bias="0.1"/>
 
         <TextView
             android:id="@+id/team_name"
@@ -52,7 +39,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/team_img"
-            app:layout_constraintVertical_bias="0.25"/>
+            app:layout_constraintVertical_bias="0.2"/>
 
         <TextView
             android:id="@+id/team_intro"
@@ -65,7 +52,41 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/team_img"
-            app:layout_constraintVertical_bias="0.45"/>
+            app:layout_constraintVertical_bias="0.4"/>
+
+        <TextView
+            android:id="@+id/team_level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_team_label"
+            android:text="초급"
+            android:textColor="@color/black"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.78"
+            app:layout_constraintVertical_bias="0.1" />
+
+        <TextView
+            android:id="@+id/team_recruit_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_team_label"
+            android:text="모집중"
+            android:textColor="@color/black"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.95"
+            app:layout_constraintVertical_bias="0.1" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="330dp"
@@ -77,17 +98,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintVertical_bias="0.8">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layout_team_running"
-                android:layout_width="40dp"
-                android:layout_height="30dp"
-                android:layout_marginLeft="20dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
+            <!-- 수정 예정 -->
             <TextView
                 android:id="@+id/team_state"
                 android:layout_width="wrap_content"
@@ -99,8 +110,8 @@
                 android:layout_marginLeft="20dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/layout_team_running" />
-
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

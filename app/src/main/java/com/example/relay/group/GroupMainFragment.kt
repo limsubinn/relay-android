@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
@@ -125,14 +126,8 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
             mainActivity?.groupFragmentChange(1)
         }
 
-        // 모두 보기 버튼
-        binding.btnTeamAll.setOnClickListener {
-            mainActivity?.groupFragmentChange(2)
-        }
-
-        // 리스트 -> 메인
-        setFragmentResultListener("list_to_main") {requestKey, bundle ->
-            Log.d("list_to_main", "here is main")
+        // 리스트, 멤버 -> 메인
+        setFragmentResultListener("go_to_main") {requestKey, bundle ->
 
             val clubIdx = bundle.getLong("clubIdx")
             val content = bundle.getString("content")
@@ -148,9 +143,18 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
 
             binding.profileTeam.text = name
             binding.tvIntro.text = content
-            Glide.with(binding.profileImg.context)
-                .load(imgURL)
-                .into(binding.profileImg)
+//            Glide.with(binding.profileImg.context)
+//                .load(imgURL)
+//                .into(binding.profileImg)
+
+            // 모두 보기 버튼
+            binding.btnTeamAll.setOnClickListener {
+                // 메인 -> 멤버
+                parentFragmentManager.setFragmentResult("main_to_member",
+                    bundleOf("clubIdx" to clubIdx, "content" to content,
+                        "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
+                mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
+            }
         }
 
         // 사용자 그룹명 가져오기
@@ -195,9 +199,20 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
         val res = response.result
 
         // 유저가 가입된 그룹이 존재하면 화면에 띄우고, 존재하지 않으면 그룹의 목록을 보여준다.
+        // !!! 현재 들어간 그룹이 없다는 문구가 띄워진 화면 기획 완료되면 수정할 예정 !!!
         if ((res != null) && (res.clubIdx != 0L)) {
             binding.tvTeam.text = res.name
             binding.btnJoinTeam.visibility = View.GONE
+
+            // 모두 보기 버튼
+            binding.btnTeamAll.setOnClickListener {
+                mainActivity?.groupFragmentChange(2)
+
+                parentFragmentManager.setFragmentResult("main_to_member",
+                    bundleOf("clubIdx" to res.clubIdx)
+                )
+                mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
+            }
         } else {
             mainActivity?.groupFragmentChange(1)
         }
