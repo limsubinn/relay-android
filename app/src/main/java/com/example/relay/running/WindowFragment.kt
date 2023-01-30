@@ -61,12 +61,10 @@ class WindowFragment : BottomSheetDialogFragment(), OnBottomSheetCallbacks {
         when (newState) {
             BottomSheetBehavior.STATE_EXPANDED -> {
                 layout_bottom_sheet.visibility = View.GONE
-                layout_full_sheet.visibility = View.VISIBLE
 
             }
             BottomSheetBehavior.STATE_COLLAPSED -> {
                 layout_bottom_sheet.visibility = View.VISIBLE
-                layout_full_sheet.visibility = View.GONE
             }
         }
     }
