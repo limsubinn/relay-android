@@ -132,7 +132,6 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
 
         // 리스트 -> 메인
         setFragmentResultListener("list_to_main") {requestKey, bundle ->
-            Log.d("list_to_main", "here is main")
 
             val clubIdx = bundle.getLong("clubIdx")
             val content = bundle.getString("content")
@@ -148,9 +147,9 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
 
             binding.profileTeam.text = name
             binding.tvIntro.text = content
-            Glide.with(binding.profileImg.context)
-                .load(imgURL)
-                .into(binding.profileImg)
+//            Glide.with(binding.profileImg.context)
+//                .load(imgURL)
+//                .into(binding.profileImg)
         }
 
         // 사용자 그룹명 가져오기
@@ -195,6 +194,7 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
         val res = response.result
 
         // 유저가 가입된 그룹이 존재하면 화면에 띄우고, 존재하지 않으면 그룹의 목록을 보여준다.
+        // !!! 현재 들어간 그룹이 없다는 문구가 띄워진 화면 기획 완료되면 수정할 예정 !!!
         if ((res != null) && (res.clubIdx != 0L)) {
             binding.tvTeam.text = res.name
             binding.btnJoinTeam.visibility = View.GONE

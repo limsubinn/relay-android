@@ -29,10 +29,16 @@ class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): Recy
         fun bind(data: GroupListResult) {
             binding.teamName.text = data.name
             binding.teamIntro.text = data.content
-            binding.teamState.text = data.recruitStatus
-            Glide.with(binding.teamImg.context)
-                .load(data.imgURL)
-                .into(binding.teamImg)
+
+            if (data.recruitStatus == "recruiting") {
+                binding.teamRecruitStatus.text = "모집중"
+            } else {
+                binding.teamRecruitStatus.text = "모집완료"
+            }
+
+//            Glide.with(binding.teamImg.context)
+//                .load(data.imgURL)
+//                .into(binding.teamImg)
         }
     }
 
