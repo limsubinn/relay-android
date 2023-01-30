@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
@@ -125,13 +126,8 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
             mainActivity?.groupFragmentChange(1)
         }
 
-        // 모두 보기 버튼
-        binding.btnTeamAll.setOnClickListener {
-            mainActivity?.groupFragmentChange(2)
-        }
-
-        // 리스트 -> 메인
-        setFragmentResultListener("list_to_main") {requestKey, bundle ->
+        // 리스트, 멤버 -> 메인
+        setFragmentResultListener("go_to_main") {requestKey, bundle ->
 
             val clubIdx = bundle.getLong("clubIdx")
             val content = bundle.getString("content")
@@ -150,6 +146,15 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
 //            Glide.with(binding.profileImg.context)
 //                .load(imgURL)
 //                .into(binding.profileImg)
+
+            // 모두 보기 버튼
+            binding.btnTeamAll.setOnClickListener {
+                // 메인 -> 멤버
+                parentFragmentManager.setFragmentResult("main_to_member",
+                    bundleOf("clubIdx" to clubIdx, "content" to content,
+                        "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
+                mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
+            }
         }
 
         // 사용자 그룹명 가져오기
@@ -198,6 +203,16 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
         if ((res != null) && (res.clubIdx != 0L)) {
             binding.tvTeam.text = res.name
             binding.btnJoinTeam.visibility = View.GONE
+
+            // 모두 보기 버튼
+            binding.btnTeamAll.setOnClickListener {
+                mainActivity?.groupFragmentChange(2)
+
+                parentFragmentManager.setFragmentResult("main_to_member",
+                    bundleOf("clubIdx" to res.clubIdx)
+                )
+                mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
+            }
         } else {
             mainActivity?.groupFragmentChange(1)
         }
