@@ -40,13 +40,20 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
     }
 
     override fun onPostLocalSignUpInSuccess(response: SignUpLocalRes) {
-        prefs.edit().putString("accessToken", response.result.accessToken).apply()
+        if (!response.isSuccess) { // 회원가입 실패
+            val intent = Intent()
+            intent.putExtra("sign-up-fail", response.message)
+            setResult(RESULT_OK, intent)
+            finish()
+        } else {
+            prefs.edit().putString("accessToken", response.result.accessToken).apply()
 
-        val name = prefs.getString("name", "")
-        val url = "https://i.ibb.co/g6QJDkL/Avatar-6.png" // 이미지 임시로 설정
+            val name = prefs.getString("name", "")
+            val url = "https://i.ibb.co/g6QJDkL/Avatar-6.png" // 이미지 임시로 설정
 
-        if (name != null) {
-            SignUpService(this).tryPostUserProfile(name, url, "n", name, "" )
+            if (name != null) {
+                SignUpService(this).tryPostUserProfile(name, url, "n", name, "")
+            }
         }
     }
 

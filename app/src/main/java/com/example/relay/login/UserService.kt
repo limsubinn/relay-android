@@ -70,7 +70,7 @@ class SignUpService(val signUpInterface: SignUpInterface) {
             retrofit.postSignUpLocalReq(SignUpLocalReq(name, email, pw)).enqueue((object : Callback<SignUpLocalRes>{
                 // 전송 성공
                 override fun onResponse(call: Call<SignUpLocalRes>, response: Response<SignUpLocalRes>) {
-                    if (response.isSuccessful) { // <--> response.code == 200
+                    if (response.code() == 200) {
                         // 성공 처리
                         Log.d("SignUpLocal","accessToken : ${response.body()?.result?.accessToken}")
                         Log.d("SignUpLocal","refreshToken : ${response.body()?.result?.refreshToken}")
