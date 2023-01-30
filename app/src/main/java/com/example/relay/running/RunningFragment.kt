@@ -18,6 +18,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.relay.Constants
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_RESUME_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
@@ -193,7 +194,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             binding.btnStart1.setImageResource(R.drawable.img_btn_restart)
             //configureBackdrop()
         } else {
-            sendCommandToService(ACTION_RESUME_SERVICE)
+            sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE)
             binding.btnPause.visibility = View.VISIBLE
             binding.layoutWhilePause.visibility = View.GONE
             binding.layoutBottomSheet.visibility = View.VISIBLE

@@ -17,6 +17,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_RESUME_SERVICE
+import com.example.relay.Constants.ACTION_START_OR_RESUME_SERVICE
 import com.example.relay.Constants.ACTION_START_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
 import com.example.relay.Constants.FASTEST_LOCATION_INTERVAL
@@ -91,15 +92,25 @@ class TrackingService : LifecycleService() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         intent?.let{
             when(it.action){
-                ACTION_START_SERVICE -> {
-                    if(isFirstRun) {
+//                ACTION_START_SERVICE -> {
+//                    if(isFirstRun) {
+//                        startForegroundService()
+//                        isFirstRun = false
+//                        Log.d("isFirstRun","${isFirstRun}")
+//                    }
+//                }
+//                ACTION_RESUME_SERVICE -> {
+//                    Timber.d("Resuming service...")
+//                    resumeTimer()
+//                }
+                ACTION_START_OR_RESUME_SERVICE -> {
+                    if (isFirstRun) {
                         startForegroundService()
                         isFirstRun = false
+                    } else {
+                        Timber.d("Resuming service...")
+                        resumeTimer()
                     }
-                }
-                ACTION_RESUME_SERVICE -> {
-                    Timber.d("Resuming service...")
-                    startTimer()
                 }
                 ACTION_PAUSE_SERVICE -> {
                     Timber.d("Paused service")
@@ -137,6 +148,29 @@ class TrackingService : LifecycleService() {
             while (isTracking.value!!) {
                 //달리기 시작으로부터 지금까지 시간
                 lapTime = (System.currentTimeMillis() - 3000L) - timeStarted
+                //lapTime 새로 설정
+                timeRunInMillis.postValue(timeRun + lapTime)
+//            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+
+                if (timeRunInMillis.value!! >= lastSecondTimestamp + 1000L) {
+                    timeRunInSeconds.postValue(timeRunInSeconds.value!! + 1)
+                    lastSecondTimestamp += 1000L
+                }
+                delay(TIMER_UPDATE_INTERVAL)
+            }
+            timeRun += lapTime
+        }
+    }
+
+    private fun resumeTimer() {
+        addEmptyPolyline()
+        isTracking.postValue(true)
+        timeStarted = System.currentTimeMillis()
+        isTimerEnabled = true
+        CoroutineScope(Dispatchers.Main).launch {
+            while (isTracking.value!!) {
+                //달리기 시작으로부터 지금까지 시간
+                lapTime = System.currentTimeMillis() - timeStarted
                 //lapTime 새로 설정
                 timeRunInMillis.postValue(timeRun + lapTime)
 //            val nowSpeed = round((nowDistanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
