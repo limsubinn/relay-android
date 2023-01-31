@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
+import com.example.relay.group.GroupCreateFragment
 import com.example.relay.group.GroupListFragment
 import com.example.relay.group.GroupMainFragment
 import com.example.relay.group.GroupMemberFragment
@@ -138,6 +139,11 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager
                 .beginTransaction()
                 .replace(binding.containerFragment.id, GroupMemberFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 3) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupCreateFragment())
                 .commitAllowingStateLoss()
         }
     }

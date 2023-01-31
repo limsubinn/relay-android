@@ -2,7 +2,6 @@ package com.example.relay.group
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -64,6 +63,12 @@ class GroupListFragment: Fragment(), GroupListInterface {
             }
             true
         })
+
+        // 그룹 생성 버튼
+        binding.btnCreate.setOnClickListener {
+            mainActivity?.groupFragmentChange(3)
+        }
+
     }
 
     override fun onDestroyView() {
@@ -92,7 +97,7 @@ class GroupListFragment: Fragment(), GroupListInterface {
         }
 
         // 리사이클러뷰 아이템 클릭 이벤트
-        listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener{
+        listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val clubIdx = clubList[position].clubIdx
                 val content = clubList[position].content

@@ -3,7 +3,6 @@ package com.example.relay.group
 import android.util.Log
 import com.example.relay.ApplicationClass
 import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.group.models.GroupListResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
