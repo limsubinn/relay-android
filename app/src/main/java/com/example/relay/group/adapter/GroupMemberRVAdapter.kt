@@ -1,9 +1,10 @@
-package com.example.relay.group
+package com.example.relay.group.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.relay.databinding.ItemGroupMemberBinding
+import com.example.relay.group.models.Member
 
 class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerView.Adapter<GroupMemberRVAdapter.DataViewHolder>() {
 

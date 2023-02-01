@@ -1,4 +1,4 @@
-package com.example.relay.mypage.models
+package com.example.relay.ui.models
 
 import com.google.gson.annotations.SerializedName
 
