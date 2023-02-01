@@ -1,4 +1,4 @@
-package com.example.relay.group
+package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.databinding.FragmentGroupMemberBinding
+import com.example.relay.group.adapter.GroupMemberRVAdapter
+import com.example.relay.group.models.Member
 import com.example.relay.ui.MainActivity
 
 class GroupMemberFragment: Fragment() {

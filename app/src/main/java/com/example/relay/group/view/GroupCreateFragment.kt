@@ -1,19 +1,22 @@
-package com.example.relay.group
+package com.example.relay.group.view
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.example.relay.R
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentGroupCreateBinding
+import com.example.relay.group.GetClubListService
+import com.example.relay.group.GetUserClubInterface
+import com.example.relay.group.GetUserClubService
+import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.ui.MainActivity
 
-class GroupCreateFragment: Fragment() {
+class GroupCreateFragment: Fragment(), GetUserClubInterface {
     private var _binding: FragmentGroupCreateBinding? = null
     private val binding get() = _binding!!
 
@@ -59,10 +62,34 @@ class GroupCreateFragment: Fragment() {
 //            }
 //        }
 
+        // 유저가 속한 그룹의 이름 가져오기
+        val userIdx = prefs.getLong("userIdx", 0L)
+        if (userIdx != 0L) {
+            GetUserClubService(this).tryGetUserClub(userIdx)
+        } else {
+            Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+        }
+
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
+        binding.btnNext.setOnClickListener {
+            if (response.code != 2008) {
+                // 가입한 그룹이 있으면 그룹 생성하기 거부
+                mainActivity?.groupFragmentChange(4)
+            } else {
+                // 가입한 그룹 x (수정 예정)
+                Toast.makeText(activity, "!!!그룹 생성 가능!!!", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    override fun onGetUserClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

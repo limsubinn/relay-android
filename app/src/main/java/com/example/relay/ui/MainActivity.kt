@@ -3,23 +3,26 @@ package com.example.relay.ui
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
-import com.example.relay.group.GroupCreateFragment
-import com.example.relay.group.GroupListFragment
-import com.example.relay.group.GroupMainFragment
-import com.example.relay.group.GroupMemberFragment
+import com.example.relay.group.view.*
+import com.example.relay.mypage.MainService
 import com.example.relay.mypage.MyRecordFragment
 import com.example.relay.mypage.MypageFragment
+import com.example.relay.mypage.MypageService
 import com.example.relay.running.RunningFragment
 import com.example.relay.timetable.TimetableFragment
+import com.example.relay.ui.models.UserInfoResponse
+import com.example.relay.ui.models.UserProfileListResponse
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainInterface {
     private var listener: OnBottomSheetCallbacks? = null
     private var mBottomSheetBehavior: BottomSheetBehavior<View?>? = null
 
@@ -30,6 +33,9 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        // 유저 정보 받아오기
+        MainService(this).tryGetUserInfo()
 
         supportActionBar?.elevation = 0f
 
@@ -145,7 +151,42 @@ class MainActivity : AppCompatActivity() {
                 .beginTransaction()
                 .replace(binding.containerFragment.id, GroupCreateFragment())
                 .commitAllowingStateLoss()
+        } else if (index == 4) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupCreateNFragment())
+                .commitAllowingStateLoss()
         }
+    }
+
+    override fun onGetUserInfoSuccess(response: UserInfoResponse) {
+        val name = response.result.name
+        val email = response.result.email
+
+        val editor = prefs.edit()
+        editor.putString("name", name)
+        editor.putString("email", email)
+        editor.apply()
+
+        // 유저 프로필 리스트 가져오기
+        MainService(this).tryGetProfileList(name)
+    }
+
+    override fun onGetUserInfoFailure(message: String) {
+        Toast.makeText(this, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onGetProfileListSuccess(response: UserProfileListResponse) {
+        val res = response.result[1] // 수정 필요 !!!
+        val userIdx = res.userIdx
+
+        val editor = prefs.edit()
+        editor.putLong("userIdx", userIdx)
+        editor.apply()
+    }
+
+    override fun onGetProfileListFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }
 

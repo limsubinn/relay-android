@@ -1,4 +1,4 @@
-package com.example.relay.group
+package com.example.relay.group.adapter
 
 import android.view.LayoutInflater
 import android.view.View

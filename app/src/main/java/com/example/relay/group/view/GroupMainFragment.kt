@@ -1,4 +1,4 @@
-package com.example.relay.group
+package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
@@ -14,6 +14,8 @@ import androidx.fragment.app.setFragmentResultListener
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMainBinding
+import com.example.relay.group.GetUserClubInterface
+import com.example.relay.group.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
@@ -23,7 +25,7 @@ import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
 import java.util.*
 
-class GroupMainFragment: Fragment(), GroupMainInterface {
+class GroupMainFragment: Fragment(), GetUserClubInterface {
     private var _binding: FragmentGroupMainBinding? = null
     private val binding get() = _binding!!
 
@@ -156,9 +158,9 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
 
         // 사용자 그룹명 가져오기
         Handler(Looper.getMainLooper()).postDelayed({
-            val profileIdx = prefs.getLong("profileIdx", 0L)
+            val userIdx = prefs.getLong("userIdx", 0L)
             if (binding.profileTeam.text.isEmpty()) {
-                GroupMainService(this).tryGetUserClub(profileIdx)
+                GetUserClubService(this).tryGetUserClub(userIdx)
             }
         }, 10)
 
@@ -193,11 +195,11 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        val res = response.result
-
         // 유저가 가입된 그룹이 존재하면 화면에 띄우고, 존재하지 않으면 그룹의 목록을 보여준다.
         // !!! 현재 들어간 그룹이 없다는 문구가 띄워진 화면 기획 완료되면 수정할 예정 !!!
-        if ((res != null) && (res.clubIdx != 0L)) {
+        if (response.code != 2008) {
+            val res = response.result
+
             binding.tvTeam.text = res.name
             binding.btnJoinTeam.visibility = View.GONE
 
@@ -205,13 +207,14 @@ class GroupMainFragment: Fragment(), GroupMainInterface {
             binding.btnTeamAll.setOnClickListener {
                 mainActivity?.groupFragmentChange(2)
 
-                parentFragmentManager.setFragmentResult("main_to_member",
+                parentFragmentManager.setFragmentResult(
+                    "main_to_member",
                     bundleOf("clubIdx" to res.clubIdx)
                 )
                 mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
             }
         } else {
-            mainActivity?.groupFragmentChange(1)
+            mainActivity?.groupFragmentChange(1) // 그룹 목록
         }
     }
 

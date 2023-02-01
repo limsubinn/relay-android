@@ -7,12 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
-import com.example.relay.mypage.models.UserInfoResponse
-import com.example.relay.mypage.models.UserProfileListResponse
+import com.example.relay.ui.models.UserProfileListResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
@@ -136,8 +137,14 @@ class MypageFragment: Fragment(), MypageInterface {
 //                    }
         }
 
-        // 유저 정보 받아오기
-        MypageService(this).tryGetUserInfo()
+        val userIdx = prefs.getLong("userIdx", 0L)
+        val name = prefs.getString("name", "")
+
+        if (name != null) {
+            if ((userIdx != 0L) && (name.isNotEmpty())) {
+                MypageService(this).tryGetUserProfile(userIdx, name)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -166,27 +173,6 @@ class MypageFragment: Fragment(), MypageInterface {
         }
         calendar.add(Calendar.DATE, -1)
         return list
-    }
-
-    override fun onGetUserInfoSuccess(response: UserInfoResponse) {
-        // 유저 프로필 리스트 가져오기
-        MypageService(this).tryGetProfileList(response.result.name)
-    }
-
-    override fun onGetUserInfoFailure(message: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onGetProfileListSuccess(response: UserProfileListResponse) {
-        val res = response.result[1] // 수정 필요 !!!
-        val userIdx = res.userIdx
-        val name = res.userName
-
-        MypageService(this).tryGetUserProfile(userIdx, name)
-    }
-
-    override fun onGetProfileListFailure(message: String) {
-        TODO("Not yet implemented")
     }
 
     override fun onGetUserProfileSuccess(response: UserProfileResponse) {
@@ -221,6 +207,6 @@ class MypageFragment: Fragment(), MypageInterface {
     }
 
     override fun onGetUserProfileFailure(message: String) {
-        // 에러 발생
+        Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }
