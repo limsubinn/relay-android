@@ -1,16 +1,18 @@
 package com.example.relay.group.view
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.example.relay.ApplicationClass.Companion.prefs
+import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupCreateBinding
-import com.example.relay.group.GetClubListService
 import com.example.relay.group.GetUserClubInterface
 import com.example.relay.group.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
@@ -61,6 +63,19 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
         // 그룹 삭제하기 화면에 안 보이게
         binding.line3.visibility = View.GONE
         binding.btnDelete.visibility = View.GONE
+
+        // 일일 목표치 설정 (type)
+        binding.goalType.setOnClickListener {
+            val mBuilder = activity?.let { it1 -> AlertDialog.Builder(it1) }
+            val mDialogView = LayoutInflater.from(activity).inflate(R.layout.dialog_goal_type, null)
+            mBuilder?.setView(mDialogView)
+
+            val dialog = mBuilder?.create()
+            if (dialog != null) {
+                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                dialog.show()
+            }
+        }
 
         // 스피너 설정 -> 화면 기획 완성되면 수정
 //        val sGoal = resources.getStringArray(R.array.group_goal)
