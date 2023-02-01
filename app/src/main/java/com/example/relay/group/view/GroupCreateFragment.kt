@@ -70,6 +70,11 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
 
+        // 취소 버튼
+        binding.btnBack.setOnClickListener {
+            mainActivity?.groupFragmentChange(1) // 그룹 리스트로 이동
+        }
+
     }
 
     override fun onDestroyView() {

@@ -39,6 +39,10 @@ class GroupCreateNFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 돌아가기 버튼
+        binding.btnBack.setOnClickListener{
+            mainActivity?.groupFragmentChange(1) // 그룹 리스트로 이동
+        }
 
     }
 
