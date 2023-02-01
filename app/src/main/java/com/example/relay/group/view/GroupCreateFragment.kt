@@ -46,6 +46,22 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // 모집중 상태
+        binding.swRecruitStatus.isChecked = true
+
+        // 스위치 체크
+        binding.swRecruitStatus.setOnCheckedChangeListener { p0, isChecked ->
+            if (isChecked) {
+                binding.tvRecruitStatus.text = "모집중"
+            } else {
+                binding.tvRecruitStatus.text = "모집완료"
+            }
+        }
+
+        // 그룹 삭제하기 화면에 안 보이게
+        binding.line3.visibility = View.GONE
+        binding.btnDelete.visibility = View.GONE
+
         // 스피너 설정 -> 화면 기획 완성되면 수정
 //        val sGoal = resources.getStringArray(R.array.group_goal)
 //        val goalAdapter =
