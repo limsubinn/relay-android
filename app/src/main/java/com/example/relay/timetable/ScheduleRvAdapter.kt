@@ -18,10 +18,10 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     private val context = context
     inner class DataViewHolder(private val binding: ItemRvEditTableBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bind(data: Schedule){
-                binding.etTmpDay.setText(data.day)
+                binding.etTmpDay.setText(dayToString(data.day))
                 binding.btnStart.text = data.startTime
                 binding.btnEnd.text = data.endTime
-                binding.etTmpGoal.setText(data.goal)
+                binding.etTmpGoal.setText(data.goal.toString())
 
                 binding.btnRemove.setOnClickListener{
                     removeItem(adapterPosition)
@@ -58,18 +58,33 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     }
 
     fun addEmptyItem(){
-        dataList.add(Schedule("","","","", ""))
+        // val day = dayToString()
+        dataList.add(Schedule("",0,"","", 0, ""))
         notifyItemInserted(dataList.size)
         notifyItemRangeChanged(dataList.size, getItemCount());
     }
 
-    fun addItem(name: String, day:String, start:String, end:String, goal:String){
-        dataList.add(Schedule(name, day, start, end, goal))
+    fun addItem(name: String, day:Int, start:String, end:String, goal:Int, goalType:String){
+        dataList.add(Schedule(name, day, start, end, goal, goalType))
         notifyItemInserted(dataList.size)
         notifyItemRangeChanged(dataList.size, getItemCount());
     }
 
     fun getUpdatedSchedules(): MutableList<Schedule> {
         return dataList
+    }
+
+    private fun dayToString(daySt:Int): String{
+        var day = when(daySt){
+            1 -> "월"
+            2 -> "화"
+            3 -> "수"
+            4 -> "목"
+            5 -> "금"
+            6 -> "토"
+            0 -> "일"
+            else -> ""
+        }
+        return day
     }
 }

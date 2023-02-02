@@ -54,12 +54,12 @@ class TimetableFragment: Fragment(), TimetableInterface {
         // TimetableService(this).tryGetGroupSchedules(1)
 
         scheduleList.apply {
-            add(Schedule("라나", 0, "1:00", "8:00", 0, "20"))
-            add(Schedule("라나", 1, "5:00", "10:00", 0, "20"))
-            add(Schedule("라나", 2, "13:00", "14:00", 0, "20"))
-            add(Schedule("라나", 4, "9:00", "5:00", 0, "20"))
-            add(Schedule("라나", 5, "12:00", "17:00", 0, "20"))
-            add(Schedule("라나", 7, "11:00", "20:00", 0, "20"))
+            add(Schedule("라나", 1, "1:00", "8:00", 0, "20"))
+            add(Schedule("라나", 2, "5:00", "10:00", 0, "20"))
+            add(Schedule("라나", 4, "13:00", "14:00", 0, "20"))
+            add(Schedule("라나", 5, "9:00", "5:00", 0, "20"))
+            add(Schedule("라나", 6, "12:00", "17:00", 0, "20"))
+            add(Schedule("라나", 0, "11:00", "20:00", 0, "20"))
         }
 
         ondPostMyTimetableSuccess(scheduleList)
@@ -86,20 +86,6 @@ class TimetableFragment: Fragment(), TimetableInterface {
             sList.add(schedule)
         }
         binding.timetable.updateSchedules(sList)
-    }
-
-    private fun dayToInt(daySt:String): Int{
-        var day = when(daySt){
-            "월" -> 0
-            "화" -> 1
-            "수" -> 2
-            "목" -> 3
-            "금" -> 4
-            "토" -> 5
-            "일" -> 6
-            else -> 500
-        }
-        return day
     }
 
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
