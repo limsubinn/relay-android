@@ -72,7 +72,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
 
 
         // 목표치 설정 (type)
-        binding.goalType.setOnClickListener {
+        binding.btnGoalType.setOnClickListener {
             val dialogView = layoutInflater.inflate(R.layout.dialog_group_create, null)
             val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
@@ -89,7 +89,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                     view,
                     position,
                     id ->
-                binding.goalType.text = itemView.adapter.getItem(position).toString()
+                binding.tvGoalType.text = itemView.adapter.getItem(position).toString()
                 alertDialog?.dismiss()
             }
 //            dialogView.list_dialog_item.setOnItemClickListener { adapterView, view, i, l ->
