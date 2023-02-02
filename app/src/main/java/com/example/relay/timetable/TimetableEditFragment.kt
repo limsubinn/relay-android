@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
+import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.Schedule
 import java.sql.Time
 
@@ -31,12 +32,12 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         // 테스트 더미
         scheduleList.apply {
-            add(Schedule("월", "1:00", "8:00", "20"))
-            add(Schedule("화", "5:00", "10:00", "20"))
-            add(Schedule("수", "13:00", "14:00", "20"))
-            add(Schedule("목", "9:00", "5:00", "20"))
-            add(Schedule("금", "12:00", "17:00", "20"))
-            add(Schedule("일", "11:00", "20:00", "20"))
+            add(Schedule("라나", "월", "1:00", "8:00", "20"))
+            add(Schedule("라나", "화", "5:00", "10:00", "20"))
+            add(Schedule("라나", "수", "13:00", "14:00", "20"))
+            add(Schedule("라나", "목", "9:00", "5:00", "20"))
+            add(Schedule("라나", "금", "12:00", "17:00", "20"))
+            add(Schedule("라나", "일", "11:00", "20:00", "20"))
         }
 
         binding.containerRv.adapter = scheduleRvAdapter
@@ -66,6 +67,14 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
                 .replace(R.id.container_edit, emptyFragment)
                 .commit()
         }
+    }
+
+    override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetGroupTimetableFailure(message: String) {
+        TODO("Not yet implemented")
     }
 
     override fun onPostMyTimetableSuccess() {

@@ -10,15 +10,17 @@ import androidx.fragment.app.FragmentTransaction
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
 import com.example.relay.databinding.FragmentTimetableEditBinding
+import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.Schedule
 import com.islandparadise14.mintable.model.ScheduleDay
 import com.islandparadise14.mintable.model.ScheduleEntity
 import kotlinx.android.synthetic.main.fragment_timetable_edit.*
 
-class TimetableFragment: Fragment() {
+class TimetableFragment: Fragment(), TimetableInterface {
     private var viewBinding: FragmentTimetableBinding? = null
     private val binding get() = viewBinding!!
     private val day = arrayOf("일", "월", "화", "수", "목", "금", "토")
+    val scheduleList = mutableListOf<Schedule>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,18 +51,18 @@ class TimetableFragment: Fragment() {
 
         }
 
-        val scheduleList = mutableListOf<Schedule>()
-        // 테스트 더미
+        // TimetableService(this).tryGetGroupSchedules(1)
+
         scheduleList.apply {
-            add(Schedule("월", "1:00", "8:00", "20"))
-            add(Schedule("화", "5:00", "10:00", "20"))
-            add(Schedule("수", "13:00", "14:00", "20"))
-            add(Schedule("목", "9:00", "5:00", "20"))
-            add(Schedule("금", "12:00", "17:00", "20"))
-            add(Schedule("일", "11:00", "20:00", "20"))
+            add(Schedule("라나","월", "1:00", "8:00", "20"))
+            add(Schedule("라나","화", "5:00", "10:00", "20"))
+            add(Schedule("라나","수", "13:00", "14:00", "20"))
+            add(Schedule("라나","목", "9:00", "5:00", "20"))
+            add(Schedule("라나","금", "12:00", "17:00", "20"))
+            add(Schedule("라나","일", "11:00", "20:00", "20"))
         }
 
-        onPostMyTimetableSuccess(scheduleList)
+        ondPostMyTimetableSuccess(scheduleList)
     }
 
     // 메모리 누수 방지 (fragment 의 생명주기 > view 의 생명주기)
@@ -69,18 +71,17 @@ class TimetableFragment: Fragment() {
         viewBinding = null
     }
 
-    fun onPostMyTimetableSuccess(scheduleList: MutableList<Schedule>){
+    fun ondPostMyTimetableSuccess(scheduleList: MutableList<Schedule>){
         val sList: ArrayList<ScheduleEntity> = ArrayList()
         for (item in scheduleList) {
             val schedule = ScheduleEntity(
-                32, //originId
-                "Test", //scheduleName
-                "지우자", //roomInfo
+                1, //originId,
+                item.userName, //scheduleName,
                 dayToInt(item.day), //ScheduleDay object (MONDAY ~ SUNDAY)
                 item.startTime, //startTime format: "HH:mm"
                 item.endTime, //endTime  format: "HH:mm"
                 "#F54242", //backgroundColor (optional)
-                "#FFFFFF" //textcolor (optional)
+                "#FFFFFF" //textColor (optional)
             )
             sList.add(schedule)
         }
@@ -99,5 +100,21 @@ class TimetableFragment: Fragment() {
             else -> 0
         }
         return day
+    }
+
+    override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetGroupTimetableFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPostMyTimetableSuccess() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPostMyTimetableFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

@@ -3,10 +3,10 @@ package com.example.relay.timetable
 import android.util.Log
 import com.example.relay.ApplicationClass
 import com.example.relay.BaseResponse
+import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.Schedule
 import retrofit2.Call
 import retrofit2.Response
-import javax.security.auth.callback.Callback
 
 class TimetableService(val timetableInterface: TimetableInterface) {
     private val retrofit: TimetableRetrofit = ApplicationClass.sRetrofit.create(TimetableRetrofit::class.java)
@@ -28,6 +28,25 @@ class TimetableService(val timetableInterface: TimetableInterface) {
                 timetableInterface.onPostMyTimetableFailure(t.message ?: "통신 오류")
             }
 
+        }))
+    }
+
+    fun tryGetGroupSchedules(clubIdx: Int){
+        retrofit.getGroupTimetables(clubIdx).enqueue((object : retrofit2.Callback<GroupTimetableRes>{
+            override fun onResponse(call: Call<GroupTimetableRes>, response: Response<GroupTimetableRes>) {
+                if (response.isSuccessful) { // response.code == 200
+                    timetableInterface.onPostMyTimetableSuccess()
+                }else {
+                    // 전송은 성공 but 4xx 에러
+                    Log.d("LogInLocal", "failure")
+                }
+            }
+
+            override fun onFailure(call: Call<GroupTimetableRes>, t: Throwable) {
+                Log.d("Timetable", t.message!!)
+                t.printStackTrace()
+                timetableInterface.onPostMyTimetableFailure(t.message ?: "통신 오류")
+            }
         }))
     }
 }
