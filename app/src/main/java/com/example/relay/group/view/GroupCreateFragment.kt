@@ -216,6 +216,38 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             }
         }
 
+        // 러너 레벨 설정
+        binding.btnRunnerLevel.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_people_cnt, null)
+            val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+            alertDialog?.setView(dialogView)
+            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog?.show()
+
+            // 최대, 최소값, 기본값 설정
+            val levelList = arrayOf("초보 러너", "중급 러너", "프로 러너")
+
+            dialogView.np_people.displayedValues = levelList
+            dialogView.np_people.minValue = 0
+            dialogView.np_people.maxValue = 2
+
+            val value = binding.tvRunnerLevel.text.toString()
+            val index = levelList.indexOf(value)
+            dialogView.np_people.value = index
+
+            // 저장 버튼
+            dialogView.btn_save.setOnClickListener {
+                binding.tvRunnerLevel.text = levelList[dialogView.np_people.value]
+                alertDialog?.dismiss()
+            }
+
+            // 취소 버튼
+            dialogView.btn_cancel.setOnClickListener {
+                alertDialog?.dismiss()
+            }
+        }
+
 
         // 유저가 속한 그룹의 이름 가져오기
         val userIdx = prefs.getLong("userIdx", 0L)

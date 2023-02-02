@@ -252,6 +252,7 @@
         app:layout_constraintStart_toStartOf="parent" >
 
         <TextView
+            android:id="@+id/tv_runner_level"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="초보 러너"
