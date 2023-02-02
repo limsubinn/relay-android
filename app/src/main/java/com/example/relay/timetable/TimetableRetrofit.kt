@@ -15,7 +15,7 @@ interface TimetableRetrofit {
         @Path("clubIdx") clubIdx:Int
     ) : Call<GroupTimetableRes>
 
-    @POST("clubs/member-status/{clubIdx}\n")
+    @POST("clubs/member-status/{clubIdx}")
     fun postMyTimetableReq(
         @Path("clubIdx") clubIdx:Int,
         @Body timeTables: MySchedulesReq

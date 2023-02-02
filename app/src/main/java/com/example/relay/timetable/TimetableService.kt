@@ -34,8 +34,8 @@ class TimetableService(val timetableInterface: TimetableInterface) {
         retrofit.getGroupTimetablesReq(clubIdx).enqueue((object : retrofit2.Callback<GroupTimetableRes>{
             override fun onResponse(call: Call<GroupTimetableRes>, response: Response<GroupTimetableRes>) {
                 if (response.isSuccessful) { // response.code == 200
-                    timetableInterface.onPostMyTimetableSuccess()
-                }else {
+                    timetableInterface.onGetGroupTimetableSuccess(response.body() as GroupTimetableRes)
+                } else {
                     // 전송은 성공 but 4xx 에러
                     Log.d("LogInLocal", "failure")
                 }
@@ -44,7 +44,7 @@ class TimetableService(val timetableInterface: TimetableInterface) {
             override fun onFailure(call: Call<GroupTimetableRes>, t: Throwable) {
                 Log.d("Timetable", t.message!!)
                 t.printStackTrace()
-                timetableInterface.onPostMyTimetableFailure(t.message ?: "통신 오류")
+                timetableInterface.onGetGroupTimetableFailure(t.message ?: "통신 오류")
             }
         }))
     }

@@ -1,12 +1,14 @@
 package com.example.relay.timetable
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
 import com.example.relay.databinding.FragmentTimetableEditBinding
@@ -51,16 +53,16 @@ class TimetableFragment: Fragment(), TimetableInterface {
 
         }
 
-        // TimetableService(this).tryGetGroupSchedules(1)
+        // TimetableService(this).tryGetGroupSchedules(26)
 
-        scheduleList.apply {
+        /*scheduleList.apply {
             add(Schedule("라나", 1, "1:00", "8:00", 0, "20"))
             add(Schedule("라나", 2, "5:00", "10:00", 0, "20"))
             add(Schedule("라나", 4, "13:00", "14:00", 0, "20"))
             add(Schedule("라나", 5, "9:00", "5:00", 0, "20"))
             add(Schedule("라나", 6, "12:00", "17:00", 0, "20"))
             add(Schedule("라나", 0, "11:00", "20:00", 0, "20"))
-        }
+        }*/
 
         ondPostMyTimetableSuccess(scheduleList)
     }
