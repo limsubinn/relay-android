@@ -7,10 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
 import com.example.relay.group.GetClubListInterface
 import com.example.relay.group.GetClubListService
@@ -89,15 +92,12 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.rvGroupAll.adapter = listAdapter
         binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)
 
-        if (res != null) {
-            clubList.addAll(res)
-        }
+//        if (res != null) {
+//            clubList.addAll(res)
+//        }
+//
+//        listAdapter.notifyDataSetChanged()
 
-        listAdapter.notifyDataSetChanged()
-
-        if (listAdapter.itemCount == 0) {
-            Toast.makeText(activity, "검색된 결과가 없습니다.", Toast.LENGTH_SHORT).show()
-        }
 
         // 리사이클러뷰 아이템 클릭 이벤트
         listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
@@ -115,6 +115,49 @@ class GroupListFragment: Fragment(), GetClubListInterface {
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
         })
+
+        // 모집 상태
+        val recruitList = listOf("전체", "모집중", "모집완료")
+        val recruitAdapter = activity?.let {
+            ArrayAdapter<String>(
+                it,
+                R.layout.spinner_item,
+                recruitList
+            )
+        }
+
+        binding.spRecruitStatus.adapter = recruitAdapter
+        binding.spRecruitStatus.setSelection(0)
+        binding.spRecruitStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                clubList.clear()
+                if (p2 == 1) {
+                    res.forEach {
+                        if (it.recruitStatus == "recruiting") {
+                            clubList.add(it)
+                        }
+                    }
+                } else if (p2 == 2) {
+                    res.forEach {
+                        if (it.recruitStatus != "recruiting") {
+                            clubList.add(it)
+                        }
+                    }
+                } else {
+                    clubList.addAll(res)
+                }
+                listAdapter.notifyDataSetChanged()
+
+                if (listAdapter.itemCount == 0) {
+                    Toast.makeText(activity, "검색된 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
+            }
+
+        }
 
     }
 
