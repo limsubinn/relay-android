@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,8 +20,8 @@ import com.example.relay.group.GetUserClubInterface
 import com.example.relay.group.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.ui.MainActivity
-import kotlinx.android.synthetic.main.dialog_group_create.view.*
-
+import kotlinx.android.synthetic.main.dialog_goal_time.view.*
+import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 
 class GroupCreateFragment: Fragment(), GetUserClubInterface {
     private var _binding: FragmentGroupCreateBinding? = null
@@ -73,10 +74,11 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
 
         // 목표치 설정 (type)
         binding.btnGoalType.setOnClickListener {
-            val dialogView = layoutInflater.inflate(R.layout.dialog_group_create, null)
+            val dialogView = layoutInflater.inflate(R.layout.dialog_goal_type, null)
             val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
             alertDialog?.setView(dialogView)
+            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             alertDialog?.show()
 
             val itemView = dialogView.list_dialog_item
@@ -90,15 +92,55 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                     position,
                     id ->
                 binding.tvGoalType.text = itemView.adapter.getItem(position).toString()
+                if (position == 0) {
+                    binding.tvGoalValue.text = "----"
+                } else if (position == 1) {
+                    binding.tvGoalValue.text = "00 : 00 : 00"
+                } else {
+                    binding.tvGoalValue.text = "00 : 00"
+                }
                 alertDialog?.dismiss()
             }
-//            dialogView.list_dialog_item.setOnItemClickListener { adapterView, view, i, l ->
-//                binding.goalType.text = getText(i)
-//                alertDialog?.dismiss()
-//            }
+        }
 
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+        // 목표치 설정 (value)
+        binding.btnGoalValue.setOnClickListener {
+            if (binding.tvGoalType.text.equals("시간")) {
+                val dialogView = layoutInflater.inflate(R.layout.dialog_goal_time, null)
+                val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+                alertDialog?.setView(dialogView)
+                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDialog?.show()
+
+                // 최대, 최소값 설정
+                dialogView.np_hour.minValue = 0
+                dialogView.np_hour.maxValue = 23
+                dialogView.np_min.minValue = 0
+                dialogView.np_min.maxValue = 59
+                dialogView.np_sec.minValue = 0
+                dialogView.np_sec.maxValue = 59
+
+                // 기본값 설정
+                dialogView.np_hour.value = Integer.parseInt(binding.tvGoalValue.text.substring(0, 2))
+                dialogView.np_min.value = Integer.parseInt(binding.tvGoalValue.text.substring(5, 7))
+                dialogView.np_sec.value = Integer.parseInt(binding.tvGoalValue.text.substring(10, 12))
+
+                // 저장 버튼
+                dialogView.btn_save.setOnClickListener {
+                    var hour = dialogView.np_hour.value.toString().padStart(2, '0')
+                    var min = dialogView.np_min.value.toString().padStart(2, '0')
+                    var sec = dialogView.np_sec.value.toString().padStart(2, '0')
+
+                    binding.tvGoalValue.text = "${hour} : ${min} : ${sec}"
+                    alertDialog?.dismiss()
+                }
+
+                // 취소 버튼
+                dialogView.btn_cancel.setOnClickListener {
+                    alertDialog?.dismiss()
+                }
+            }
         }
 
 
