@@ -225,6 +225,8 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             alertDialog?.show()
 
+            dialogView.tv_people.text = "레벨"
+
             // 최대, 최소값, 기본값 설정
             val levelList = arrayOf("초보 러너", "중급 러너", "프로 러너")
 

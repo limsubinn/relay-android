@@ -36,7 +36,7 @@
 
         <NumberPicker
             android:id="@+id/np_people"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="120dp"
             android:keepScreenOn="false"
             android:solidColor="@color/white"
