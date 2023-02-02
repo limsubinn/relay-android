@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.dialog_goal_time.view.*
 import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_cancel
 import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_save
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
+import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 
 class GroupCreateFragment: Fragment(), GetUserClubInterface {
     private var _binding: FragmentGroupCreateBinding? = null
@@ -184,6 +185,34 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                 dialogView.btn_cancel.setOnClickListener {
                     alertDialog?.dismiss()
                 }
+            }
+        }
+
+        // 인원수 설정
+        binding.btnPeopleCnt.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_people_cnt, null)
+            val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+            alertDialog?.setView(dialogView)
+            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog?.show()
+
+            // 최대, 최소값 설정
+            dialogView.np_people.minValue = 1
+            dialogView.np_people.maxValue = 8
+
+            // 기본값 설정
+            dialogView.np_people.value = Integer.parseInt(binding.tvPeopleCnt.text.toString())
+
+            // 저장 버튼
+            dialogView.btn_save.setOnClickListener {
+                binding.tvPeopleCnt.text = dialogView.np_people.value.toString()
+                alertDialog?.dismiss()
+            }
+
+            // 취소 버튼
+            dialogView.btn_cancel.setOnClickListener {
+                alertDialog?.dismiss()
             }
         }
 
