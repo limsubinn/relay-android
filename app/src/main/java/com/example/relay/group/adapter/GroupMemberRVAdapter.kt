@@ -3,13 +3,13 @@ package com.example.relay.group.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.relay.databinding.ItemGroupMemberBinding
+import com.example.relay.databinding.ItemRvGroupMemberBinding
 import com.example.relay.group.models.Member
 
 class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerView.Adapter<GroupMemberRVAdapter.DataViewHolder>() {
 
     // ViewHolder 객체
-    inner class DataViewHolder(val binding: ItemGroupMemberBinding) :
+    inner class DataViewHolder(val binding: ItemRvGroupMemberBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Member) {
             binding.memberName.text = data.name
@@ -20,7 +20,7 @@ class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerVie
     // ViewHolder 만들어질 때 실행할 동작
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
         val binding =
-            ItemGroupMemberBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemRvGroupMemberBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DataViewHolder(binding)
     }
 

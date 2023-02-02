@@ -7,6 +7,7 @@
     android:background="@drawable/bg_corner_round">
 
     <ListView
+        android:id="@+id/list_dialog_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:divider="@color/black"
