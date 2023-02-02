@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.relay.databinding.ItemGroupListBinding
+import com.example.relay.databinding.ItemRvGroupListBinding
 import com.example.relay.group.models.GroupListResult
 
 class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerView.Adapter<GroupListRVAdapter.DataViewHolder>() {
@@ -23,7 +23,7 @@ class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): Recy
     }
 
     // ViewHolder 객체
-    inner class DataViewHolder(val binding: ItemGroupListBinding) :
+    inner class DataViewHolder(val binding: ItemRvGroupListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: GroupListResult) {
             binding.teamName.text = data.name
@@ -44,7 +44,7 @@ class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): Recy
     // ViewHolder 만들어질 때 실행할 동작
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
         val binding =
-            ItemGroupListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ItemRvGroupListBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DataViewHolder(binding)
     }
 
