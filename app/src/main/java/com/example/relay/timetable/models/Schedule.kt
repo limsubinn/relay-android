@@ -2,8 +2,9 @@ package com.example.relay.timetable.models
 
 data class Schedule(
     val userName: String,
-    val day:String,
+    val day:Int,
     val startTime: String,
     val endTime: String,
-    val goal: String
+    val goal: Int,
+    val goalType: String
 )

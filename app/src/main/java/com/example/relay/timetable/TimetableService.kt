@@ -3,16 +3,15 @@ package com.example.relay.timetable
 import android.util.Log
 import com.example.relay.ApplicationClass
 import com.example.relay.BaseResponse
-import com.example.relay.timetable.models.GroupTimetableRes
-import com.example.relay.timetable.models.Schedule
+import com.example.relay.timetable.models.*
 import retrofit2.Call
 import retrofit2.Response
 
 class TimetableService(val timetableInterface: TimetableInterface) {
     private val retrofit: TimetableRetrofit = ApplicationClass.sRetrofit.create(TimetableRetrofit::class.java)
 
-    fun tryPostMySchedules(clubIdx:Int, timetableIdx: Int, scheduleList: MutableList<Schedule>){
-        retrofit.postMyTimetable(clubIdx, timetableIdx, scheduleList).enqueue((object : retrofit2.Callback<BaseResponse> {
+    fun tryPostMySchedules(clubIdx:Int, scheduleList: MutableList<Schedule>){
+        retrofit.postMyTimetableReq(clubIdx, MySchedulesReq(scheduleList)).enqueue((object : retrofit2.Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) { // response.code == 200
                     timetableInterface.onPostMyTimetableSuccess()
@@ -32,7 +31,7 @@ class TimetableService(val timetableInterface: TimetableInterface) {
     }
 
     fun tryGetGroupSchedules(clubIdx: Int){
-        retrofit.getGroupTimetables(clubIdx).enqueue((object : retrofit2.Callback<GroupTimetableRes>{
+        retrofit.getGroupTimetablesReq(clubIdx).enqueue((object : retrofit2.Callback<GroupTimetableRes>{
             override fun onResponse(call: Call<GroupTimetableRes>, response: Response<GroupTimetableRes>) {
                 if (response.isSuccessful) { // response.code == 200
                     timetableInterface.onPostMyTimetableSuccess()

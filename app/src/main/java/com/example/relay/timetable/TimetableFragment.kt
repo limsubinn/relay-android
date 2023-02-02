@@ -54,12 +54,12 @@ class TimetableFragment: Fragment(), TimetableInterface {
         // TimetableService(this).tryGetGroupSchedules(1)
 
         scheduleList.apply {
-            add(Schedule("라나","월", "1:00", "8:00", "20"))
-            add(Schedule("라나","화", "5:00", "10:00", "20"))
-            add(Schedule("라나","수", "13:00", "14:00", "20"))
-            add(Schedule("라나","목", "9:00", "5:00", "20"))
-            add(Schedule("라나","금", "12:00", "17:00", "20"))
-            add(Schedule("라나","일", "11:00", "20:00", "20"))
+            add(Schedule("라나", 0, "1:00", "8:00", 0, "20"))
+            add(Schedule("라나", 1, "5:00", "10:00", 0, "20"))
+            add(Schedule("라나", 2, "13:00", "14:00", 0, "20"))
+            add(Schedule("라나", 4, "9:00", "5:00", 0, "20"))
+            add(Schedule("라나", 5, "12:00", "17:00", 0, "20"))
+            add(Schedule("라나", 7, "11:00", "20:00", 0, "20"))
         }
 
         ondPostMyTimetableSuccess(scheduleList)
@@ -77,7 +77,7 @@ class TimetableFragment: Fragment(), TimetableInterface {
             val schedule = ScheduleEntity(
                 1, //originId,
                 item.userName, //scheduleName,
-                dayToInt(item.day), //ScheduleDay object (MONDAY ~ SUNDAY)
+                item.day, //ScheduleDay object (MONDAY ~ SUNDAY)
                 item.startTime, //startTime format: "HH:mm"
                 item.endTime, //endTime  format: "HH:mm"
                 "#F54242", //backgroundColor (optional)
@@ -97,7 +97,7 @@ class TimetableFragment: Fragment(), TimetableInterface {
             "금" -> 4
             "토" -> 5
             "일" -> 6
-            else -> 0
+            else -> 500
         }
         return day
     }
