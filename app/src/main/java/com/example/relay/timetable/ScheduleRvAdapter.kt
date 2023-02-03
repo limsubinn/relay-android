@@ -18,10 +18,11 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     private val context = context
     inner class DataViewHolder(private val binding: ItemRvEditTableBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bind(data: Schedule){
-                binding.etTmpDay.setText(dayToString(data.day))
+                binding.btnDay.text = dayToString(data.day)
                 binding.btnStart.text = data.startTime
                 binding.btnEnd.text = data.endTime
-                binding.etTmpGoal.setText(data.goal.toString())
+                binding.btnGoalType.text = data.goalType
+                binding.btnGoal.text = data.goal.toString()
 
                 binding.btnRemove.setOnClickListener{
                     removeItem(adapterPosition)
@@ -74,8 +75,8 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
         return dataList
     }
 
-    private fun dayToString(daySt:Int): String{
-        var day = when(daySt){
+    private fun dayToString(dayInt:Int): String{
+        var day = when(dayInt){
             1 -> "월"
             2 -> "화"
             3 -> "수"
@@ -86,5 +87,14 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             else -> ""
         }
         return day
+    }
+
+    private fun goalTypeToString(goalType:Int): String{
+        var type = when(goalType){
+            0 -> "시간"
+            1 -> "거리"
+            else -> "목표없음"
+       }
+        return type
     }
 }
