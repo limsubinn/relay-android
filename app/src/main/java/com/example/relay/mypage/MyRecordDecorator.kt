@@ -2,6 +2,7 @@ package com.example.relay.mypage
 
 import android.content.Context
 import android.graphics.Color
+import android.text.style.BackgroundColorSpan
 import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import com.example.relay.R
@@ -140,5 +141,32 @@ class Decorator6(value: Date?, context: Context) :
 
     override fun decorate(view: DayViewFacade) {
         view.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.decorator_state6)!!)
+    }
+}
+
+class SelectDecorator(value: Date?, context: Context) :
+    DayViewDecorator {
+
+    private val date: CalendarDay
+    private val calendar = Calendar.getInstance()
+    var context: Context
+
+    init {
+        date = CalendarDay.from(value)
+        this.context = context
+    }
+
+    override fun shouldDecorate(day: CalendarDay): Boolean {
+        day.copyTo(calendar)
+        return day == date
+    }
+
+    override fun decorate(view: DayViewFacade) {
+        view.setSelectionDrawable(
+            ContextCompat.getDrawable(
+                context,
+                R.drawable.decorator_select
+            )!!
+        )
     }
 }

@@ -39,7 +39,11 @@ class MyRecordFragment: Fragment() {
         dayDecorator = activity?.let { Decorator1(date, it) }
         binding.calendarView.addDecorators(dayDecorator)
 
-
+        // 선택 날짜 데코레이터 달기
+        binding.calendarView.setOnDateChangedListener { widget, date, selected ->
+            val selDate = date.date
+            binding.calendarView.addDecorator(SelectDecorator(selDate, requireActivity()))
+        }
     }
 
     override fun onDestroyView() {
