@@ -16,12 +16,11 @@ class GetUserClubService(val mainInterface: GetUserClubInterface) {
         retrofit.getUserProfileClubRes(id).enqueue(object : Callback<GroupAcceptedResponse>{
             override fun onResponse(call: Call<GroupAcceptedResponse>, response: Response<GroupAcceptedResponse>) {
                 Log.d("GroupAcceptedResponse", "success")
-                // Log.d("UserProfileResponse", response.body().toString())
 
                 if (response.code() == 200) {
                     mainInterface.onGetUserClubSuccess(response.body() as GroupAcceptedResponse)
                 } else {
-                    Log.d("GroupAcceptedResponse", "4xx error")
+                    Log.d("GroupAcceptedResponse", response.message())
                     // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
@@ -43,12 +42,11 @@ class GetClubListService(val listInterface: GetClubListInterface) {
         retrofit.getClubListRes(search).enqueue(object : Callback<GroupListResponse> {
             override fun onResponse(call: Call<GroupListResponse>, response: Response<GroupListResponse>) {
                 Log.d("GroupListResponse", "success")
-                // Log.d("UserProfileResponse", response.body().toString())
 
                 if (response.code() == 200) {
                     listInterface.onGetClubListSuccess(response.body() as GroupListResponse)
                 } else {
-                    Log.d("GroupListResponse", "4xx error")
+                    Log.d("GroupListResponse", response.message())
                     // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }

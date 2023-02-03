@@ -2,12 +2,11 @@ package com.example.relay.mypage
 
 import android.util.Log
 import com.example.relay.ApplicationClass
-import com.example.relay.ui.models.UserProfileListResponse
+import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
 
 class MypageService(val mypageInterface: MypageInterface) {
 
@@ -22,7 +21,7 @@ class MypageService(val mypageInterface: MypageInterface) {
                 if (response.code() == 200) {
                     mypageInterface.onGetUserProfileSuccess(response.body() as UserProfileResponse)
                 } else {
-                    Log.d("UserProfileResponse", "4xx error")
+                    Log.d("UserProfileResponse", response.message())
                     // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
@@ -31,6 +30,27 @@ class MypageService(val mypageInterface: MypageInterface) {
                 Log.d("UserProfileResponse", "fail")
                 t.printStackTrace()
                 mypageInterface.onGetUserProfileFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+
+    fun tryGetDailyRecord(date: String){
+        retrofit.getDailyRes(date).enqueue(object : Callback<DailyRecordResponse>{
+            override fun onResponse(call: Call<DailyRecordResponse>, response: Response<DailyRecordResponse>) {
+                Log.d("DailyRecordResponse", "success")
+
+                if (response.code() == 200) {
+                    mypageInterface.onGetDailyRecordSuccess(response.body() as DailyRecordResponse)
+                } else {
+                    Log.d("DailyRecordResponse", response.message())
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
+            }
+
+            override fun onFailure(call: Call<DailyRecordResponse>, t: Throwable) {
+                Log.d("DailyRecordResponse", "fail")
+                t.printStackTrace()
+                mypageInterface.onGetDailyRecordFailure(t.message ?: "통신 오류")
             }
         })
     }

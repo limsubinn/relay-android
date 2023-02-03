@@ -3,6 +3,7 @@ package com.example.relay.mypage
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +14,7 @@ import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
+import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.ui.models.UserProfileListResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.ui.MainActivity
@@ -140,11 +142,18 @@ class MypageFragment: Fragment(), MypageInterface {
         val userIdx = prefs.getLong("userIdx", 0L)
         val name = prefs.getString("name", "")
 
+        // 프로필 불러오기
         if (name != null) {
             if ((userIdx != 0L) && (name.isNotEmpty())) {
                 MypageService(this).tryGetUserProfile(userIdx, name)
             }
         }
+
+        // 기록 불러오기
+        var yyyy = year.toString()
+        var mm = (month+1).toString().padStart(2, '0')
+        var dd = date.toString().padStart(2, '0')
+        MypageService(this).tryGetDailyRecord("${yyyy}-${mm}-${dd}")
     }
 
     override fun onDestroyView() {
@@ -208,5 +217,13 @@ class MypageFragment: Fragment(), MypageInterface {
 
     override fun onGetUserProfileFailure(message: String) {
         Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onGetDailyRecordSuccess(response: DailyRecordResponse) {
+        Log.d("record", response.result.toString())
+    }
+
+    override fun onGetDailyRecordFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

@@ -1,5 +1,6 @@
 package com.example.relay.mypage
 
+import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.ui.models.UserProfileListResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import retrofit2.Call
@@ -13,4 +14,9 @@ interface MypageRetrofit {
         @Path("profileIdx") profileIdx: Long,
         @Query("name") name: String
     ) : Call<UserProfileResponse>
+
+    @GET("/record/daily")
+    fun getDailyRes(
+        @Query("date") date: String
+    ) : Call<DailyRecordResponse>
 }
