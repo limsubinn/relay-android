@@ -25,7 +25,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
     private val binding get() = viewBinding!!
     private val day = arrayOf("일", "월", "화", "수", "목", "금", "토")
     private val myColor = "#FE0000"
-    private val colorCode =  arrayOf("#FE0000, #01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
+    private val colorCode =  arrayOf("#FE0000", "#01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
     private var clubIdx: Long = 0
     val scheduleList = mutableListOf<Schedule>()
 
