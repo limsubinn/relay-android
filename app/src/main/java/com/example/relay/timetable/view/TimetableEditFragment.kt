@@ -34,12 +34,12 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         // 테스트 더미
         scheduleList.apply {
-            add(Schedule("라나", 0, "1:00", "8:00", 0, "20"))
-            add(Schedule("라나", 1, "5:00", "10:00", 0, "20"))
-            add(Schedule("라나", 2, "13:00", "14:00", 0, "20"))
-            add(Schedule("라나", 4, "9:00", "5:00", 0, "20"))
-            add(Schedule("라나", 5, "12:00", "17:00", 0, "20"))
-            add(Schedule("라나", 7, "11:00", "20:00", 0, "20"))
+            add(Schedule(0, "1:00", "8:00", 0, "20"))
+            add(Schedule(1, "5:00", "10:00", 0, "20"))
+            add(Schedule(2, "13:00", "14:00", 0, "20"))
+            add(Schedule(4, "9:00", "5:00", 0, "20"))
+            add(Schedule(5, "12:00", "17:00", 0, "20"))
+            add(Schedule(7, "11:00", "20:00", 0, "20"))
         }
 
         binding.containerRv.adapter = scheduleRvAdapter
@@ -52,7 +52,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         binding.btnSave.setOnClickListener{
             // 테스트 코드
             scheduleList = scheduleRvAdapter.getUpdatedSchedules()
-            TimetableService(this).tryPostMySchedules(1, scheduleList)
+            // TimetableService(this).tryPostMySchedules(1, scheduleList)
 
             val emptyFragment = TimetableEmptyFragment()
             parentFragmentManager

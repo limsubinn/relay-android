@@ -1,7 +1,6 @@
 package com.example.relay.timetable.models
 
 data class Schedule(
-    val userName: String,
     val day:Int,
     val startTime: String,
     val endTime: String,

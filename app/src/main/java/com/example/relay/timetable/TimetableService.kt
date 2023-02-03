@@ -10,7 +10,7 @@ import retrofit2.Response
 class TimetableService(val timetableInterface: TimetableInterface) {
     private val retrofit: TimetableRetrofit = ApplicationClass.sRetrofit.create(TimetableRetrofit::class.java)
 
-    fun tryPostMySchedules(clubIdx:Int, scheduleList: MutableList<Schedule>){
+    fun tryPostMySchedules(clubIdx:Long, scheduleList: MutableList<Schedule>){
         retrofit.postMyTimetableReq(clubIdx, MySchedulesReq(scheduleList)).enqueue((object : retrofit2.Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) { // response.code == 200
@@ -30,7 +30,7 @@ class TimetableService(val timetableInterface: TimetableInterface) {
         }))
     }
 
-    fun tryGetGroupSchedules(clubIdx: Int){
+    fun tryGetGroupSchedules(clubIdx: Long){
         retrofit.getGroupTimetablesReq(clubIdx).enqueue((object : retrofit2.Callback<GroupTimetableRes>{
             override fun onResponse(call: Call<GroupTimetableRes>, response: Response<GroupTimetableRes>) {
                 if (response.isSuccessful) { // response.code == 200

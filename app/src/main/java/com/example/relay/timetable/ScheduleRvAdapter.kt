@@ -60,13 +60,13 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
     fun addEmptyItem(){
         // val day = dayToString()
-        dataList.add(Schedule("",0,"","", 0, ""))
+        dataList.add(Schedule(0,"9:00","9:30",1, "00:30"))
         notifyItemInserted(dataList.size)
         notifyItemRangeChanged(dataList.size, getItemCount());
     }
 
     fun addItem(name: String, day:Int, start:String, end:String, goal:Int, goalType:String){
-        dataList.add(Schedule(name, day, start, end, goal, goalType))
+        dataList.add(Schedule(day, start, end, goal, goalType))
         notifyItemInserted(dataList.size)
         notifyItemRangeChanged(dataList.size, getItemCount());
     }
