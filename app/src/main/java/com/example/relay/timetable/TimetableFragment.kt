@@ -53,16 +53,16 @@ class TimetableFragment: Fragment(), TimetableInterface {
 
         }
 
-        // TimetableService(this).tryGetGroupSchedules(26)
+        // TimetableService(this).tryGetGroupSchedules(25)
 
-        /*scheduleList.apply {
+        scheduleList.apply {
             add(Schedule("라나", 1, "1:00", "8:00", 0, "20"))
             add(Schedule("라나", 2, "5:00", "10:00", 0, "20"))
             add(Schedule("라나", 4, "13:00", "14:00", 0, "20"))
             add(Schedule("라나", 5, "9:00", "5:00", 0, "20"))
             add(Schedule("라나", 6, "12:00", "17:00", 0, "20"))
             add(Schedule("라나", 0, "11:00", "20:00", 0, "20"))
-        }*/
+        }
 
         ondPostMyTimetableSuccess(scheduleList)
     }
