@@ -150,10 +150,10 @@ class MypageFragment: Fragment(), MypageInterface {
         }
 
         // 기록 불러오기
-        var yyyy = year.toString()
-        var mm = (month+1).toString().padStart(2, '0')
-        var dd = date.toString().padStart(2, '0')
-        MypageService(this).tryGetDailyRecord("${yyyy}-${mm}-${dd}")
+//        var yyyy = year.toString()
+//        var mm = (month+1).toString().padStart(2, '0')
+//        var dd = date.toString().padStart(2, '0')
+//        MypageService(this).tryGetDailyRecord("${yyyy}-${mm}-${dd}")
     }
 
     override fun onDestroyView() {
