@@ -4,5 +4,5 @@ import com.example.relay.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class GroupTimetableRes(
-    @SerializedName("result") val result: GroupTimetableResult
+    @SerializedName("result") val result: ArrayList<GroupTimetableList>
 ) : BaseResponse()

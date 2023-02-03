@@ -1,6 +1,8 @@
 package com.example.relay.timetable.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,8 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
     private var viewBinding: FragmentTimetableBinding? = null
     private val binding get() = viewBinding!!
     private val day = arrayOf("일", "월", "화", "수", "목", "금", "토")
+    private val myColor = "#FE0000"
+    private val colorCode =  arrayOf("#FE0000, #01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
     private var clubIdx: Long = 0
     val scheduleList = mutableListOf<Schedule>()
 
@@ -35,6 +39,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
             initTable(day)
             baseSetting(20, 40, 60)
         }
+
         return binding.root
     }
 
@@ -54,26 +59,15 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
 
         }
 
-        // clubIdx 받기
-        val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
+        /* clubIdx 받기
+         val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)    // prefs 저장된 값 없음, 임의값은 동작
         if (userIdx != 0L) {
             GetUserClubService(this).tryGetUserClub(userIdx)
         } else {
             Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
-        }
+        } */
 
-        TimetableService(this).tryGetGroupSchedules(clubIdx)
-
-        scheduleList.apply {
-            add(Schedule(1, "1:00", "8:00", 0, "20"))
-            add(Schedule(2, "5:00", "10:00", 0, "20"))
-            add(Schedule(4, "13:00", "14:00", 0, "20"))
-            add(Schedule(5, "9:00", "5:00", 0, "20"))
-            add(Schedule(6, "12:00", "17:00", 0, "20"))
-            add(Schedule(0, "11:00", "20:00", 0, "20"))
-        }
-
-        ondPostMyTimetableSuccess(scheduleList)
+        GetUserClubService(this).tryGetUserClub(59L)
     }
 
     // 메모리 누수 방지 (fragment 의 생명주기 > view 의 생명주기)
@@ -82,25 +76,29 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         viewBinding = null
     }
 
-    fun ondPostMyTimetableSuccess(scheduleList: MutableList<Schedule>){
-        val sList: ArrayList<ScheduleEntity> = ArrayList()
-        for (item in scheduleList) {
-            val schedule = ScheduleEntity(
-                1, //originId,
-                "라나", //scheduleName,
-                item.day, //ScheduleDay object (MONDAY ~ SUNDAY)
-                item.startTime, //startTime format: "HH:mm"
-                item.endTime, //endTime  format: "HH:mm"
-                "#F54242", //backgroundColor (optional)
-                "#FFFFFF" //textColor (optional)
-            )
-            sList.add(schedule)
-        }
-        binding.timetable.updateSchedules(sList)
-    }
-
+    @SuppressLint("LogNotTimber")
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
-
+        if (response.code == 1000){
+            val clubMemList = response.result
+            val sList: ArrayList<ScheduleEntity> = ArrayList()
+            for ((index, mem) in clubMemList.withIndex()){
+                val color = colorCode[index]
+                for (s in mem.timeTables){
+                    val schedule = ScheduleEntity(
+                        1,
+                        mem.nickName,
+                        s.day.toInt(),
+                        s.start,
+                        s.end,
+                        color,
+                        "#FFFFFF"
+                    )
+                    sList.add(schedule)
+                }
+            }
+            binding.timetable.updateSchedules(sList)
+        } else
+            Log.d("Timetable", "onGetGroupTimetableSuccess: code-${response.code}")
     }
 
     override fun onGetGroupTimetableFailure(message: String) {
@@ -115,9 +113,13 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         TODO("Not yet implemented")
     }
 
+    @SuppressLint("LogNotTimber")
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code == 1000)
+        if (response.code == 1000) {
             clubIdx = response.result.clubIdx
+            TimetableService(this).tryGetGroupSchedules(clubIdx)
+            Log.d("Timetable", "onGetUserClubSuccess: clubIdx-$clubIdx")
+        }
     }
 
     override fun onGetUserClubFailure(message: String) {
