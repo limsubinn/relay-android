@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="280dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".timetable.TimetableEditFragment"
+    tools:context=".timetable.view.TimetableEditFragment"
     android:background="@drawable/two_rounded_shape">
 
 

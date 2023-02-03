@@ -13,9 +13,8 @@ import com.example.relay.group.view.*
 import com.example.relay.mypage.MainService
 import com.example.relay.mypage.MyRecordFragment
 import com.example.relay.mypage.MypageFragment
-import com.example.relay.mypage.MypageService
 import com.example.relay.running.RunningFragment
-import com.example.relay.timetable.TimetableFragment
+import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
 import com.google.android.material.bottomsheet.BottomSheetBehavior

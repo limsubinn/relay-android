@@ -1,4 +1,4 @@
-package com.example.relay.timetable
+package com.example.relay.timetable.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

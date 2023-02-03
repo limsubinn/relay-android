@@ -1,22 +1,16 @@
-package com.example.relay.timetable
+package com.example.relay.timetable.view
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
-import com.example.relay.databinding.FragmentTimetableEditBinding
+import com.example.relay.timetable.TimetableInterface
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.Schedule
-import com.islandparadise14.mintable.model.ScheduleDay
 import com.islandparadise14.mintable.model.ScheduleEntity
-import kotlinx.android.synthetic.main.fragment_timetable_edit.*
 
 class TimetableFragment: Fragment(), TimetableInterface {
     private var viewBinding: FragmentTimetableBinding? = null

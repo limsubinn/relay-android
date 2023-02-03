@@ -80,7 +80,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:name="com.example.relay.timetable.TimetableEmptyFragment"
+        android:name="com.example.relay.timetable.view.TimetableEmptyFragment"
         tools:layout="@layout/fragment_timetable_empty" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
