@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.relay.databinding.FragmentMyRecordBinding
+import com.prolificinteractive.materialcalendarview.DayViewDecorator
+import java.text.SimpleDateFormat
 import java.util.*
+
 
 class MyRecordFragment: Fragment() {
     private var _binding: FragmentMyRecordBinding? = null
@@ -14,6 +17,8 @@ class MyRecordFragment: Fragment() {
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+
+    private var dayDecorator: DayViewDecorator? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,6 +31,14 @@ class MyRecordFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val formatter = SimpleDateFormat("yyyy.MM.dd")
+        val date = formatter.parse("2023.02.03")
+
+        // 데코레이터 테스트
+        dayDecorator = activity?.let { Decorator1(date, it) }
+        binding.calendarView.addDecorators(dayDecorator)
+
 
     }
 

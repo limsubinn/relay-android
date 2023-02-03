@@ -19,4 +19,12 @@
     <color name="et_purple">#7B1FA2</color>
     <color name="et_focus_purple">#680093</color>
     <color name="main">#FFFF3E00</color>
+
+    <!-- 달력 표시 색상 -->
+    <color name="state1">#ffece6</color>
+    <color name="state2">#ffc5b2</color>
+    <color name="state3">#ff9f80</color>
+    <color name="state4">#ff6533</color>
+    <color name="state5">#ff521a</color>
+    <color name="state6">#ff3f02</color>
 </resources>
