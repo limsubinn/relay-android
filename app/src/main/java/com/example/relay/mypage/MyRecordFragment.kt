@@ -6,6 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.relay.databinding.FragmentMyRecordBinding
+import com.example.relay.mypage.decorator.Decorator1
+import com.example.relay.mypage.decorator.SelectDecorator
+import com.example.relay.mypage.decorator.SelectDecorator1
 import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import java.text.SimpleDateFormat
 import java.util.*
@@ -32,17 +35,27 @@ class MyRecordFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val formatter = SimpleDateFormat("yyyy.MM.dd")
-        val date = formatter.parse("2023.02.03")
+        val formatter = SimpleDateFormat("yyyy-MM-dd")
+        val setDate = formatter.parse("2023-02-03")
 
         // 데코레이터 테스트
-        dayDecorator = activity?.let { Decorator1(date, it) }
+        dayDecorator = activity?.let { Decorator1(setDate, it) }
         binding.calendarView.addDecorators(dayDecorator)
 
         // 선택 날짜 데코레이터 달기
         binding.calendarView.setOnDateChangedListener { widget, date, selected ->
             val selDate = date.date
-            binding.calendarView.addDecorator(SelectDecorator(selDate, requireActivity()))
+            if (selDate == setDate) {
+                activity?.let {
+                    binding.calendarView.removeDecorators()
+                    binding.calendarView.addDecorator(SelectDecorator1(selDate, it))
+                }
+            } else {
+                activity?.let {
+                    binding.calendarView.addDecorator(SelectDecorator(selDate, it))
+                    binding.calendarView.addDecorator(Decorator1(setDate, it))
+                }
+            }
         }
     }
 
