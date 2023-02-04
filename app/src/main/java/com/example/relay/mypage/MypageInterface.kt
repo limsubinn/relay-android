@@ -1,5 +1,6 @@
 package com.example.relay.mypage
 
+import com.example.relay.mypage.models.ChangePwdResponse
 import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.mypage.models.UserProfileResponse
 
@@ -9,4 +10,9 @@ interface MypageInterface {
 
     fun onGetDailyRecordSuccess(response: DailyRecordResponse)
     fun onGetDailyRecordFailure(message: String)
+}
+
+interface MySettingInterface {
+    fun onPatchUserPwdSuccess(response: ChangePwdResponse)
+    fun onPatchUserPwdFailure(message: String)
 }
