@@ -12,8 +12,8 @@ class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerVie
     inner class DataViewHolder(val binding: ItemRvGroupMemberBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Member) {
-            binding.memberName.text = data.name
-            binding.memberIntro.text = data.info
+            binding.memberName.text = data.profile.nickname
+            binding.memberIntro.text = data.profile.statusMsg
         }
     }
 
