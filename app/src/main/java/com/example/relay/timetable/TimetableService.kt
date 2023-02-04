@@ -17,7 +17,7 @@ class TimetableService(val timetableInterface: TimetableInterface) {
                     timetableInterface.onPostMyTimetableSuccess()
                 }else {
                     // 전송은 성공 but 4xx 에러
-                    Log.d("LogInLocal", "failure")
+                    Log.d("Timetable", "failure")
                 }
             }
 
@@ -33,15 +33,30 @@ class TimetableService(val timetableInterface: TimetableInterface) {
     fun tryGetGroupSchedules(clubIdx: Long){
         retrofit.getGroupTimetablesReq(clubIdx).enqueue((object : retrofit2.Callback<GroupTimetableRes>{
             override fun onResponse(call: Call<GroupTimetableRes>, response: Response<GroupTimetableRes>) {
-                if (response.isSuccessful) { // response.code == 200
+                if (response.isSuccessful)  // response.code == 200
                     timetableInterface.onGetGroupTimetableSuccess(response.body() as GroupTimetableRes)
-                } else {
-                    // 전송은 성공 but 4xx 에러
-                    Log.d("LogInLocal", "failure")
-                }
+                else
+                    Log.d("Timetable", "tryGetGroupSchedules failure")
             }
 
             override fun onFailure(call: Call<GroupTimetableRes>, t: Throwable) {
+                Log.d("Timetable", t.message!!)
+                t.printStackTrace()
+                timetableInterface.onGetGroupTimetableFailure(t.message ?: "통신 오류")
+            }
+        }))
+    }
+
+    fun tryGetMySchedules(profileIdx: Long){
+        retrofit.getMyTimetableReq(profileIdx).enqueue((object : retrofit2.Callback<MyTimetableRes>{
+            override fun onResponse(call: Call<MyTimetableRes>, response: Response<MyTimetableRes>) {
+                if (response.isSuccessful)  // response.code == 200
+                    timetableInterface.onGetMyTimetableSuccess(response.body() as MyTimetableRes)
+                else
+                    Log.d("Timetable", "tryGetMySchedules failure")
+            }
+
+            override fun onFailure(call: Call<MyTimetableRes>, t: Throwable) {
                 Log.d("Timetable", t.message!!)
                 t.printStackTrace()
                 timetableInterface.onGetGroupTimetableFailure(t.message ?: "통신 오류")

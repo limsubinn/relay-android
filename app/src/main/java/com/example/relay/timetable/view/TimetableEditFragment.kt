@@ -1,6 +1,7 @@
 package com.example.relay.timetable.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,11 +13,14 @@ import com.example.relay.timetable.ScheduleRvAdapter
 import com.example.relay.timetable.TimetableInterface
 import com.example.relay.timetable.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
+import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.models.Schedule
+import com.islandparadise14.mintable.model.ScheduleEntity
 
 class TimetableEditFragment : Fragment(), TimetableInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
+    private var scheduleList = mutableListOf<Schedule>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -29,7 +33,6 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        var scheduleList = mutableListOf<Schedule>()
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
         // 테스트 더미
@@ -76,6 +79,14 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
     }
 
     override fun onGetGroupTimetableFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetMyTimetableFailure(message: String) {
         TODO("Not yet implemented")
     }
 

@@ -14,7 +14,12 @@ interface TimetableRetrofit {
         @Path("clubIdx") clubIdx:Long
     ) : Call<GroupTimetableRes>
 
-    @POST("clubs/member-status/{clubIdx}")
+    @GET("/clubs/member-status/time-tables/{userProfileIdx}")
+    fun getMyTimetableReq(
+        @Path("userProfileIdx") userProfileIdx:Long
+    ) : Call<MyTimetableRes>
+
+    @POST("/clubs/member-status/{clubIdx}")
     fun postMyTimetableReq(
         @Path("clubIdx") clubIdx:Long,
         @Body timeTables: MySchedulesReq

@@ -1,6 +1,6 @@
 package com.example.relay.timetable.models
 
-data class GroupMemSchedule(
+data class MemSchedule(
     val timeTableIdx:Long,
     val day:Long,
     val start:String,

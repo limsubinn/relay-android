@@ -130,13 +130,4 @@
         android:background="@drawable/btn_back"
         style="?android:attr/borderlessButtonStyle" />
 
-    <EditText
-        android:id="@+id/et_tmp_goal"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
-        android:gravity="center"
-        app:layout_constraintStart_toEndOf="@id/btn_goal_type"
-        app:layout_constraintBottom_toBottomOf="@id/tv_goal"
-        android:layout_marginStart="20dp" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>
