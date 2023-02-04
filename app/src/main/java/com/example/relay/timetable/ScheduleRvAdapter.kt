@@ -52,6 +52,10 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
     override fun getItemCount(): Int = dataList.size
 
+    fun updateChange(){
+        notifyDataSetChanged()
+    }
+
     fun removeItem(position: Int){
         dataList.removeAt(position)
         notifyItemRemoved(position)
@@ -60,7 +64,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
     fun addEmptyItem(){
         // val day = dayToString()
-        dataList.add(Schedule(0,"9:00","9:30",1, "00:30"))
+        dataList.add(Schedule(0,"9:00","9:30",0, "목표없음"))
         notifyItemInserted(dataList.size)
         notifyItemRangeChanged(dataList.size, getItemCount());
     }

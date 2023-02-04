@@ -35,18 +35,9 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
-        // 테스트 더미
-        scheduleList.apply {
-            add(Schedule(0, "1:00", "8:00", 0, "20"))
-            add(Schedule(1, "5:00", "10:00", 0, "20"))
-            add(Schedule(2, "13:00", "14:00", 0, "20"))
-            add(Schedule(4, "9:00", "5:00", 0, "20"))
-            add(Schedule(5, "12:00", "17:00", 0, "20"))
-            add(Schedule(7, "11:00", "20:00", 0, "20"))
-        }
+        TimetableService(this).tryGetMySchedules(53)
 
         binding.containerRv.adapter = scheduleRvAdapter
-        binding.containerRv.layoutManager = LinearLayoutManager(context)
 
         binding.btnAdd.setOnClickListener{
             scheduleRvAdapter.addEmptyItem()
@@ -74,19 +65,36 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         }
     }
 
+    private fun goalTypeToKor(goalType:String): String{
+        val kor = when(goalType){
+            "DISTANCE" -> "거리"
+            "TIME" -> "시간"
+            else -> "목표없음"
+        }
+        return kor
+    }
+
+    override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
+        if (response.code == 1000) {
+            for (item in response.result) {
+                scheduleList.add(
+                    Schedule(item.day.toInt(), item.start, item.end, item.goal.toInt(), goalTypeToKor(item.goalType))
+                )
+            }
+            binding.containerRv.layoutManager = LinearLayoutManager(context)
+        } else
+            Log.d("Timetable", "onGetMyTimetableSuccess: code-${response.code}")
+    }
+
+    override fun onGetMyTimetableFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
         TODO("Not yet implemented")
     }
 
     override fun onGetGroupTimetableFailure(message: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onGetMyTimetableFailure(message: String) {
         TODO("Not yet implemented")
     }
 
