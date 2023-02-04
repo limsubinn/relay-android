@@ -6,8 +6,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
@@ -17,8 +15,8 @@ import com.example.relay.databinding.ActivityMySettingsBinding
 import com.example.relay.login.LoginMainActivity
 import com.example.relay.mypage.models.ChangeMsgResponse
 import com.example.relay.mypage.models.ChangePwdResponse
+import kotlinx.android.synthetic.main.dialog_change_msg.view.*
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
-import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 
 class MySettingsActivity : AppCompatActivity(), MySettingInterface {
     private val viewBinding: ActivityMySettingsBinding by lazy{
@@ -51,11 +49,11 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             alertDialog?.show()
 
-            dialogView.btn_cancel.setOnClickListener {
+            dialogView.btn_pw_cancel.setOnClickListener {
                 alertDialog?.dismiss()
             }
 
-            dialogView.btn_save.setOnClickListener {
+            dialogView.btn_pw_save.setOnClickListener {
                 val pw = prefs.getString("pw", "")
                 val beforePw = dialogView.et_before_pw.text.toString()
                 val newPw = dialogView.et_new_pw.text.toString()
@@ -92,15 +90,37 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             }
             viewBinding.swAlarm.isChecked = isAlarmOn.equals("y")
 
+            // 자기소개 변경하기
+            viewBinding.btnChangeInfo.setOnClickListener {
+                val dialogView = layoutInflater.inflate(R.layout.dialog_change_msg, null)
+                val alertDialog = AlertDialog.Builder(this).create()
+
+                alertDialog?.setView(dialogView)
+                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDialog?.show()
+
+                dialogView.et_msg.setText(statusMsg) // 현재 상태메시지
+                dialogView.et_msg.setSelection(dialogView.et_msg.length()) // 커서 끝에 설정
+
+                dialogView.btn_msg_cancel.setOnClickListener {
+                    alertDialog?.dismiss()
+                }
+
+                dialogView.btn_msg_save.setOnClickListener {
+                    val msg = dialogView.et_msg.text.toString()
+                    MySettingService(this).tryPatchUserMsg(msg)
+                    alertDialog?.dismiss()
+                }
+            }
         }
     }
 
     override fun onPatchUserMsgSuccess(response: ChangeMsgResponse) {
-        TODO("Not yet implemented")
+        Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onPatchUserMsgFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(this, "자기소개 변경 요청에 실패하였습니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPatchUserPwdSuccess(response: ChangePwdResponse) {
