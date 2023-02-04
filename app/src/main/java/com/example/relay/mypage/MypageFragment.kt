@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
@@ -128,15 +129,11 @@ class MypageFragment: Fragment(), MypageInterface {
 
         // 달력 버튼
         binding.btnCalendar.setOnClickListener {
-            mainActivity?.mypageFragmentChange(1);
-
-            // 선택된 날짜로 가로 달력 교체
-//                    singleRowCalendar.apply {
-//                        setDates(getFutureDatesOfSelectMonth(m))
-//                        initialPositionIndex = d-3
-//                        init()
-//                        select(d-1)
-//                    }
+            // 마이페이지 -> 마이레코드
+            parentFragmentManager.setFragmentResult("go_to_my_record",
+                bundleOf("year" to year, "month" to month, "date" to date)
+            )
+            mainActivity?.mypageFragmentChange(1) // 기록 페이지로 이동
         }
 
         val userIdx = prefs.getLong("userIdx", 0L)
