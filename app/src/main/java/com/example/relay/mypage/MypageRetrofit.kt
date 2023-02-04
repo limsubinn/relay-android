@@ -1,11 +1,8 @@
 package com.example.relay.mypage
 
 import com.example.relay.login.data.LogInLocalReq
-import com.example.relay.mypage.models.ChangePwdRequest
-import com.example.relay.mypage.models.ChangePwdResponse
-import com.example.relay.mypage.models.DailyRecordResponse
+import com.example.relay.mypage.models.*
 import com.example.relay.ui.models.UserProfileListResponse
-import com.example.relay.mypage.models.UserProfileResponse
 import retrofit2.Call
 import retrofit2.http.*
 
@@ -25,4 +22,9 @@ interface MypageRetrofit {
     fun patchUserPwdReq(
         @Body userPwd: ChangePwdRequest
     ) : Call<ChangePwdResponse>
+
+    @PATCH("/users/changeProfile")
+    fun patchUserMsgReq(
+        @Body profileReq: String
+    ) : Call<ChangeMsgResponse>
 }

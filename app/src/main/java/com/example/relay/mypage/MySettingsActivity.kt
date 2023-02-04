@@ -15,6 +15,7 @@ import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMySettingsBinding
 import com.example.relay.login.LoginMainActivity
+import com.example.relay.mypage.models.ChangeMsgResponse
 import com.example.relay.mypage.models.ChangePwdResponse
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
@@ -92,6 +93,14 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             viewBinding.swAlarm.isChecked = isAlarmOn.equals("y")
 
         }
+    }
+
+    override fun onPatchUserMsgSuccess(response: ChangeMsgResponse) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPatchUserMsgFailure(message: String) {
+        TODO("Not yet implemented")
     }
 
     override fun onPatchUserPwdSuccess(response: ChangePwdResponse) {

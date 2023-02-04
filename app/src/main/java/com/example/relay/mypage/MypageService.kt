@@ -2,10 +2,7 @@ package com.example.relay.mypage
 
 import android.util.Log
 import com.example.relay.ApplicationClass
-import com.example.relay.mypage.models.ChangePwdRequest
-import com.example.relay.mypage.models.ChangePwdResponse
-import com.example.relay.mypage.models.DailyRecordResponse
-import com.example.relay.mypage.models.UserProfileResponse
+import com.example.relay.mypage.models.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -61,6 +58,27 @@ class MypageService(val mypageInterface: MypageInterface) {
 class MySettingService(val mySettingInterface: MySettingInterface) {
 
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
+
+    fun tryPatchUserMsg(statusMsg: String){
+        retrofit.patchUserMsgReq(statusMsg).enqueue(object : Callback<ChangeMsgResponse>{
+            override fun onResponse(call: Call<ChangeMsgResponse>, response: Response<ChangeMsgResponse>) {
+                Log.d("ChangeMsgResponse", "success")
+
+                if (response.code() == 200) {
+                    mySettingInterface.onPatchUserMsgSuccess(response.body() as ChangeMsgResponse)
+                } else {
+                    Log.d("ChangeMsgResponse", response.message())
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
+            }
+
+            override fun onFailure(call: Call<ChangeMsgResponse>, t: Throwable) {
+                Log.d("ChangeMsgResponse", "fail")
+                t.printStackTrace()
+                mySettingInterface.onPatchUserMsgFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
 
     fun tryPatchUserPwd(newPwd: String, checkPwd: String){
         retrofit.patchUserPwdReq(ChangePwdRequest(newPwd, checkPwd)).enqueue(object : Callback<ChangePwdResponse>{
