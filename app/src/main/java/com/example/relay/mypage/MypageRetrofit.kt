@@ -13,11 +13,6 @@ interface MypageRetrofit {
         @Query("name") name: String
     ) : Call<UserProfileResponse>
 
-    @GET("/record/daily")
-    fun getDailyRes(
-        @Query("date") date: String
-    ) : Call<DailyRecordResponse>
-
     @PATCH("/users/pwd")
     fun patchUserPwdReq(
         @Body userPwd: ChangePwdRequest
@@ -27,4 +22,15 @@ interface MypageRetrofit {
     fun patchUserMsgReq(
         @Body profileReq: String
     ) : Call<ChangeMsgResponse>
+
+    @GET("/record/daily")
+    fun getDailyRes(
+        @Query("date") date: String
+    ) : Call<DailyRecordResponse>
+
+    @GET("/record/summary")
+    fun getMonthRes(
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ) : Call<MonthRecordResponse>
 }

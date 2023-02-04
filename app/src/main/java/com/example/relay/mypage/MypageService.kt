@@ -55,6 +55,32 @@ class MypageService(val mypageInterface: MypageInterface) {
     }
 }
 
+class MyRecordService(val myRecordInterface: MyRecordInterface) {
+
+    private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
+
+    fun tryGetDailyRecord(year: Int, month: Int){
+        retrofit.getMonthRes(year, month).enqueue(object : Callback<MonthRecordResponse>{
+            override fun onResponse(call: Call<MonthRecordResponse>, response: Response<MonthRecordResponse>) {
+                Log.d("MonthRecordResponse", "success")
+
+                if (response.code() == 200) {
+                    myRecordInterface.onGetMonthRecordSuccess(response.body() as MonthRecordResponse)
+                } else {
+                    Log.d("MonthRecordResponse", response.message())
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
+            }
+
+            override fun onFailure(call: Call<MonthRecordResponse>, t: Throwable) {
+                Log.d("MonthRecordResponse", "fail")
+                t.printStackTrace()
+                myRecordInterface.onGetMonthRecordFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
 class MySettingService(val mySettingInterface: MySettingInterface) {
 
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)

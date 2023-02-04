@@ -1,9 +1,6 @@
 package com.example.relay.mypage
 
-import com.example.relay.mypage.models.ChangeMsgResponse
-import com.example.relay.mypage.models.ChangePwdResponse
-import com.example.relay.mypage.models.DailyRecordResponse
-import com.example.relay.mypage.models.UserProfileResponse
+import com.example.relay.mypage.models.*
 
 interface MypageInterface {
     fun onGetUserProfileSuccess(response: UserProfileResponse)
@@ -11,6 +8,11 @@ interface MypageInterface {
 
     fun onGetDailyRecordSuccess(response: DailyRecordResponse)
     fun onGetDailyRecordFailure(message: String)
+}
+
+interface MyRecordInterface {
+    fun onGetMonthRecordSuccess(response: MonthRecordResponse)
+    fun onGetMonthRecordFailure(message: String)
 }
 
 interface MySettingInterface {
