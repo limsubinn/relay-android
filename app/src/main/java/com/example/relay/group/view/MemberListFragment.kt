@@ -2,7 +2,6 @@ package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +11,15 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentGroupMemberBinding
-import com.example.relay.group.GetClubDetailService
 import com.example.relay.group.GetMemberListInterface
 import com.example.relay.group.GetMemberListService
 import com.example.relay.group.adapter.GroupMemberRVAdapter
 import com.example.relay.group.models.Member
 import com.example.relay.group.models.MemberResponse
 import com.example.relay.ui.MainActivity
-import kotlinx.android.synthetic.main.item_rv_group_member.*
 import java.util.*
 
-class GroupMemberFragment: Fragment(), GetMemberListInterface {
+class MemberListFragment: Fragment(), GetMemberListInterface {
     private var _binding: FragmentGroupMemberBinding? = null
     private val binding get() = _binding!!
 
@@ -108,17 +105,15 @@ class GroupMemberFragment: Fragment(), GetMemberListInterface {
 
 
         // 리사이클러뷰 아이템 클릭 이벤트
-//        memberAdapter.setItemClickListener( object : GroupMemberRVAdapter.ItemClickListener {
-//            override fun onMemberClick(view: View, position: Int) {
-//                val clubIdx = clubList[position].clubIdx
-//                val recruitStatus = clubList[position].recruitStatus
-//
-//                // 리스트 -> 메인
-//                parentFragmentManager.setFragmentResult("go_to_main",
-//                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
-//                mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
-//            }
-//        })
+        memberAdapter.setItemClickListener( object : GroupMemberRVAdapter.ItemClickListener {
+            override fun onMemberClick(view: View, position: Int) {
+
+                // 멤버 리스트 -> 멤버 페이지
+//                parentFragmentManager.setFragmentResult("go_to_member_page",
+//                    bundleOf())
+                mainActivity?.groupFragmentChange(5) // 멤버 페이지로 이동
+            }
+        })
     }
 
     override fun onGetMemberListFailure(message: String) {
