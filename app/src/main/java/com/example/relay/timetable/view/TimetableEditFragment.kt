@@ -1,10 +1,14 @@
 package com.example.relay.timetable.view
 
+import android.app.TimePickerDialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
@@ -16,6 +20,12 @@ import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.models.Schedule
 import com.islandparadise14.mintable.model.ScheduleEntity
+import kotlinx.android.synthetic.main.dialog_goal_time.view.*
+import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
+import kotlinx.android.synthetic.main.dialog_people_cnt.view.btn_cancel
+import kotlinx.android.synthetic.main.dialog_people_cnt.view.btn_save
+import kotlinx.android.synthetic.main.item_rv_edit_table.view.*
+import java.util.*
 
 class TimetableEditFragment : Fragment(), TimetableInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
@@ -40,7 +50,48 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         binding.containerRv.adapter = scheduleRvAdapter
 
         binding.btnAdd.setOnClickListener{
-            scheduleRvAdapter.addEmptyItem()
+            val dialogView = layoutInflater.inflate(R.layout.dialog_people_cnt, null)
+            val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+            alertDialog?.setView(dialogView)
+            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog?.show()
+
+            dialogView.tv_people.text = "요일"
+
+            val dayList = arrayOf("일", "월", "화", "수", "목", "금", "토")
+
+            dialogView.np_people.displayedValues = dayList
+            dialogView.np_people.minValue = 0
+            dialogView.np_people.maxValue = 6
+
+            val index = dayList.indexOf("월")
+            dialogView.np_people.value = index
+
+            // 저장 버튼
+            dialogView.btn_save.setOnClickListener {
+                val day = dialogView.np_people.value
+                var start = "00:00"
+                var end = "00:30"
+                alertDialog?.dismiss()
+
+                val cal = Calendar.getInstance()
+
+                TimePickerDialog(context, { timePicker, h, m ->
+                    var start = "$h:$m"
+                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
+
+                TimePickerDialog(context, { timePicker, h, m ->
+                    val end = "$h:$m"
+                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
+
+                scheduleRvAdapter.addItem(day, start, end, 0, "목표없음")
+            }
+
+            // 취소 버튼
+            dialogView.btn_cancel.setOnClickListener {
+                alertDialog?.dismiss()
+            }
         }
 
         binding.btnSave.setOnClickListener{
