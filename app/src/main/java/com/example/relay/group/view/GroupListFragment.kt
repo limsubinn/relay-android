@@ -92,20 +92,10 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.rvGroupAll.adapter = listAdapter
         binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)
 
-//        if (res != null) {
-//            clubList.addAll(res)
-//        }
-//
-//        listAdapter.notifyDataSetChanged()
-
-
         // 리사이클러뷰 아이템 클릭 이벤트
         listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val clubIdx = clubList[position].clubIdx
-                val content = clubList[position].content
-                val imgURL = clubList[position].imgURL
-                val name = clubList[position].name
                 val recruitStatus = clubList[position].recruitStatus
 
                 // 리스트 -> 메인

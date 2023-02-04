@@ -2,6 +2,7 @@ package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,16 +10,27 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentGroupMemberBinding
+import com.example.relay.group.GetClubDetailInterface
+import com.example.relay.group.GetClubDetailService
+import com.example.relay.group.adapter.GroupListRVAdapter
 import com.example.relay.group.adapter.GroupMemberRVAdapter
+import com.example.relay.group.models.GroupInfoResponse
+import com.example.relay.group.models.GroupListResult
 import com.example.relay.group.models.Member
 import com.example.relay.ui.MainActivity
+import java.util.*
 
-class GroupMemberFragment: Fragment() {
+class GroupMemberFragment: Fragment(), GetClubDetailInterface {
     private var _binding: FragmentGroupMemberBinding? = null
     private val binding get() = _binding!!
 
     private var mainActivity: MainActivity? = null
+
+    private var userIdx = prefs.getLong("userIdx", 0L)
+    private var clubIdx = 0L
+    private var recruitStatus = ""
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -44,30 +56,29 @@ class GroupMemberFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val today = GregorianCalendar()
+        var year: Int = today.get(Calendar.YEAR)
+        var month: Int = today.get(Calendar.MONTH)
+        var date: Int = today.get(Calendar.DATE)
+
+        var strY = year.toString()
+        var strM = (month+1).toString().padStart(2, '0')
+        var strD = date.toString().padStart(2, '0')
+        var curDate = "${strY}-${strM}-${strD}"
+
         // 메인 -> 멤버
         setFragmentResultListener("main_to_member") { requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx")
+            recruitStatus = bundle.getString("recruitStatus", "")
 
-            val clubIdx = bundle.getLong("clubIdx")
-            val content = bundle.getString("content")
-            val imgURL = bundle.getString("imgURL")
-            val name = bundle.getString("name")
-            val recruitStatus = bundle.getString("recruitStatus")
-
-            // > 버튼
-            binding.btnRight.setOnClickListener {
-                // 멤버 -> 메인
-                parentFragmentManager.setFragmentResult("go_to_main",
-                    bundleOf("clubIdx" to clubIdx, "content" to content,
-                        "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
-                mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
-            }
+            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
 
             // 리사이클러뷰
-            val memberList: ArrayList<Member> = arrayListOf()
-            val memberAdapter = GroupMemberRVAdapter(memberList)
+            // val memberList: ArrayList<Member> = arrayListOf()
+            // val memberAdapter = GroupMemberRVAdapter(memberList)
 
-            binding.rvGroupMember.adapter = memberAdapter
-            binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
+            // binding.rvGroupMember.adapter = memberAdapter
+            // binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
 
 
 //            memberList.apply {
@@ -85,12 +96,41 @@ class GroupMemberFragment: Fragment() {
 //                add(Member("혜콩", "iOS"))
 //            }
 
-            memberAdapter.notifyDataSetChanged()
+            // memberAdapter.notifyDataSetChanged()
         }
+
+        // > 버튼
+            binding.btnRight.setOnClickListener {
+                // 멤버 -> 메인
+                parentFragmentManager.setFragmentResult("go_to_main",
+                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
+                mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
+            }
     }
 
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
+    }
+
+    override fun onGetClubDetailSuccess(response: GroupInfoResponse) {
+        val res = response.result
+
+        // 리사이클러뷰
+        val memberList: ArrayList<Member> = arrayListOf()
+        val memberAdapter = GroupMemberRVAdapter(memberList)
+
+        binding.rvGroupMember.adapter = memberAdapter
+        binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
+
+        if (res.member != null) {
+            memberList.addAll(res.member)
+        }
+
+        memberAdapter.notifyDataSetChanged()
+    }
+
+    override fun onGetClubDetailFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

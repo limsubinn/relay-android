@@ -154,18 +154,10 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
         }
 
+        // 사용자 그룹명 가져오기
         if (clubIdx == 0L) {
             GetUserClubService(this).tryGetUserClub(userIdx)
         }
-
-        // 사용자 그룹명 가져오기
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            val userIdx = prefs.getLong("userIdx", 0L)
-//            if (binding.profileTeam.text.isEmpty()) {
-//                GetUserClubService(this).tryGetUserClub(userIdx)
-//            }
-//        }, 10)
-
     }
 
     override fun onDestroyView() {
@@ -197,15 +189,16 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        // 유저가 가입된 그룹이 존재하면 화면에 띄우고, 존재하지 않으면 그룹의 목록을 보여준다.
-        // !!! 현재 들어간 그룹이 없다는 문구가 띄워진 화면 기획 완료되면 수정할 예정 !!!
-        if (response.code != 2008) {
+        if (response.code != 2008) { // 가입한 그룹 존재 o
             val res = response.result
 
-            binding.btnJoinTeam.visibility = View.GONE
+            if (userIdx == res.clubIdx) {
+                binding.btnJoinTeam.text = "탈퇴하기"
+            }
+
             GetClubDetailService(this).tryGetClubDetail(res.clubIdx, curDate)
 
-        } else {
+        } else { // 가입한 그룹 존재 x
             binding.profileImg.visibility = View.GONE
             binding.profileTeam.visibility = View.GONE
             binding.teamLayout.visibility = View.GONE
@@ -244,14 +237,13 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
-            // 메인 -> 멤버
             parentFragmentManager.setFragmentResult("main_to_member",
-                bundleOf("clubIdx" to clubIdx, "memberList" to res.member))
+                bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
             mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
         }
     }
 
     override fun onGetClubDetailFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, "그룹의 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }

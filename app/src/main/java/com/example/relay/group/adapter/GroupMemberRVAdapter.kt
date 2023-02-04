@@ -3,6 +3,7 @@ package com.example.relay.group.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.relay.databinding.ItemRvGroupMemberBinding
 import com.example.relay.group.models.Member
 
@@ -14,6 +15,11 @@ class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerVie
         fun bind(data: Member) {
             binding.memberName.text = data.profile.nickname
             binding.memberIntro.text = data.profile.statusMsg
+
+            Glide.with(binding.memberImg.context)
+                .load(data.profile.imgUrl)
+                .into(binding.memberImg)
+
         }
     }
 
