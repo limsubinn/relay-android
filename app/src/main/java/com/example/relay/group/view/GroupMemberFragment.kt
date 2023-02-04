@@ -19,6 +19,7 @@ import com.example.relay.group.adapter.GroupMemberRVAdapter
 import com.example.relay.group.models.Member
 import com.example.relay.group.models.MemberResponse
 import com.example.relay.ui.MainActivity
+import kotlinx.android.synthetic.main.item_rv_group_member.*
 import java.util.*
 
 class GroupMemberFragment: Fragment(), GetMemberListInterface {
@@ -28,6 +29,7 @@ class GroupMemberFragment: Fragment(), GetMemberListInterface {
     private var mainActivity: MainActivity? = null
 
     private var userIdx = prefs.getLong("userIdx", 0L)
+    private var hostIdx = 0L
     private var clubIdx = 0L
     private var recruitStatus = ""
 
@@ -68,6 +70,7 @@ class GroupMemberFragment: Fragment(), GetMemberListInterface {
         // 메인 -> 멤버
         setFragmentResultListener("main_to_member") { requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx")
+            hostIdx = bundle.getLong("hostIdx")
             recruitStatus = bundle.getString("recruitStatus", "")
 
             GetMemberListService(this).tryGetMemberList(clubIdx, curDate)
@@ -92,7 +95,7 @@ class GroupMemberFragment: Fragment(), GetMemberListInterface {
 
         // 리사이클러뷰
         val memberList: ArrayList<Member> = arrayListOf()
-        val memberAdapter = GroupMemberRVAdapter(memberList)
+        val memberAdapter = GroupMemberRVAdapter(memberList, hostIdx)
 
         binding.rvGroupMember.adapter = memberAdapter
         binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
@@ -102,6 +105,7 @@ class GroupMemberFragment: Fragment(), GetMemberListInterface {
         }
 
         memberAdapter.notifyDataSetChanged()
+
 
         // 리사이클러뷰 아이템 클릭 이벤트
 //        memberAdapter.setItemClickListener( object : GroupMemberRVAdapter.ItemClickListener {

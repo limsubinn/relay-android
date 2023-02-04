@@ -238,7 +238,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
             parentFragmentManager.setFragmentResult("main_to_member",
-                bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
+                bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus, "hostIdx" to res.hostIdx))
             mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
         }
     }

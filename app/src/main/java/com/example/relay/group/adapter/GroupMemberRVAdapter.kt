@@ -8,7 +8,7 @@ import com.bumptech.glide.Glide
 import com.example.relay.databinding.ItemRvGroupMemberBinding
 import com.example.relay.group.models.Member
 
-class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerView.Adapter<GroupMemberRVAdapter.DataViewHolder>() {
+class GroupMemberRVAdapter(private val dataList: ArrayList<Member>, private val hostIdx: Long): RecyclerView.Adapter<GroupMemberRVAdapter.DataViewHolder>() {
 
     // 아이템 클릭 인터페이스
     interface ItemClickListener {
@@ -26,13 +26,19 @@ class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerVie
     // ViewHolder 객체
     inner class DataViewHolder(val binding: ItemRvGroupMemberBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(data: Member) {
+        fun bind(data: Member, hostIdx: Long) {
             binding.memberName.text = data.profile.nickname
             binding.memberIntro.text = data.profile.statusMsg
 
             Glide.with(binding.memberImg.context)
                 .load(data.profile.imgUrl)
                 .into(binding.memberImg)
+
+            if (data.profile.userIdx == hostIdx) {
+                binding.icClubHost.visibility = View.VISIBLE
+            } else {
+                binding.icClubHost.visibility = View.INVISIBLE
+            }
 
         }
     }
@@ -46,7 +52,7 @@ class GroupMemberRVAdapter(private val dataList: ArrayList<Member>): RecyclerVie
 
     // ViewHolder가 실제로 데이터를 표시해야 할 때 호출되는 함수
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
-        holder.bind(dataList[position])
+        holder.bind(dataList[position], hostIdx)
 
         // > 버튼 클릭 리스너
         holder.binding.btnRight.setOnClickListener {
