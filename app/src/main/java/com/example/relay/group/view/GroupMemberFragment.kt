@@ -12,17 +12,16 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentGroupMemberBinding
-import com.example.relay.group.GetClubDetailInterface
 import com.example.relay.group.GetClubDetailService
-import com.example.relay.group.adapter.GroupListRVAdapter
+import com.example.relay.group.GetMemberListInterface
+import com.example.relay.group.GetMemberListService
 import com.example.relay.group.adapter.GroupMemberRVAdapter
-import com.example.relay.group.models.GroupInfoResponse
-import com.example.relay.group.models.GroupListResult
 import com.example.relay.group.models.Member
+import com.example.relay.group.models.MemberResponse
 import com.example.relay.ui.MainActivity
 import java.util.*
 
-class GroupMemberFragment: Fragment(), GetClubDetailInterface {
+class GroupMemberFragment: Fragment(), GetMemberListInterface {
     private var _binding: FragmentGroupMemberBinding? = null
     private val binding get() = _binding!!
 
@@ -71,32 +70,7 @@ class GroupMemberFragment: Fragment(), GetClubDetailInterface {
             clubIdx = bundle.getLong("clubIdx")
             recruitStatus = bundle.getString("recruitStatus", "")
 
-            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
-
-            // 리사이클러뷰
-            // val memberList: ArrayList<Member> = arrayListOf()
-            // val memberAdapter = GroupMemberRVAdapter(memberList)
-
-            // binding.rvGroupMember.adapter = memberAdapter
-            // binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
-
-
-//            memberList.apply {
-//                add(Member("리페", "팀장"))
-//                add(Member("노창", "디자이너"))
-//                add(Member("비카", "서버"))
-//                add(Member("설기", "서버"))
-//                add(Member("솜", "서버"))
-//                add(Member("채리", "서버"))
-//                add(Member("라나", "안드로이드"))
-//                add(Member("리미", "안드로이드"))
-//                add(Member("샐리", "안드로이드"))
-//                add(Member("야옹", "iOS"))
-//                add(Member("테오", "iOS"))
-//                add(Member("혜콩", "iOS"))
-//            }
-
-            // memberAdapter.notifyDataSetChanged()
+            GetMemberListService(this).tryGetMemberList(clubIdx, curDate)
         }
 
         // > 버튼
@@ -113,7 +87,7 @@ class GroupMemberFragment: Fragment(), GetClubDetailInterface {
         super.onDestroyView()
     }
 
-    override fun onGetClubDetailSuccess(response: GroupInfoResponse) {
+    override fun onGetMemberListSuccess(response: MemberResponse) {
         val res = response.result
 
         // 리사이클러뷰
@@ -123,14 +97,27 @@ class GroupMemberFragment: Fragment(), GetClubDetailInterface {
         binding.rvGroupMember.adapter = memberAdapter
         binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
 
-        if (res.member != null) {
-            memberList.addAll(res.member)
+        if (res != null) {
+            memberList.addAll(res)
         }
 
         memberAdapter.notifyDataSetChanged()
+
+        // 리사이클러뷰 아이템 클릭 이벤트
+//        memberAdapter.setItemClickListener( object : GroupMemberRVAdapter.ItemClickListener {
+//            override fun onMemberClick(view: View, position: Int) {
+//                val clubIdx = clubList[position].clubIdx
+//                val recruitStatus = clubList[position].recruitStatus
+//
+//                // 리스트 -> 메인
+//                parentFragmentManager.setFragmentResult("go_to_main",
+//                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
+//                mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
+//            }
+//        })
     }
 
-    override fun onGetClubDetailFailure(message: String) {
+    override fun onGetMemberListFailure(message: String) {
         TODO("Not yet implemented")
     }
 }

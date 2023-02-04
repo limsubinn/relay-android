@@ -5,6 +5,7 @@ import com.example.relay.ApplicationClass
 import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupInfoResponse
 import com.example.relay.group.models.GroupListResponse
+import com.example.relay.group.models.MemberResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -82,6 +83,32 @@ class GetClubDetailService(val detailInterface: GetClubDetailInterface) {
                 Log.d("GroupInfoResponse", "fail")
                 t.printStackTrace()
                 detailInterface.onGetClubDetailFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class GetMemberListService(val memberInterface: GetMemberListInterface) {
+
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryGetMemberList(clubIdx: Long, date: String){
+        retrofit.getClubMemberRes(clubIdx, date).enqueue(object : Callback<MemberResponse>{
+            override fun onResponse(call: Call<MemberResponse>, response: Response<MemberResponse>) {
+                Log.d("MemberResponse", "success")
+
+                if (response.code() == 200) {
+                    memberInterface.onGetMemberListSuccess(response.body() as MemberResponse)
+                } else {
+                    Log.d("MemberResponse", "4xx error")
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
+            }
+
+            override fun onFailure(call: Call<MemberResponse>, t: Throwable) {
+                Log.d("MemberResponse", "fail")
+                t.printStackTrace()
+                memberInterface.onGetMemberListFailure(t.message ?: "통신 오류")
             }
         })
     }
