@@ -15,10 +15,11 @@ import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMySettingsBinding
 import com.example.relay.login.LoginMainActivity
+import com.example.relay.mypage.models.ChangePwdResponse
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 
-class MySettingsActivity : AppCompatActivity() {
+class MySettingsActivity : AppCompatActivity(), MySettingInterface {
     private val viewBinding: ActivityMySettingsBinding by lazy{
         ActivityMySettingsBinding.inflate(layoutInflater)
     }
@@ -61,9 +62,14 @@ class MySettingsActivity : AppCompatActivity() {
 
                 if (beforePw != pw) {
                     Toast.makeText(this, "기존 비밀번호를 확인해주세요!", Toast.LENGTH_SHORT).show()
+                } else {
+                    if (newPw != checkPw) {
+                        Toast.makeText(this, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
+                    } else { // 비밀번호 변경 값 전송
+                        MySettingService(this).tryPatchUserPwd(newPw, checkPw)
+                        alertDialog?.dismiss()
+                    }
                 }
-
-
             }
         }
 
@@ -86,5 +92,13 @@ class MySettingsActivity : AppCompatActivity() {
             viewBinding.swAlarm.isChecked = isAlarmOn.equals("y")
 
         }
+    }
+
+    override fun onPatchUserPwdSuccess(response: ChangePwdResponse) {
+        Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchUserPwdFailure(message: String) {
+        Toast.makeText(this, "비밀번호 변경 요청에 실패하였습니다.", Toast.LENGTH_SHORT).show()
     }
 }
