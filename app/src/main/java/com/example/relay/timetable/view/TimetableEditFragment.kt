@@ -35,7 +35,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
-        TimetableService(this).tryGetMySchedules(53)
+        TimetableService(this).tryGetMySchedules(59)
 
         binding.containerRv.adapter = scheduleRvAdapter
 
@@ -46,7 +46,13 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         binding.btnSave.setOnClickListener{
             // 테스트 코드
             scheduleList = scheduleRvAdapter.getUpdatedSchedules()
-            // TimetableService(this).tryPostMySchedules(1, scheduleList)
+            val sList = mutableListOf<Schedule>()
+            for ((index,item) in scheduleList.withIndex()){
+                scheduleList[index].start = scheduleList[index].start + ":00"
+                scheduleList[index].end = scheduleList[index].end + ":00"
+                scheduleList[index].goalType = goalTypeToEn(scheduleList[index].goalType)
+            }
+            TimetableService(this).tryPostMySchedules(59, scheduleList)
 
             val emptyFragment = TimetableEmptyFragment()
             parentFragmentManager
@@ -74,11 +80,20 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         return kor
     }
 
+    private fun goalTypeToEn(goalType:String): String{
+        val kor = when(goalType){
+            "거리" -> "DISTANCE"
+            "시간" -> "TIME"
+            else -> "목표없음"
+        }
+        return kor
+    }
+
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
         if (response.code == 1000) {
             for (item in response.result) {
                 scheduleList.add(
-                    Schedule(item.day.toInt(), item.start, item.end, item.goal.toInt(), goalTypeToKor(item.goalType))
+                    Schedule(item.day.toInt(), item.start.substring(0, 5), item.end.substring(0, 5), item.goal.toInt(), goalTypeToKor(item.goalType))
                 )
             }
             binding.containerRv.layoutManager = LinearLayoutManager(context)
@@ -99,10 +114,10 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
     }
 
     override fun onPostMyTimetableSuccess() {
-        TODO("Not yet implemented")
+        Log.d("Timetable", "onPostMyTimetableSuccess: ")
     }
 
     override fun onPostMyTimetableFailure(message: String) {
-        TODO("Not yet implemented")
+        Log.d("Timetable", "onPostMyTimetableFailure: ")
     }
 }

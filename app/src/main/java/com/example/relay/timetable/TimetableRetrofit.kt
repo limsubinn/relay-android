@@ -19,9 +19,9 @@ interface TimetableRetrofit {
         @Path("userProfileIdx") userProfileIdx:Long
     ) : Call<MyTimetableRes>
 
-    @POST("/clubs/member-status/{clubIdx}")
+    @POST("/clubs/member-status/time-tables/{userProfileIdx}")
     fun postMyTimetableReq(
-        @Path("clubIdx") clubIdx:Long,
-        @Body timeTables: MySchedulesReq
+        @Path("userProfileIdx") userProfileIdx:Long,
+        @Body schedules: MySchedulesReq
     ) : Call<BaseResponse>
 }

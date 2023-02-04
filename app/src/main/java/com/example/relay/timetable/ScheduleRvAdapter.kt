@@ -19,8 +19,8 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     inner class DataViewHolder(private val binding: ItemRvEditTableBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bind(data: Schedule){
                 binding.btnDay.text = dayToString(data.day)
-                binding.btnStart.text = data.startTime
-                binding.btnEnd.text = data.endTime
+                binding.btnStart.text = data.start
+                binding.btnEnd.text = data.end
                 binding.btnGoalType.text = data.goalType
                 binding.btnGoal.text = data.goal.toString()
 
@@ -51,10 +51,6 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     }
 
     override fun getItemCount(): Int = dataList.size
-
-    fun updateChange(){
-        notifyDataSetChanged()
-    }
 
     fun removeItem(position: Int){
         dataList.removeAt(position)

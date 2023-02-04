@@ -10,13 +10,12 @@ import retrofit2.Response
 class TimetableService(val timetableInterface: TimetableInterface) {
     private val retrofit: TimetableRetrofit = ApplicationClass.sRetrofit.create(TimetableRetrofit::class.java)
 
-    fun tryPostMySchedules(clubIdx:Long, scheduleList: MutableList<Schedule>){
-        retrofit.postMyTimetableReq(clubIdx, MySchedulesReq(scheduleList)).enqueue((object : retrofit2.Callback<BaseResponse> {
+    fun tryPostMySchedules(profileIdx:Long, scheduleList: MutableList<Schedule>){
+        retrofit.postMyTimetableReq(profileIdx, MySchedulesReq(scheduleList)).enqueue((object : retrofit2.Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) { // response.code == 200
                     timetableInterface.onPostMyTimetableSuccess()
                 }else {
-                    // 전송은 성공 but 4xx 에러
                     Log.d("Timetable", "failure")
                 }
             }
