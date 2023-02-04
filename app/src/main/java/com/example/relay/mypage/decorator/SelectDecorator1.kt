@@ -1,6 +1,7 @@
 package com.example.relay.mypage.decorator
 
 import android.content.Context
+import android.graphics.Color
 import androidx.core.content.ContextCompat
 import com.example.relay.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
