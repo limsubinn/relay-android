@@ -298,16 +298,15 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     }
 
     private fun dayToString(dayInt:Int): String{
-        val day = when(dayInt){
+        return when(dayInt){
             1 -> "월"
             2 -> "화"
             3 -> "수"
             4 -> "목"
             5 -> "금"
             6 -> "토"
-            0 -> "일"
-            else -> ""
+            7 -> "일"
+            else -> throw IllegalArgumentException("잘못된 값")
         }
-        return day
     }
 }

@@ -33,10 +33,9 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
     ): View {
         viewBinding = FragmentTimetableBinding.inflate(layoutInflater)
         with(binding.timetable){
+            baseSetting(35, 40, 40)
             initTable(day)
-            // baseSetting(20, 40, 60)
         }
-
         return binding.root
     }
 
