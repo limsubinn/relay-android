@@ -1,15 +1,16 @@
 package com.example.relay.timetable.adapter
 
-import android.app.TimePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.example.relay.R
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.dialog_goal_time.*
 import kotlinx.android.synthetic.main.dialog_goal_time.view.*
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
+import kotlinx.android.synthetic.main.dialog_timepicker.view.*
 import kotlinx.android.synthetic.main.item_rv_edit_table.view.*
 import kotlinx.android.synthetic.main.item_rv_edit_table.view.btn_goal_type
 import java.util.*
@@ -66,6 +68,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
         return DataViewHolder(binding)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         val cal = Calendar.getInstance()
         val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -103,20 +106,54 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             }
         }
         holder.itemView.btn_start.setOnClickListener{
-            TimePickerDialog(context, { timePicker, h, m ->
-                val hour = h.toString().padStart(2, '0')
-                val min = m.toString().padStart(2, '0')
+            val dialogView = inflater.inflate(R.layout.dialog_timepicker, null)
+            val alertDialog = context.let { AlertDialog.Builder(it).create() }
+
+            with(alertDialog) {
+                setView(dialogView)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                show()
+            }
+
+            dialogView.timePicker.hour = holder.itemView.btn_start.text.toString().substring(0,2).toInt()
+            dialogView.timePicker.minute = holder.itemView.btn_start.text.toString().substring(3).toInt()
+
+            dialogView.btn_save.setOnClickListener{
+                val hour = dialogView.timePicker.hour.toString().padStart(2, '0')
+                val min = dialogView.timePicker.minute.toString().padStart(2, '0')
                 dataList[position].start = "$hour:$min:00"
                 notifyDataSetChanged()
-            }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
+                alertDialog.dismiss()
+            }
+
+            dialogView.btn_cancel.setOnClickListener{
+                alertDialog.dismiss()
+            }
         }
         holder.itemView.btn_end.setOnClickListener{
-            TimePickerDialog(context, { timePicker, h, m ->
-                val hour = h.toString().padStart(2, '0')
-                val min = m.toString().padStart(2, '0')
+            val dialogView = inflater.inflate(R.layout.dialog_timepicker, null)
+            val alertDialog = context.let { AlertDialog.Builder(it).create() }
+
+            with(alertDialog) {
+                setView(dialogView)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                show()
+            }
+            dialogView.tv_timepicker_name.text = "Finish"
+            dialogView.timePicker.hour = holder.itemView.btn_end.text.toString().substring(0,2).toInt()
+            dialogView.timePicker.minute = holder.itemView.btn_end.text.toString().substring(3).toInt()
+
+            dialogView.btn_save.setOnClickListener{
+                val hour = dialogView.timePicker.hour.toString().padStart(2, '0')
+                val min = dialogView.timePicker.minute.toString().padStart(2, '0')
                 dataList[position].end = "$hour:$min:00"
                 notifyDataSetChanged()
-            }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
+                alertDialog.dismiss()
+            }
+
+            dialogView.btn_cancel.setOnClickListener{
+                alertDialog.dismiss()
+            }
         }
         holder.itemView.btn_goal_type.setOnClickListener{
             val goalType = arrayOf("목표 없음", "시간", "거리")
@@ -245,8 +282,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     }
 
     fun addEmptyItem(){
-        // val day = dayToString()
-        dataList.add(Schedule(0,"09:00:00","09:30:00",0F, "NOGOAL"))
+        dataList.add(Schedule(1,"09:00:00","10:00:00",1800F, "TIME"))
         notifyItemInserted(dataList.size)
         notifyItemRangeChanged(dataList.size, itemCount);
     }
