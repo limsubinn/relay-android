@@ -33,6 +33,12 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 binding.btnStart.text = data.start
                 binding.btnEnd.text = data.end
                 binding.btnGoalType.text = data.goalType
+                binding.btnGoal.text = when (data.goalType){
+                    "DISTANCE" -> ""
+                    "TIME" -> ""
+                    "NONE" -> "----"
+                    else -> "오류"
+                }
                 binding.btnGoal.text = data.goal.toString()
 
                 binding.btnRemove.setOnClickListener{
@@ -83,12 +89,16 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
         }
         holder.itemView.btn_start.setOnClickListener{
             TimePickerDialog(context, { timePicker, h, m ->
-                holder.itemView.btn_start.text = "$h:$m"
+                val hour = h.toString().padStart(2, '0')
+                val min = m.toString().padStart(2, '0')
+                holder.itemView.btn_start.text = "$hour:$min"
             }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
         }
         holder.itemView.btn_end.setOnClickListener{
             TimePickerDialog(context, { timePicker, h, m ->
-                holder.itemView.btn_end.text = "$h:$m"
+                val hour = h.toString().padStart(2, '0')
+                val min = m.toString().padStart(2, '0')
+                holder.itemView.btn_end.text = "$hour:$min"
             }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
         }
         holder.itemView.btn_goal_type.setOnClickListener{

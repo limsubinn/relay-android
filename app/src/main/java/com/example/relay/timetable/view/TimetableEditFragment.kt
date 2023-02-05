@@ -52,48 +52,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         binding.containerRv.adapter = scheduleRvAdapter
 
         binding.btnAdd.setOnClickListener{
-            val dialogView = layoutInflater.inflate(R.layout.dialog_people_cnt, null)
-            val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
-
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
-
-            dialogView.tv_people.text = "요일"
-
-            val dayList = arrayOf("월", "화", "수", "목", "금", "토", "일")
-
-            dialogView.np_people.displayedValues = dayList
-            dialogView.np_people.minValue = 0
-            dialogView.np_people.maxValue = 6
-
-            val index = dayList.indexOf("월")
-            dialogView.np_people.value = index
-
-            // 저장 버튼
-            dialogView.btn_save.setOnClickListener {
-                val day = dialogView.np_people.value
-                var start = "00:00"
-                var end = "00:30"
-                alertDialog?.dismiss()
-
-                val cal = Calendar.getInstance()
-
-                TimePickerDialog(context, { timePicker, h, m ->
-                    var start = "$h:$m"
-                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
-
-                TimePickerDialog(context, { timePicker, h, m ->
-                    val end = "$h:$m"
-                }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
-
-                scheduleRvAdapter.addItem(day, start, end, 0, "목표없음")
-            }
-
-            // 취소 버튼
-            dialogView.btn_cancel.setOnClickListener {
-                alertDialog?.dismiss()
-            }
+            scheduleRvAdapter.addEmptyItem()
         }
 
         binding.btnSave.setOnClickListener{
@@ -139,7 +98,8 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         val kor = when(goalType){
             "DISTANCE" -> "거리"
             "TIME" -> "시간"
-            else -> "목표없음"
+            "NONE" -> "목표 없음"
+            else -> "오류"
         }
         return kor
     }
@@ -148,6 +108,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         val kor = when(goalType){
             "거리" -> "DISTANCE"
             "시간" -> "TIME"
+            "목표 없음" -> "NONE"
             else -> "목표없음"
         }
         return kor
