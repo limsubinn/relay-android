@@ -1,5 +1,6 @@
 package com.example.relay.timetable.view
 
+import android.annotation.SuppressLint
 import android.app.TimePickerDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -40,6 +41,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         return binding.root
     }
 
+    @SuppressLint("InflateParams")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -59,7 +61,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
             dialogView.tv_people.text = "요일"
 
-            val dayList = arrayOf("일", "월", "화", "수", "목", "금", "토")
+            val dayList = arrayOf("월", "화", "수", "목", "금", "토", "일")
 
             dialogView.np_people.displayedValues = dayList
             dialogView.np_people.minValue = 0
@@ -95,16 +97,27 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         }
 
         binding.btnSave.setOnClickListener{
-            // 테스트 코드
             scheduleList = scheduleRvAdapter.getUpdatedSchedules()
-            val sList = mutableListOf<Schedule>()
-            for ((index,item) in scheduleList.withIndex()){
-                scheduleList[index].start = scheduleList[index].start + ":00"
-                scheduleList[index].end = scheduleList[index].end + ":00"
-                scheduleList[index].goalType = goalTypeToEn(scheduleList[index].goalType)
-            }
-            TimetableService(this).tryPostMySchedules(59, scheduleList)
 
+            if (scheduleList.size == 0){
+                val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+                alertDialog?.setView(dialogView)
+                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDialog?.show()
+
+
+            } else {
+                // 테스트 코드
+                val sList = mutableListOf<Schedule>()
+                for ((index, item) in scheduleList.withIndex()) {
+                    scheduleList[index].start = scheduleList[index].start + ":00"
+                    scheduleList[index].end = scheduleList[index].end + ":00"
+                    scheduleList[index].goalType = goalTypeToEn(scheduleList[index].goalType)
+                }
+                TimetableService(this).tryPostMySchedules(59, scheduleList)
+            }
             val emptyFragment = TimetableEmptyFragment()
             parentFragmentManager
                 .beginTransaction()

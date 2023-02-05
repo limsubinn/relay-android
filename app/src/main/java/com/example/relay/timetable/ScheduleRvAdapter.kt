@@ -14,11 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.relay.R
 import com.example.relay.databinding.ItemRvEditTableBinding
 import com.example.relay.timetable.models.Schedule
-import kotlinx.android.synthetic.main.dialog_goal_km.*
+import kotlinx.android.synthetic.main.dialog_goal_km.view.*
+import kotlinx.android.synthetic.main.dialog_goal_km.view.btn_cancel
+import kotlinx.android.synthetic.main.dialog_goal_km.view.btn_save
 import kotlinx.android.synthetic.main.dialog_goal_time.*
-import kotlinx.android.synthetic.main.dialog_goal_time.btn_cancel
-import kotlinx.android.synthetic.main.dialog_goal_time.btn_save
-import kotlinx.android.synthetic.main.dialog_goal_type.*
+import kotlinx.android.synthetic.main.dialog_goal_time.view.*
+import kotlinx.android.synthetic.main.dialog_goal_type.view.*
+import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.item_rv_edit_table.view.*
 import kotlinx.android.synthetic.main.item_rv_edit_table.view.btn_goal_type
 import java.util.*
@@ -46,9 +48,38 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
         val cal = Calendar.getInstance()
+        val inflater: LayoutInflater = LayoutInflater.from(context)
+
         holder.bind(dataList[position])
         holder.itemView.btn_day.setOnClickListener{
+            val dialogView = inflater.inflate(R.layout.dialog_people_cnt, null)
+            val alertDialog = context.let { AlertDialog.Builder(it).create() }
 
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
+
+            dialogView.tv_people.text = "요일"
+
+            val dayList = arrayOf("월", "화", "수", "목", "금", "토", "일")
+
+            dialogView.np_people.displayedValues = dayList
+            dialogView.np_people.minValue = 0
+            dialogView.np_people.maxValue = 6
+
+            val index = dayList.indexOf("월")
+            dialogView.np_people.value = index
+
+            // 저장 버튼
+            dialogView.btn_save.setOnClickListener {
+                holder.itemView.btn_day.text = dayList[dialogView.np_people.value]
+                alertDialog.dismiss()
+            }
+
+            // 취소 버튼
+            dialogView.btn_cancel.setOnClickListener {
+                alertDialog.dismiss()
+            }
         }
         holder.itemView.btn_start.setOnClickListener{
             TimePickerDialog(context, { timePicker, h, m ->
@@ -63,12 +94,14 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
         holder.itemView.btn_goal_type.setOnClickListener{
             val goalType = arrayOf("목표 없음", "시간", "거리", "스피드")
 
+            val dialogView = inflater.inflate(R.layout.dialog_goal_type, null)
             val alertDialog = context.let { AlertDialog.Builder(it).create() }
-            alertDialog.setContentView(R.layout.dialog_goal_type)
+
+            alertDialog.setView(dialogView)
             alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             alertDialog.show()
 
-            val itemView = alertDialog.list_dialog_item
+            val itemView = dialogView.list_dialog_item
 
             itemView.adapter =
                 ArrayAdapter(context, android.R.layout.simple_list_item_1, goalType)
@@ -84,18 +117,20 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                     1 -> holder.itemView.btn_goal.text = "00 : 00 : 00"
                     else -> holder.itemView.btn_goal.text  = "00 : 00"
                 }
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
         }
         holder.itemView.btn_goal.setOnClickListener{
             when (holder.itemView.btn_goal_type.text){
                 "거리" -> {
+                    val dialogView = inflater.inflate(R.layout.dialog_goal_km, null)
                     val alertDialog = context.let { AlertDialog.Builder(it).create() }
-                    alertDialog.setContentView(R.layout.dialog_goal_km)
+
+                    alertDialog.setView(dialogView)
                     alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     alertDialog.show()
 
-                    with(alertDialog){
+                    with(dialogView){
                         // 최대, 최소값 설정
                         np1.minValue = 0
                         np1.maxValue = 99
@@ -108,31 +143,32 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                     }
 
                     // 저장 버튼
-                    alertDialog.btn_save.setOnClickListener {
-                        val hour = alertDialog.np_hour.value.toString().padStart(2, '0')
-                        val min = alertDialog.np_min.value.toString().padStart(2, '0')
-                        val sec = alertDialog.np_sec.value.toString().padStart(2, '0')
+                    dialogView.btn_save.setOnClickListener {
+                        var n1 = dialogView.np1.value.toString().padStart(2, '0')
+                        var n2 = dialogView.np2.value.toString().padStart(2, '0')
 
-                        if ((hour == "00" && min == "00" && sec == "00")) {
-                            Toast.makeText(context, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
+                        if ((n1 == "00" && n2 == "00")) {
+                            Toast.makeText(context, "거리를 설정해주세요!", Toast.LENGTH_SHORT).show()
                         } else {
-                            holder.itemView.btn_goal.text = "${hour} : ${min}"
-                            alertDialog?.dismiss()
+                            holder.itemView.btn_goal.text = "$n1 : $n2"
+                            alertDialog.dismiss()
                         }
                     }
 
                     // 취소 버튼
-                    alertDialog.btn_cancel.setOnClickListener {
-                        alertDialog?.dismiss()
+                    dialogView.btn_cancel.setOnClickListener {
+                        alertDialog.dismiss()
                     }
                 }
                 "시간" -> {
+                    val dialogView = inflater.inflate(R.layout.dialog_goal_time, null)
                     val alertDialog = context.let { AlertDialog.Builder(it).create() }
-                    alertDialog.setContentView(R.layout.dialog_goal_time)
+
+                    alertDialog.setView(dialogView)
                     alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     alertDialog.show()
 
-                    with(alertDialog){
+                    with(dialogView){
                         // 최대, 최소값 설정
                         np_hour.minValue = 0
                         np_hour.maxValue = 23
@@ -148,7 +184,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                     }
 
                     // 저장 버튼
-                    alertDialog.btn_save.setOnClickListener {
+                    dialogView.btn_save.setOnClickListener {
                         val hour = alertDialog.np_hour.value.toString().padStart(2, '0')
                         val min = alertDialog.np_min.value.toString().padStart(2, '0')
                         val sec = alertDialog.np_sec.value.toString().padStart(2, '0')
@@ -156,14 +192,14 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                         if ((hour == "00" && min == "00" && sec == "00")) {
                             Toast.makeText(context, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
                         } else {
-                            holder.itemView.btn_goal.text = "${hour} : ${min}"
-                            alertDialog?.dismiss()
+                            holder.itemView.btn_goal.text = "$hour : $min : $sec"
+                            alertDialog.dismiss()
                         }
                     }
 
                     // 취소 버튼
-                    alertDialog.btn_cancel.setOnClickListener {
-                        alertDialog?.dismiss()
+                    dialogView.btn_cancel.setOnClickListener {
+                        alertDialog.dismiss()
                     }
                 }
             }
