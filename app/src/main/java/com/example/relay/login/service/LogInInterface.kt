@@ -1,6 +1,6 @@
-package com.example.relay.login
+package com.example.relay.login.service
 
-import com.example.relay.login.data.LogInLocalRes
+import com.example.relay.login.models.LogInLocalRes
 
 interface LogInInterface {
     fun onPostLocalLogInSuccess(response: LogInLocalRes)

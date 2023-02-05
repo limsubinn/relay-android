@@ -1,4 +1,4 @@
-package com.example.relay.timetable
+package com.example.relay.timetable.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass

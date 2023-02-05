@@ -1,4 +1,4 @@
-package com.example.relay.login
+package com.example.relay.login.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -7,8 +7,9 @@ import android.widget.Toast
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.ui.MainActivity
 import com.example.relay.databinding.ActivityLoginMainBinding
-import com.example.relay.login.data.LogInLocalRes
-import com.example.relay.running.RunningFragment
+import com.example.relay.login.service.LogInInterface
+import com.example.relay.login.service.LogInService
+import com.example.relay.login.models.LogInLocalRes
 
 class LoginMainActivity : AppCompatActivity(), LogInInterface {
     private val viewBinding: ActivityLoginMainBinding by lazy{

@@ -1,7 +1,7 @@
-package com.example.relay.login
+package com.example.relay.login.service
 
-import com.example.relay.login.data.SignUpLocalRes
-import com.example.relay.login.data.UserProfileRes
+import com.example.relay.login.models.SignUpLocalRes
+import com.example.relay.login.models.UserProfileRes
 
 interface SignUpInterface {
     // 로컬 회원가입

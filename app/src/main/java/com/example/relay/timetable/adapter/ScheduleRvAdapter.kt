@@ -1,10 +1,9 @@
-package com.example.relay.timetable
+package com.example.relay.timetable.adapter
 
 import android.app.TimePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.text.TextUtils.split
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -62,7 +61,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScheduleRvAdapter.DataViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataViewHolder {
         val binding = ItemRvEditTableBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return DataViewHolder(binding)
     }

@@ -1,4 +1,4 @@
-package com.example.relay.timetable
+package com.example.relay.timetable.service
 
 import com.example.relay.BaseResponse
 import com.example.relay.timetable.models.*

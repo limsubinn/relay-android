@@ -1,9 +1,9 @@
-package com.example.relay.login
+package com.example.relay.login.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.ApplicationClass.Companion.sRetrofit
-import com.example.relay.login.data.*
+import com.example.relay.login.models.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,4 +1,4 @@
-package com.example.relay.login.data
+package com.example.relay.login.models
 
 import com.google.gson.annotations.SerializedName
 

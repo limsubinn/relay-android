@@ -12,8 +12,8 @@ import com.example.relay.databinding.FragmentTimetableBinding
 import com.example.relay.group.GetUserClubInterface
 import com.example.relay.group.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.timetable.TimetableInterface
-import com.example.relay.timetable.TimetableService
+import com.example.relay.timetable.service.TimetableInterface
+import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.islandparadise14.mintable.model.ScheduleEntity

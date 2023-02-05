@@ -1,9 +1,8 @@
-package com.example.relay.login.data
+package com.example.relay.login.models
 
 import com.google.gson.annotations.SerializedName
 
-data class SignUpLocalReq(
-    @SerializedName("name") val name: String,
+data class LogInLocalReq(
     @SerializedName("email") val email: String,
     @SerializedName("pwd") val pwd: String
 )

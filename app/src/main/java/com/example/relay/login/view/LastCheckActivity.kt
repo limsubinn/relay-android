@@ -1,4 +1,4 @@
-package com.example.relay.login
+package com.example.relay.login.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,9 +6,10 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivityLastCheckBinding
-import com.example.relay.login.data.SignUpLocalRes
-import com.example.relay.login.data.UserProfileRes
-import java.util.*
+import com.example.relay.login.service.SignUpInterface
+import com.example.relay.login.service.SignUpService
+import com.example.relay.login.models.SignUpLocalRes
+import com.example.relay.login.models.UserProfileRes
 
 
 class LastCheckActivity : AppCompatActivity(), SignUpInterface {

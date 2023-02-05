@@ -1,4 +1,4 @@
-package com.example.relay.login
+package com.example.relay.login.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

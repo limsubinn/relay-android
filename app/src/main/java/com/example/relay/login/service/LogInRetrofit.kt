@@ -1,6 +1,6 @@
-package com.example.relay.login
+package com.example.relay.login.service
 
-import com.example.relay.login.data.*
+import com.example.relay.login.models.*
 import retrofit2.Call
 import retrofit2.http.*
 

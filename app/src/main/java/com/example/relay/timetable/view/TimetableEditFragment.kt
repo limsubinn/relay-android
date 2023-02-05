@@ -1,7 +1,5 @@
 package com.example.relay.timetable.view
 
-import android.annotation.SuppressLint
-import android.app.TimePickerDialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
@@ -14,9 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
-import com.example.relay.timetable.ScheduleRvAdapter
-import com.example.relay.timetable.TimetableInterface
-import com.example.relay.timetable.TimetableService
+import com.example.relay.timetable.adapter.ScheduleRvAdapter
+import com.example.relay.timetable.service.TimetableInterface
+import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.models.Schedule
