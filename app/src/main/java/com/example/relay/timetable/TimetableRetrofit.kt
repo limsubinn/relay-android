@@ -9,7 +9,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface TimetableRetrofit {
-    @GET("/clubs/member-status/{clubIdx}/time-tables")
+    @GET("/clubs/{clubIdx}/time-tables")
     fun getGroupTimetablesReq(
         @Path("clubIdx") clubIdx:Long
     ) : Call<GroupTimetableRes>

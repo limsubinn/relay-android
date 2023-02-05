@@ -46,7 +46,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         binding.btnMyTimetable.setOnClickListener{
             if (binding.tvTitle.text == "팀 시간표") {
                 binding.timetable.initTable(day)
-                TimetableService(this).tryGetMySchedules(59)
+                TimetableService(this).tryGetMySchedules(66)
                 binding.tvTitle.text = "개인 시간표"
             } else {
                 binding.timetable.initTable(day)
@@ -71,7 +71,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
             Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
         } */
 
-        GetUserClubService(this).tryGetUserClub(59L)
+        GetUserClubService(this).tryGetUserClub(66)
     }
 
     // 메모리 누수 방지 (fragment 의 생명주기 > view 의 생명주기)

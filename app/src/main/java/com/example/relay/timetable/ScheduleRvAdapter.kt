@@ -4,6 +4,8 @@ import android.app.TimePickerDialog
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.text.TextUtils.split
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -30,16 +32,29 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
     inner class DataViewHolder(private val binding: ItemRvEditTableBinding) : RecyclerView.ViewHolder(binding.root) {
             fun bind(data: Schedule){
                 binding.btnDay.text = dayToString(data.day)
-                binding.btnStart.text = data.start
-                binding.btnEnd.text = data.end
-                binding.btnGoalType.text = data.goalType
-                binding.btnGoal.text = when (data.goalType){
-                    "DISTANCE" -> ""
-                    "TIME" -> ""
-                    "NONE" -> "----"
-                    else -> "오류"
+                binding.btnStart.text = data.start.substring(0,5)
+                binding.btnEnd.text = data.end.substring(0,5)
+
+                when (data.goalType) {
+                    "DISTANCE" -> {
+                        binding.btnGoalType.text = "거리"
+                        val goalArr = data.goal.toString().split(".")
+                        Log.d("Timetable", "bind: ${goalArr.get(0).padStart(2, '0')}")
+                        binding.btnGoal.text = "${goalArr.get(0).padStart(2, '0')}:${goalArr.get(1).padStart(2, '0')}"
+                    }
+                    "TIME" -> {
+                        binding.btnGoalType.text = "시간"
+                        val hour = (data.goal / 3600).toInt().toString().padStart(2, '0')
+                        val min = (data.goal % 3600 / 60).toInt().toString().padStart(2, '0')
+                        val sec = (data.goal % 60).toInt().toString().padStart(2, '0')
+                        binding.btnGoal.text = "$hour:$min:$sec"
+                    }
+                    "NOGOAL" -> {
+                        binding.btnGoalType.text = "목표 없음"
+                        binding.btnGoal.text = "----"
+                    }
+                    else -> throw IllegalArgumentException("잘못된 값")
                 }
-                binding.btnGoal.text = data.goal.toString()
 
                 binding.btnRemove.setOnClickListener{
                     removeItem(adapterPosition)
@@ -78,6 +93,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
             // 저장 버튼
             dialogView.btn_save.setOnClickListener {
+                dataList[position].day = dialogView.np_people.value + 1
                 holder.itemView.btn_day.text = dayList[dialogView.np_people.value]
                 alertDialog.dismiss()
             }
@@ -91,18 +107,20 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             TimePickerDialog(context, { timePicker, h, m ->
                 val hour = h.toString().padStart(2, '0')
                 val min = m.toString().padStart(2, '0')
-                holder.itemView.btn_start.text = "$hour:$min"
+                dataList[position].start = "$hour:$min:00"
+                notifyDataSetChanged()
             }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
         }
         holder.itemView.btn_end.setOnClickListener{
             TimePickerDialog(context, { timePicker, h, m ->
                 val hour = h.toString().padStart(2, '0')
                 val min = m.toString().padStart(2, '0')
-                holder.itemView.btn_end.text = "$hour:$min"
+                dataList[position].end = "$hour:$min:00"
+                notifyDataSetChanged()
             }, cal.get(Calendar.HOUR), cal.get(Calendar.MINUTE), true ).show()
         }
         holder.itemView.btn_goal_type.setOnClickListener{
-            val goalType = arrayOf("목표 없음", "시간", "거리", "스피드")
+            val goalType = arrayOf("목표 없음", "시간", "거리")
 
             val dialogView = inflater.inflate(R.layout.dialog_goal_type, null)
             val alertDialog = context.let { AlertDialog.Builder(it).create() }
@@ -117,15 +135,16 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 ArrayAdapter(context, android.R.layout.simple_list_item_1, goalType)
 
             itemView.onItemClickListener = AdapterView.OnItemClickListener {
-                    parent,
-                    view,
-                    position,
-                    id ->
-                holder.itemView.btn_goal_type.text = itemView.adapter.getItem(position).toString()
-                when (position) {
-                    0 -> holder.itemView.btn_goal.text = "----"
-                    1 -> holder.itemView.btn_goal.text = "00 : 00 : 00"
-                    else -> holder.itemView.btn_goal.text  = "00 : 00"
+                    parent, view, itemPosition, id ->
+                if (holder.itemView.btn_goal_type.text != itemView.adapter.getItem(itemPosition).toString()) {
+                    when (itemPosition) {
+                        0 -> dataList[position].goalType = "NOGOAL"
+                        1 -> dataList[position].goalType = "TIME"
+                        2 -> dataList[position].goalType = "DISTANCE"
+                        else -> throw IllegalArgumentException("잘못된 값")
+                    }
+                    dataList[position].goal = 0F
+                    notifyDataSetChanged()
                 }
                 alertDialog.dismiss()
             }
@@ -149,22 +168,23 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
                         // 기본값 설정
                         np1.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(0, 2))
-                        np2.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(5, 7))
+                        np2.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 5))
                     }
 
                     // 저장 버튼
                     dialogView.btn_save.setOnClickListener {
-                        var n1 = dialogView.np1.value.toString().padStart(2, '0')
-                        var n2 = dialogView.np2.value.toString().padStart(2, '0')
+                        val n1 = dialogView.np1.value.toString().padStart(2, '0')
+                        val n2 = dialogView.np2.value.toString().padStart(2, '0')
 
                         if ((n1 == "00" && n2 == "00")) {
                             Toast.makeText(context, "거리를 설정해주세요!", Toast.LENGTH_SHORT).show()
                         } else {
-                            holder.itemView.btn_goal.text = "$n1 : $n2"
+                            val distance = ("$n1.$n2").toFloat()
+                            dataList[position].goal = distance
+                            holder.itemView.btn_goal.text = "$n1:$n2"
                             alertDialog.dismiss()
                         }
                     }
-
                     // 취소 버튼
                     dialogView.btn_cancel.setOnClickListener {
                         alertDialog.dismiss()
@@ -189,8 +209,8 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
                         // 기본값 설정
                         np_hour.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(0, 2))
-                        np_min.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(5, 7))
-                        np_sec.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(10, 12))
+                        np_min.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 5))
+                        np_sec.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(6, 8))
                     }
 
                     // 저장 버튼
@@ -198,11 +218,12 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                         val hour = alertDialog.np_hour.value.toString().padStart(2, '0')
                         val min = alertDialog.np_min.value.toString().padStart(2, '0')
                         val sec = alertDialog.np_sec.value.toString().padStart(2, '0')
-
                         if ((hour == "00" && min == "00" && sec == "00")) {
                             Toast.makeText(context, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
                         } else {
-                            holder.itemView.btn_goal.text = "$hour : $min : $sec"
+                            val goal = alertDialog.np_hour.value * 3600 + alertDialog.np_min.value * 60 + alertDialog.np_sec.value
+                            dataList[position].goal = goal.toFloat()
+                            notifyDataSetChanged()
                             alertDialog.dismiss()
                         }
                     }
@@ -226,15 +247,15 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
     fun addEmptyItem(){
         // val day = dayToString()
-        dataList.add(Schedule(0,"9:00","9:30",0, "목표없음"))
+        dataList.add(Schedule(0,"09:00:00","09:30:00",0F, "NOGOAL"))
         notifyItemInserted(dataList.size)
-        notifyItemRangeChanged(dataList.size, getItemCount());
+        notifyItemRangeChanged(dataList.size, itemCount);
     }
 
-    fun addItem(day:Int, start:String, end:String, goal:Int, goalType:String){
+    fun addItem(day:Int, start:String, end:String, goal:Float, goalType:String){
         dataList.add(Schedule(day, start, end, goal, goalType))
         notifyItemInserted(dataList.size)
-        notifyItemRangeChanged(dataList.size, getItemCount());
+        notifyItemRangeChanged(dataList.size, itemCount);
     }
 
     fun getUpdatedSchedules(): MutableList<Schedule> {
@@ -253,14 +274,5 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             else -> ""
         }
         return day
-    }
-
-    private fun goalTypeToString(goalType:Int): String{
-        val type = when(goalType){
-            0 -> "시간"
-            1 -> "거리"
-            else -> "목표없음"
-       }
-        return type
     }
 }
