@@ -1,19 +1,14 @@
-package com.example.relay.mypage
+package com.example.relay.group.view
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.bumptech.glide.Glide
-import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
-import com.example.relay.databinding.FragmentMypageBinding
-import com.example.relay.mypage.models.UserProfileResponse
+import com.example.relay.databinding.FragmentMemberPageBinding
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
@@ -23,8 +18,8 @@ import com.michalsvec.singlerowcalendar.utils.DateUtils
 import java.util.*
 
 
-class MypageFragment: Fragment(), MypageInterface {
-    private var _binding: FragmentMypageBinding? = null
+class MemberPageFragment: Fragment() {
+    private var _binding: FragmentMemberPageBinding? = null
     private val binding get() = _binding!!
 
     private val calendar = Calendar.getInstance()
@@ -50,7 +45,7 @@ class MypageFragment: Fragment(), MypageInterface {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMypageBinding.inflate(inflater, container, false)
+        _binding = FragmentMemberPageBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -136,14 +131,6 @@ class MypageFragment: Fragment(), MypageInterface {
 //                    }
         }
 
-        val userIdx = prefs.getLong("userIdx", 0L)
-        val name = prefs.getString("name", "")
-
-        if (name != null) {
-            if ((userIdx != 0L) && (name.isNotEmpty())) {
-                MypageService(this).tryGetUserProfile(userIdx, name)
-            }
-        }
     }
 
     override fun onDestroyView() {
@@ -172,40 +159,5 @@ class MypageFragment: Fragment(), MypageInterface {
         }
         calendar.add(Calendar.DATE, -1)
         return list
-    }
-
-    override fun onGetUserProfileSuccess(response: UserProfileResponse) {
-        val res = response.result
-
-        // 닉네임 & 그룹 이름 받아오기
-        if (res.clubIdx == 0L) {
-            binding.profileName.text = "${res.nickname} / -"
-        } else {
-            binding.profileName.text = "${res.nickname} / ${res.clubName}"
-        }
-        // 자기소개
-        binding.tvIntro.text = res.statusMsg
-        // 프로필 사진
-        Glide.with(binding.profileImg.context)
-            .load(res.imgUrl)
-            .override(90,90) // 사이즈 조정
-            .into(binding.profileImg)
-
-        // 설정 버튼
-        binding.btnMySettings.setOnClickListener {
-            val intent = Intent(activity, MySettingsActivity::class.java)
-            intent.apply {
-                putExtra("imgUrl", res.imgUrl)
-                putExtra("name", res.nickname)
-                putExtra("email", res.email)
-                putExtra("statusMsg", res.statusMsg)
-                putExtra("isAlarmOn", res.isAlarmOn)
-            }
-            startActivity(intent);
-        }
-    }
-
-    override fun onGetUserProfileFailure(message: String) {
-        Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }

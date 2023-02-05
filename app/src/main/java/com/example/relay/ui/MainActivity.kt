@@ -13,7 +13,6 @@ import com.example.relay.group.view.*
 import com.example.relay.mypage.MainService
 import com.example.relay.mypage.MyRecordFragment
 import com.example.relay.mypage.MypageFragment
-import com.example.relay.mypage.MypageService
 import com.example.relay.running.RunningFragment
 import com.example.relay.timetable.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
@@ -144,7 +143,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         } else if (index == 2) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(binding.containerFragment.id, GroupMemberFragment())
+                .replace(binding.containerFragment.id, MemberListFragment())
                 .commitAllowingStateLoss()
         } else if (index == 3) {
             supportFragmentManager
@@ -155,6 +154,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
             supportFragmentManager
                 .beginTransaction()
                 .replace(binding.containerFragment.id, GroupCreateNFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 5) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, MemberPageFragment())
                 .commitAllowingStateLoss()
         }
     }

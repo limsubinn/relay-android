@@ -14,7 +14,7 @@
         android:src="@drawable/ic_baseline_account_box_24"
         app:civ_border_overlay="true"
         app:civ_border_width="3dp"
-        app:civ_border_color="#A85524"
+        app:civ_border_color="#FF3E00"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,13 +22,24 @@
         app:layout_constraintHorizontal_bias="0.1"
         app:layout_constraintVertical_bias="0.35"/>
 
+    <ImageView
+        android:id="@+id/ic_club_host"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_club_host"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintStart_toEndOf="@id/member_img"
+        app:layout_constraintEnd_toStartOf="@id/member_name"/>
+
     <TextView
         android:id="@+id/member_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="닉네임"
         android:textSize="18sp"
-        android:textColor="#A85524"
+        android:textColor="#FF3E00"
         android:textStyle="bold"
         android:layout_marginLeft="60dp"
         app:layout_constraintTop_toTopOf="parent"
@@ -42,7 +53,7 @@
         android:layout_height="wrap_content"
         android:text="자기소개"
         android:textSize="15sp"
-        android:textColor="#A85524"
+        android:textColor="#FF3E00"
         android:layout_marginLeft="62dp"
         app:layout_constraintTop_toBottomOf="@id/member_name"
         app:layout_constraintStart_toEndOf="@id/member_img" />
@@ -56,5 +67,5 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:tint="#A85524" />
+        android:tint="#FF3E00" />
 </androidx.constraintlayout.widget.ConstraintLayout>
