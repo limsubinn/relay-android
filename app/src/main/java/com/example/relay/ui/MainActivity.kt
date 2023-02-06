@@ -11,9 +11,8 @@ import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*
 import com.example.relay.mypage.MainService
-import com.example.relay.mypage.MyRecordFragment
-import com.example.relay.mypage.MypageFragment
-import com.example.relay.mypage.MypageService
+import com.example.relay.mypage.view.MyRecordFragment
+import com.example.relay.mypage.view.MypageFragment
 import com.example.relay.running.RunningFragment
 import com.example.relay.timetable.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
@@ -177,7 +176,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
     }
 
     override fun onGetProfileListSuccess(response: UserProfileListResponse) {
-        val res = response.result[1] // 수정 필요 !!!
+        val res = response.result[0] // 기본 프로필
         val userIdx = res.userIdx
 
         val editor = prefs.edit()

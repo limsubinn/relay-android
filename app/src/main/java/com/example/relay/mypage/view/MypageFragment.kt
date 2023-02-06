@@ -1,4 +1,4 @@
-package com.example.relay.mypage
+package com.example.relay.mypage.view
 
 import android.content.Context
 import android.content.Intent
@@ -15,8 +15,9 @@ import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
+import com.example.relay.mypage.service.MypageInterface
+import com.example.relay.mypage.service.MypageService
 import com.example.relay.mypage.models.DailyRecordResponse
-import com.example.relay.ui.models.UserProfileListResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver

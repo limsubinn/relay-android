@@ -1,4 +1,4 @@
-package com.example.relay.mypage
+package com.example.relay.mypage.view
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -13,6 +13,8 @@ import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMySettingsBinding
 import com.example.relay.login.LoginMainActivity
+import com.example.relay.mypage.service.MySettingInterface
+import com.example.relay.mypage.service.MySettingService
 import com.example.relay.mypage.models.ChangeMsgResponse
 import com.example.relay.mypage.models.ChangePwdResponse
 import kotlinx.android.synthetic.main.dialog_change_msg.view.*

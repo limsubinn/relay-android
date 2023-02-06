@@ -1,4 +1,4 @@
-package com.example.relay.mypage
+package com.example.relay.mypage.view
 
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.example.relay.databinding.FragmentMyRecordBinding
+import com.example.relay.mypage.service.MyRecordInterface
+import com.example.relay.mypage.service.MyRecordService
 import com.example.relay.mypage.decorator.Decorator1
 import com.example.relay.mypage.decorator.SelectDecorator
 import com.example.relay.mypage.decorator.SelectDecorator1

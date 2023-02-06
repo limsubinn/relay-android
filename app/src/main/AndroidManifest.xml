@@ -86,7 +86,7 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".mypage.MySettingsActivity"
+            android:name=".mypage.view.MySettingsActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

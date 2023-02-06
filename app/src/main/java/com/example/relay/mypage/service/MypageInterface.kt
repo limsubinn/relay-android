@@ -1,4 +1,4 @@
-package com.example.relay.mypage
+package com.example.relay.mypage.service
 
 import com.example.relay.mypage.models.*
 
