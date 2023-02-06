@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<selector android:exitFadeDuration="100"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:state_checked="true"
-        android:drawable="@drawable/cal_selection" />
-    <item
-        android:state_pressed="true"
-        android:drawable="@drawable/cal_selection" />
-    <item android:drawable="@android:color/transparent" />
-</selector>
+<shape
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval" >
+
+    <solid android:color="@color/black" />
+
+    <stroke
+        android:width="30dp"
+        android:color="@android:color/transparent" />
+</shape>

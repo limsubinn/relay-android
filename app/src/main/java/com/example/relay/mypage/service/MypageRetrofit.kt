@@ -29,7 +29,7 @@ interface MypageRetrofit {
         @Query("idx") idx: Long
     ) : Call<DailyRecordResponse>
 
-    @GET("/record/calendar")
+    @GET("/record/calender")
     fun getMonthRes(
         @Query("year") year: Int,
         @Query("month") month: Int,

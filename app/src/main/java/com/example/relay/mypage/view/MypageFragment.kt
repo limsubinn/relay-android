@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
@@ -36,6 +37,7 @@ class MypageFragment: Fragment(), MypageInterface {
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+    private var currentYear = 0
     private var curDate = ""
 
     private val userIdx = prefs.getLong("userIdx", 0L)
@@ -54,7 +56,6 @@ class MypageFragment: Fragment(), MypageInterface {
         super.onDetach()
         mainActivity = null
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -115,7 +116,7 @@ class MypageFragment: Fragment(), MypageInterface {
 
         val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
-                Log.d("calender selection", "$position, $date")
+                // Log.d("calender selection", "$position, $date")
 
                 curDate = simpleDateFormat.format(date)
                 MypageService(this@MypageFragment).tryGetDailyRecord(curDate, userIdx)
@@ -130,7 +131,7 @@ class MypageFragment: Fragment(), MypageInterface {
             }
         }
 
-        val singleRowCalendar = binding.selCalendar.apply {
+        binding.selCalendar.apply {
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
@@ -139,6 +140,22 @@ class MypageFragment: Fragment(), MypageInterface {
             initialPositionIndex = date - 3
             init()
             select(date - 1) // 오늘 날짜 선택
+        }
+
+        // 기록 -> 마이페이지
+        setFragmentResultListener("record_to_mypage") { requestKey, bundle ->
+
+            curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
+            year = Integer.parseInt(curDate.substring(0, 4))
+            month = Integer.parseInt(curDate.substring(5, 7))
+            date = Integer.parseInt(curDate.substring(8, 10))
+
+            binding.selCalendar.apply {
+                setDates(getFutureDatesOfSelectMonth(month, year))
+                initialPositionIndex = date - 3
+                init()
+                select(date-1)
+            }
         }
 
         // 달력 버튼
@@ -165,16 +182,19 @@ class MypageFragment: Fragment(), MypageInterface {
     }
 
     private fun getFutureDatesOfCurrentMonth(): List<Date> {
+        currentYear = calendar[Calendar.YEAR]
         currentMonth = calendar[Calendar.MONTH]
         return getDates(mutableListOf())
     }
 
-    private fun getFutureDatesOfSelectMonth(month: Int): List<Date> {
-        currentMonth = month
+    private fun getFutureDatesOfSelectMonth(month: Int, year: Int): List<Date> {
+        currentMonth = month-1
+        currentYear = year
         return getDates(mutableListOf())
     }
 
     private fun getDates(list: MutableList<Date>): List<Date> {
+        calendar.set(Calendar.YEAR, currentYear)
         calendar.set(Calendar.MONTH, currentMonth)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         list.add(calendar.time)

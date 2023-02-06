@@ -93,6 +93,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:mcv_showOtherDates="all"
-        app:mcv_weekDayLabels="@array/weekdays_custom"/>
+        app:mcv_weekDayLabels="@array/weekdays_custom"
+        app:mcv_selectionColor="@color/white"/>
 
 </LinearLayout>

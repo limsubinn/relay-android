@@ -1,6 +1,8 @@
-package com.example.relay.mypage.decorator
+package com.example.relay.mypage.view.decorator
 
 import android.content.Context
+import android.graphics.Color
+import android.text.style.ForegroundColorSpan
 import androidx.core.content.ContextCompat
 import com.example.relay.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -8,7 +10,7 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import java.util.*
 
-class SelectDecorator5(value: Date?, context: Context) :
+class SelectDecorator3(value: Date?, context: Context) :
     DayViewDecorator {
 
     private val date: CalendarDay
@@ -26,11 +28,12 @@ class SelectDecorator5(value: Date?, context: Context) :
     }
 
     override fun decorate(view: DayViewFacade) {
-        view.setSelectionDrawable(
+        view.setBackgroundDrawable(
             ContextCompat.getDrawable(
                 context,
-                R.drawable.decorator_state5_select
+                R.drawable.decorator_state3_select
             )!!
         )
+        view.addSpan(ForegroundColorSpan(Color.WHITE))
     }
 }

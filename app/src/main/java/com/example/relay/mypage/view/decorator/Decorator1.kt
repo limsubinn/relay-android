@@ -1,6 +1,7 @@
-package com.example.relay.mypage.decorator
+package com.example.relay.mypage.view.decorator
 
 import android.content.Context
+import android.graphics.Color
 import androidx.core.content.ContextCompat
 import com.example.relay.R
 import com.prolificinteractive.materialcalendarview.CalendarDay
@@ -8,7 +9,7 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import com.prolificinteractive.materialcalendarview.DayViewFacade
 import java.util.*
 
-class Decorator2(value: Date?, context: Context) :
+class Decorator1(value: Date?, context: Context) :
     DayViewDecorator {
 
     private val date: CalendarDay
@@ -26,6 +27,6 @@ class Decorator2(value: Date?, context: Context) :
     }
 
     override fun decorate(view: DayViewFacade) {
-        view.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.decorator_state2)!!)
+        view.setBackgroundDrawable(ContextCompat.getDrawable(context, R.drawable.decorator_state1)!!)
     }
 }

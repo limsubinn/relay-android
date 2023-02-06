@@ -1,4 +1,4 @@
-package com.example.relay.mypage.decorator
+package com.example.relay.mypage.view.decorator
 
 import android.content.Context
 import androidx.core.content.ContextCompat
