@@ -33,8 +33,8 @@ class MypageService(val mypageInterface: MypageInterface) {
         })
     }
 
-    fun tryGetDailyRecord(date: String){
-        retrofit.getDailyRes(date).enqueue(object : Callback<DailyRecordResponse>{
+    fun tryGetDailyRecord(date: String, idx: Long){
+        retrofit.getDailyRes(date, idx).enqueue(object : Callback<DailyRecordResponse>{
             override fun onResponse(call: Call<DailyRecordResponse>, response: Response<DailyRecordResponse>) {
                 Log.d("DailyRecordResponse", "success")
 

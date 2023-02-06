@@ -23,9 +23,10 @@ interface MypageRetrofit {
         @Body profileReq: String
     ) : Call<ChangeMsgResponse>
 
-    @GET("/record/daily")
+    @GET("/record")
     fun getDailyRes(
-        @Query("date") date: String
+        @Query("date") date: String,
+        @Query("idx") idx: Long
     ) : Call<DailyRecordResponse>
 
     @GET("/record/summary")
