@@ -12,7 +12,7 @@ import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMySettingsBinding
-import com.example.relay.login.LoginMainActivity
+import com.example.relay.login.view.LoginMainActivity
 import com.example.relay.mypage.service.MySettingInterface
 import com.example.relay.mypage.service.MySettingService
 import com.example.relay.mypage.models.ChangeMsgResponse

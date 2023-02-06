@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
-import com.example.relay.group.GetClubListInterface
-import com.example.relay.group.GetClubListService
-import com.example.relay.group.adapter.GroupListRVAdapter
+import com.example.relay.group.service.GetClubListInterface
+import com.example.relay.group.service.GetClubListService
+import com.example.relay.group.view.adapter.GroupListRVAdapter
 import com.example.relay.group.models.GroupListResponse
 import com.example.relay.group.models.GroupListResult
 import com.example.relay.ui.MainActivity
@@ -92,26 +92,15 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.rvGroupAll.adapter = listAdapter
         binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)
 
-//        if (res != null) {
-//            clubList.addAll(res)
-//        }
-//
-//        listAdapter.notifyDataSetChanged()
-
-
         // 리사이클러뷰 아이템 클릭 이벤트
         listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val clubIdx = clubList[position].clubIdx
-                val content = clubList[position].content
-                val imgURL = clubList[position].imgURL
-                val name = clubList[position].name
                 val recruitStatus = clubList[position].recruitStatus
 
                 // 리스트 -> 메인
                 parentFragmentManager.setFragmentResult("go_to_main",
-                    bundleOf("clubIdx" to clubIdx, "content" to content,
-                    "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
+                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
         })

@@ -1,8 +1,6 @@
 package com.example.relay.mypage.service
 
-import com.example.relay.login.data.LogInLocalReq
 import com.example.relay.mypage.models.*
-import com.example.relay.ui.models.UserProfileListResponse
 import retrofit2.Call
 import retrofit2.http.*
 

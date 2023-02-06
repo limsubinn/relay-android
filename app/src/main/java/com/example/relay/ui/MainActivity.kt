@@ -10,13 +10,14 @@ import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*
-import com.example.relay.mypage.MainService
+import com.example.relay.ui.service.MainService
 import com.example.relay.mypage.view.MyRecordFragment
 import com.example.relay.mypage.view.MypageFragment
 import com.example.relay.running.RunningFragment
-import com.example.relay.timetable.TimetableFragment
+import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
+import com.example.relay.ui.service.MainInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -143,7 +144,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         } else if (index == 2) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(binding.containerFragment.id, GroupMemberFragment())
+                .replace(binding.containerFragment.id, MemberListFragment())
                 .commitAllowingStateLoss()
         } else if (index == 3) {
             supportFragmentManager
@@ -154,6 +155,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
             supportFragmentManager
                 .beginTransaction()
                 .replace(binding.containerFragment.id, GroupCreateNFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 5) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, MemberPageFragment())
                 .commitAllowingStateLoss()
         }
     }
