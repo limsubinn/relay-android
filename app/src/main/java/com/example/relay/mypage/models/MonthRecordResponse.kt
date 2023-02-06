@@ -4,5 +4,5 @@ import com.example.relay.BaseResponse
 import com.google.gson.annotations.SerializedName
 
 data class MonthRecordResponse (
-    @SerializedName("result") val result: ArrayList<DailyRecordResult>
+    @SerializedName("result") val result: ArrayList<MonthRecordResult>
 ) : BaseResponse()

@@ -59,8 +59,8 @@ class MyRecordService(val myRecordInterface: MyRecordInterface) {
 
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
 
-    fun tryGetDailyRecord(year: Int, month: Int){
-        retrofit.getMonthRes(year, month).enqueue(object : Callback<MonthRecordResponse>{
+    fun tryGetDailyRecord(year: Int, month: Int, profileIdx: Long){
+        retrofit.getMonthRes(year, month, profileIdx).enqueue(object : Callback<MonthRecordResponse>{
             override fun onResponse(call: Call<MonthRecordResponse>, response: Response<MonthRecordResponse>) {
                 Log.d("MonthRecordResponse", "success")
 
