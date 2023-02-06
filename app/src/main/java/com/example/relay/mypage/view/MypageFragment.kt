@@ -36,6 +36,7 @@ class MypageFragment: Fragment(), MypageInterface {
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+    private var curDate = ""
 
     private val userIdx = prefs.getLong("userIdx", 0L)
     private val name = prefs.getString("name", "")
@@ -76,6 +77,8 @@ class MypageFragment: Fragment(), MypageInterface {
         calendar.time = Date()
         currentMonth = calendar[Calendar.MONTH]
 
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+
         val myCalendarViewManager = object : CalendarViewManager {
             override fun setCalendarViewResourceId(
                 position: Int,
@@ -114,9 +117,7 @@ class MypageFragment: Fragment(), MypageInterface {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
                 Log.d("calender selection", "$position, $date")
 
-                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
-                val curDate = simpleDateFormat.format(date)
-
+                curDate = simpleDateFormat.format(date)
                 MypageService(this@MypageFragment).tryGetDailyRecord(curDate, userIdx)
 
                 return true
@@ -144,7 +145,7 @@ class MypageFragment: Fragment(), MypageInterface {
         binding.btnCalendar.setOnClickListener {
             // 마이페이지 -> 마이레코드
             parentFragmentManager.setFragmentResult("go_to_my_record",
-                bundleOf("year" to year, "month" to month, "date" to date)
+                bundleOf("curDate" to curDate)
             )
             mainActivity?.mypageFragmentChange(1) // 기록 페이지로 이동
         }

@@ -40,26 +40,29 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+
         // 마이페이지 -> 마이레코드
         setFragmentResultListener("go_to_my_record") { requestKey, bundle ->
 
-            val year = bundle.getInt("year")
-            val month = bundle.getInt("month") + 1
-            val date = bundle.getInt("date")
+            val curDate = bundle.getString("curDate", "")
 
-            // 선택 날짜
-            val formatter = SimpleDateFormat("yyyy-MM-dd")
-            val selDate = formatter.parse("${year}-${month}-${date}")
+            if (curDate.isNotEmpty()) {
+                val selDate = simpleDateFormat.parse(curDate)
+                val year = Integer.parseInt(curDate.substring(0, 4))
+                val month = Integer.parseInt(curDate.substring(5, 7))
 
-            binding.calendarView.addDecorator(activity?.let { SelectDecorator(selDate, it) })
+                Log.d("month record", "$selDate, $year, $month")
 
-            // 월별 기록 불러오기
-            MyRecordService(this).tryGetDailyRecord(year, month)
+//            binding.calendarView.addDecorator(activity?.let { SelectDecorator(selDate, it) })
+//
+//            // 월별 기록 불러오기
+//            MyRecordService(this).tryGetDailyRecord(year, month)
+            }
         }
 
 
-        val formatter = SimpleDateFormat("yyyy-MM-dd")
-        val setDate = formatter.parse("2023-02-03")
+        val setDate = simpleDateFormat.parse("2023-02-03")
 
         // 데코레이터 테스트
         dayDecorator = activity?.let { Decorator1(setDate, it) }
