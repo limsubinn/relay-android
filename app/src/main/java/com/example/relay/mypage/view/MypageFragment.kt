@@ -2,6 +2,7 @@ package com.example.relay.mypage.view
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -148,10 +149,11 @@ class MypageFragment: Fragment(), MypageInterface {
         }
 
         // 기록 불러오기
-//        var yyyy = year.toString()
-//        var mm = (month+1).toString().padStart(2, '0')
-//        var dd = date.toString().padStart(2, '0')
-//        MypageService(this).tryGetDailyRecord("${yyyy}-${mm}-${dd}")
+        var yyyy = year.toString()
+        var mm = (month+1).toString().padStart(2, '0')
+        var dd = date.toString().padStart(2, '0')
+        var curDate = "${yyyy}-${mm}-${dd}"
+        MypageService(this).tryGetDailyRecord(curDate, userIdx)
     }
 
     override fun onDestroyView() {
@@ -218,7 +220,45 @@ class MypageFragment: Fragment(), MypageInterface {
     }
 
     override fun onGetDailyRecordSuccess(response: DailyRecordResponse) {
-        Log.d("record", response.result.toString())
+        if (response.isSuccess) {
+            val res = response.result
+            // Log.d("record", res.toString())
+
+            binding.tvNotRecord.visibility = View.GONE
+            binding.recordLayout.visibility = View.VISIBLE
+            binding.runningmap.visibility = View.VISIBLE
+
+            // 거리, 시간, 페이스
+            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "목표없음")) {
+                binding.goalValue.visibility = View.GONE
+                binding.goalTarget.text = res.time.toString() // 수정 필요
+                binding.goalTarget.setTextColor(Color.BLACK)
+                binding.goalType.text = "시간"
+            } else {
+                binding.goalType.text = res.goalType
+
+                if (res.goalType == "시간") {
+                    binding.goalValue.text = res.time.toString() // 수정 필요
+                    binding.goalTarget.text = res.goalValue.toString() // 수정 필요
+                    binding.otherType.text = "거리"
+                    binding.otherValue.text = res.distance.toString() + "km"
+                } else {
+                    binding.goalValue.text = res.distance.toString() + "km"
+                    binding.goalTarget.text = res.goalValue.toString() + "km"
+                    binding.otherType.text = "시간"
+                    binding.otherValue.text = res.time.toString() // 수정 필요
+                }
+
+                binding.runningPace.text = res.pace.toString() // 수정 필요
+            }
+        } else {
+            binding.tvNotRecord.visibility = View.VISIBLE
+            binding.recordLayout.visibility = View.GONE
+            binding.runningmap.visibility = View.GONE
+
+            binding.tvNotRecord.text = response.message
+        }
+
     }
 
     override fun onGetDailyRecordFailure(message: String) {
