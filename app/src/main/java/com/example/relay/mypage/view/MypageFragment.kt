@@ -16,16 +16,17 @@ import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
-import com.example.relay.mypage.service.MypageInterface
-import com.example.relay.mypage.service.MypageService
 import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.mypage.models.UserProfileResponse
+import com.example.relay.mypage.service.MypageInterface
+import com.example.relay.mypage.service.MypageService
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -35,6 +36,9 @@ class MypageFragment: Fragment(), MypageInterface {
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+
+    private val userIdx = prefs.getLong("userIdx", 0L)
+    private val name = prefs.getString("name", "")
 
     private var mainActivity: MainActivity? = null
 
@@ -108,6 +112,13 @@ class MypageFragment: Fragment(), MypageInterface {
 
         val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
+                Log.d("calender selection", "$position, $date")
+
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+                val curDate = simpleDateFormat.format(date)
+
+                MypageService(this@MypageFragment).tryGetDailyRecord(curDate, userIdx)
+
                 return true
             }
         }
@@ -138,9 +149,6 @@ class MypageFragment: Fragment(), MypageInterface {
             mainActivity?.mypageFragmentChange(1) // 기록 페이지로 이동
         }
 
-        val userIdx = prefs.getLong("userIdx", 0L)
-        val name = prefs.getString("name", "")
-
         // 프로필 불러오기
         if (name != null) {
             if ((userIdx != 0L) && (name.isNotEmpty())) {
@@ -148,12 +156,6 @@ class MypageFragment: Fragment(), MypageInterface {
             }
         }
 
-        // 기록 불러오기
-        var yyyy = year.toString()
-        var mm = (month+1).toString().padStart(2, '0')
-        var dd = date.toString().padStart(2, '0')
-        var curDate = "${yyyy}-${mm}-${dd}"
-        MypageService(this).tryGetDailyRecord(curDate, userIdx)
     }
 
     override fun onDestroyView() {
@@ -222,7 +224,6 @@ class MypageFragment: Fragment(), MypageInterface {
     override fun onGetDailyRecordSuccess(response: DailyRecordResponse) {
         if (response.isSuccess) {
             val res = response.result
-            // Log.d("record", res.toString())
 
             binding.tvNotRecord.visibility = View.GONE
             binding.recordLayout.visibility = View.VISIBLE
