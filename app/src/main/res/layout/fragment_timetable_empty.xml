@@ -4,4 +4,4 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="0dp"
-    tools:context=".timetable.TimetableEmptyFragment" />
+    tools:context=".timetable.view.TimetableEmptyFragment" />

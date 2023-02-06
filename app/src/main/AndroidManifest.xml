@@ -31,49 +31,49 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.NewPwActivity"
+            android:name=".login.view.NewPwActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.AuthenticationActivity"
+            android:name=".login.view.AuthenticationActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.ForgetPwActivity"
+            android:name=".login.view.ForgetPwActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.LastCheckActivity"
+            android:name=".login.view.LastCheckActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.PrivacyConditionActivity"
+            android:name=".login.view.PrivacyConditionActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.SignupActivity"
+            android:name=".login.view.SignupActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".login.LoginMainActivity"
+            android:name=".login.view.LoginMainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

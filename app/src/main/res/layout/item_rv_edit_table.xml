@@ -1,95 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="110dp"
+    android:layout_height="130dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_marginHorizontal="10dp"
-    android:layout_marginVertical="5dp"
-    android:background="@color/btn_background_gray">
-
-    <EditText
-        android:id="@+id/et_tmp_day"
-        android:layout_width="40dp"
-        android:layout_height="50dp"
-        android:textSize="22sp"
-        android:gravity="center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="5dp" />
-
-    <TextView
-        android:id="@+id/tv_tmp_day"
-        android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:textSize="22sp"
-        android:text="요일"
-        app:layout_constraintStart_toEndOf="@id/et_tmp_day"
-        app:layout_constraintTop_toTopOf="@id/et_tmp_day"
-        android:layout_marginTop="10dp"/>
-
-    <Button
-        android:id="@+id/btn_start"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
-        android:gravity="center"
-        android:textColor="@color/black"
-        android:text="9:00"
-        app:layout_constraintStart_toEndOf="@id/tv_tmp_day"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="5dp"
-        style="?android:attr/borderlessButtonStyle"/>
-
-
-    <Button
-        android:id="@+id/btn_end"
-        android:layout_width="100dp"
-        android:layout_height="45dp"
-        android:gravity="center"
-        android:textColor="@color/black"
-        android:text="10:00"
-        app:layout_constraintStart_toEndOf="@id/btn_start"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="5dp"
-        style="?android:attr/borderlessButtonStyle"/>
-
+    android:layout_marginVertical="8dp"
+    android:background="@drawable/rectangle_bottom_gray_border">
 
     <ImageButton
         android:id="@+id/btn_remove"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:background="@drawable/ic_arrow_back"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="@drawable/ic_baseline_close_24"
+        app:layout_constraintEnd_toEndOf="@id/btn_end"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_margin="3dp" />
 
     <TextView
-        android:id="@+id/tv_tmp_goal"
+        android:id="@+id/tv_time"
         android:layout_width="wrap_content"
-        android:layout_height="35dp"
-        android:textSize="22sp"
-        android:text="@string/goal"
-        app:layout_constraintStart_toStartOf="@id/et_tmp_day"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="10dp" />
+        android:layout_height="wrap_content"
+        android:textColor="@color/main_color_btn1"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="TIME"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/tv_goal"
+        android:layout_marginStart="18dp"
+        android:layout_marginBottom="18dp" />
 
-    <Spinner
-        android:id="@+id/dropdown_goal"
-        android:layout_width="150dp"
-        android:layout_height="45dp"
-        app:layout_constraintStart_toEndOf="@id/tv_tmp_goal"
-        app:layout_constraintBottom_toBottomOf="@id/tv_tmp_goal"
-        android:layout_marginStart="20dp" />
-
-    <EditText
-        android:id="@+id/et_tmp_goal"
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_day"
         android:layout_width="100dp"
-        android:layout_height="45dp"
+        android:layout_height="35dp"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:text="월요일"
         android:gravity="center"
-        app:layout_constraintStart_toEndOf="@id/dropdown_goal"
-        app:layout_constraintBottom_toBottomOf="@id/tv_tmp_goal"
-        android:layout_marginStart="20dp" />
+        app:layout_constraintStart_toEndOf="@id/tv_time"
+        app:layout_constraintBottom_toBottomOf="@id/tv_time"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/btn_back"
+        style="?android:attr/borderlessButtonStyle"/>
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_start"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="9:00"
+        app:layout_constraintStart_toEndOf="@id/btn_day"
+        app:layout_constraintBottom_toBottomOf="@id/btn_day"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/btn_back"
+        style="?android:attr/borderlessButtonStyle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:text="~"
+        app:layout_constraintStart_toStartOf="@id/btn_start"
+        app:layout_constraintEnd_toEndOf="@id/btn_end"
+        app:layout_constraintTop_toTopOf="@id/btn_start"
+        app:layout_constraintBottom_toBottomOf="@id/btn_start" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_end"
+        android:layout_width="70dp"
+        android:layout_height="35dp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="10:00"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/btn_day"
+        android:layout_marginEnd="12dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/btn_back"
+        style="?android:attr/borderlessButtonStyle"/>
+
+
+    <TextView
+        android:id="@+id/tv_goal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/main_color_btn1"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="GOAL"
+        app:layout_constraintStart_toStartOf="@id/tv_time"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="15dp" />
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_goal_type"
+        android:layout_width="100dp"
+        android:layout_height="35dp"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="목표 없음"
+        android:gravity="center"
+        app:layout_constraintStart_toStartOf="@id/btn_day"
+        app:layout_constraintBottom_toBottomOf="@id/tv_goal"
+        android:background="@drawable/btn_back"
+        style="?android:attr/borderlessButtonStyle"/>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_goal"
+        android:layout_width="0dp"
+        android:layout_height="35dp"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:text="----"
+        app:layout_constraintStart_toStartOf="@id/btn_start"
+        app:layout_constraintEnd_toEndOf="@id/btn_end"
+        app:layout_constraintBottom_toBottomOf="@id/btn_goal_type"
+        android:background="@drawable/btn_back"
+        style="?android:attr/borderlessButtonStyle" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

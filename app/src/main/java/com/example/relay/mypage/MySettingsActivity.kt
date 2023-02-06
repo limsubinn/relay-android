@@ -7,7 +7,7 @@ import android.os.Bundle
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivityMySettingsBinding
-import com.example.relay.login.LoginMainActivity
+import com.example.relay.login.view.LoginMainActivity
 
 class MySettingsActivity : AppCompatActivity() {
     private val viewBinding: ActivityMySettingsBinding by lazy{
