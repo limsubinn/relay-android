@@ -11,9 +11,9 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentGroupMemberBinding
-import com.example.relay.group.GetMemberListInterface
-import com.example.relay.group.GetMemberListService
-import com.example.relay.group.adapter.GroupMemberRVAdapter
+import com.example.relay.group.service.GetMemberListInterface
+import com.example.relay.group.service.GetMemberListService
+import com.example.relay.group.view.adapter.GroupMemberRVAdapter
 import com.example.relay.group.models.Member
 import com.example.relay.group.models.MemberResponse
 import com.example.relay.ui.MainActivity

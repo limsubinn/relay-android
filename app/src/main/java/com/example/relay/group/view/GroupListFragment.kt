@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
-import com.example.relay.group.GetClubListInterface
-import com.example.relay.group.GetClubListService
-import com.example.relay.group.adapter.GroupListRVAdapter
+import com.example.relay.group.service.GetClubListInterface
+import com.example.relay.group.service.GetClubListService
+import com.example.relay.group.view.adapter.GroupListRVAdapter
 import com.example.relay.group.models.GroupListResponse
 import com.example.relay.group.models.GroupListResult
 import com.example.relay.ui.MainActivity
@@ -106,7 +106,7 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         })
 
         // 모집 상태
-        val recruitList = listOf("전체", "모집중", "모집완료")
+        val recruitList = listOf("모집전체", "모집중", "모집완료")
         val recruitAdapter = activity?.let {
             ArrayAdapter<String>(
                 it,
@@ -120,19 +120,19 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.spRecruitStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 clubList.clear()
-                if (p2 == 1) {
+                if (p2 == 1) { // 모집중
                     res.forEach {
                         if (it.recruitStatus == "recruiting") {
                             clubList.add(it)
                         }
                     }
-                } else if (p2 == 2) {
+                } else if (p2 == 2) { // 모집 완료
                     res.forEach {
                         if (it.recruitStatus != "recruiting") {
                             clubList.add(it)
                         }
                     }
-                } else {
+                } else { // 전체
                     clubList.addAll(res)
                 }
                 listAdapter.notifyDataSetChanged()
@@ -145,9 +145,18 @@ class GroupListFragment: Fragment(), GetClubListInterface {
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
-
         }
 
+        // 러너 레벨
+        val levelList = listOf("레벨전체", "초보러너", "중급러너", "프로러너")
+        val levelAdapter = activity?.let {
+            ArrayAdapter<String>(
+                it,
+                R.layout.spinner_item,
+                levelList
+            )
+        }
+        // 레벨 api 아직 x
     }
 
     override fun onGetClubListFailure(message: String) {

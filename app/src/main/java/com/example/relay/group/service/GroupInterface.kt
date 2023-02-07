@@ -1,4 +1,4 @@
-package com.example.relay.group
+package com.example.relay.group.service
 
 import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupInfoResponse

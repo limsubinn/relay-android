@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupCreateBinding
-import com.example.relay.group.GetUserClubInterface
-import com.example.relay.group.GetUserClubService
+import com.example.relay.group.service.GetUserClubInterface
+import com.example.relay.group.service.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_goal_km.view.*

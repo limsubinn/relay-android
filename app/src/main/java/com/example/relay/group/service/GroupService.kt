@@ -1,4 +1,4 @@
-package com.example.relay.group
+package com.example.relay.group.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
@@ -22,7 +22,7 @@ class GetUserClubService(val mainInterface: GetUserClubInterface) {
                 if (response.code() == 200) {
                     mainInterface.onGetUserClubSuccess(response.body() as GroupAcceptedResponse)
                 } else {
-                    Log.d("GroupAcceptedResponse", "4xx error")
+                    Log.d("GroupAcceptedResponse", response.message())
                     // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
@@ -48,7 +48,7 @@ class GetClubListService(val listInterface: GetClubListInterface) {
                 if (response.code() == 200) {
                     listInterface.onGetClubListSuccess(response.body() as GroupListResponse)
                 } else {
-                    Log.d("GroupListResponse", "4xx error")
+                    Log.d("GroupListResponse", response.message())
                     // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }

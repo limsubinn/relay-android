@@ -75,4 +75,15 @@
         \t\t보유 기간: 3년\n</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="saturday"><font color="#1877F2">토</font></string>
+    <string name="sunday"><font color="#FF0000">일</font></string>
+    <array name="weekdays_custom">
+        <item>@string/sunday</item>
+        <item>월</item>
+        <item>화</item>
+        <item>수</item>
+        <item>목</item>
+        <item>금</item>
+        <item>@string/saturday</item>
+    </array>
 </resources>
