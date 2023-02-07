@@ -3,6 +3,7 @@ package com.example.relay
 import android.app.Application
 import android.content.SharedPreferences
 import android.util.Log
+import com.kakao.sdk.common.KakaoSdk
 import dagger.hilt.android.HiltAndroidApp
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -29,7 +30,8 @@ class ApplicationClass : Application() {
     // 앱이 처음 생성될 때
     override fun onCreate() {
         super.onCreate()
-
+        // kakaoSDK 초기화
+        KakaoSdk.init(this, getString(R.string.kakao_app_key))
         // shared preference
         prefs =
             applicationContext.getSharedPreferences("prefs", MODE_PRIVATE)
