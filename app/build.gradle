@@ -155,4 +155,7 @@ dependencies {
     // fragment result api
     implementation "androidx.fragment:fragment:1.5.3"
     implementation "androidx.fragment:fragment-ktx:1.5.3"
+
+    // SNS login
+    implementation 'com.google.android.gms:play-services-auth:20.4.1'
 }
