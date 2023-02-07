@@ -9,8 +9,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
-import com.example.relay.group.GetUserClubInterface
-import com.example.relay.group.GetUserClubService
+import com.example.relay.group.service.GetUserClubInterface
+import com.example.relay.group.service.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.timetable.service.TimetableInterface
 import com.example.relay.timetable.service.TimetableService

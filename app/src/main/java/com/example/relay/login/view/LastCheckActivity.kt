@@ -47,14 +47,27 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
             setResult(RESULT_OK, intent)
             finish()
         } else {
+            Toast.makeText(
+                this@LastCheckActivity,
+                "로컬 회원가입 성공",
+                Toast.LENGTH_SHORT
+            ).show()
+
             prefs.edit().putString("accessToken", response.result.accessToken).apply()
 
-            val name = prefs.getString("name", "")
-            val url = "https://i.ibb.co/ySXTrQS/Avatar-6.png" // 이미지 임시로 설정
+            val intent = Intent(
+                this@LastCheckActivity,
+                LoginMainActivity::class.java
+            )
+            finishAffinity()        // 스택에 쌓인 액티비티 비우기
+            startActivity(intent)
 
-            if (name != null) {
-                SignUpService(this).tryPostUserProfile(name, url, "n", name, "")
-            }
+//            val name = prefs.getString("name", "")
+//            val url = "https://i.ibb.co/ySXTrQS/Avatar-6.png" // 이미지 임시로 설정
+//
+//            if (name != null) {
+//                SignUpService(this).tryPostUserProfile(name, url, "n", name, "")
+//            }
         }
     }
 
@@ -62,31 +75,6 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
         Toast.makeText(
             this@LastCheckActivity,
             "로컬 회원가입 실패",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    override fun onPostUserProfileSuccess(response: UserProfileRes) {
-        Toast.makeText(
-            this@LastCheckActivity,
-            "로컬 회원가입 성공",
-            Toast.LENGTH_SHORT
-        ).show()
-
-        val intent = Intent(
-            this@LastCheckActivity,
-            LoginMainActivity::class.java
-        )
-        // prefs.edit().putLong("profileIdx", response.result).apply()
-
-        finishAffinity()        // 스택에 쌓인 액티비티 비우기
-        startActivity(intent)
-    }
-
-    override fun onPostUserProfileFailure(message: String) {
-        Toast.makeText(
-            this@LastCheckActivity,
-            "프로필 생성 실패",
             Toast.LENGTH_SHORT
         ).show()
     }

@@ -1,4 +1,4 @@
-package com.example.relay.ui
+package com.example.relay.ui.service
 
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse

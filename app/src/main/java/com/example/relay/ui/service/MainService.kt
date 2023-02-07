@@ -1,10 +1,8 @@
-package com.example.relay.mypage
+package com.example.relay.ui.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
 import com.example.relay.ui.models.UserInfoResponse
-import com.example.relay.ui.MainInterface
-import com.example.relay.ui.MainRetrofit
 import com.example.relay.ui.models.UserProfileListResponse
 import retrofit2.Call
 import retrofit2.Callback
