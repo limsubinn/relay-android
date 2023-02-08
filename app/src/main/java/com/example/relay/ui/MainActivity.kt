@@ -6,7 +6,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.ApplicationClass.Companion.prefs
-import com.example.relay.OnBottomSheetCallbacks
+import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*

@@ -1,10 +1,10 @@
-package com.example.relay
+package com.example.relay.running
 
 import android.Manifest
 import android.content.Context
 import android.location.Location
 import android.os.Build
-import com.example.relay.service.Polyline
+import com.example.relay.running.service.Polyline
 import pub.devrel.easypermissions.EasyPermissions
 import java.util.concurrent.TimeUnit
 import kotlin.math.round

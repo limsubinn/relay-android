@@ -45,7 +45,7 @@
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
 <!--        app:behavior_skipCollapsed="true"-->
-<!--        app:layout_behavior="com.example.relay.GestureLockedBottomSheetBehavior"-->
+<!--        app:layout_behavior="com.example.relay.running.GestureLockedBottomSheetBehavior"-->
 <!--        app:layout_constraintBottom_toTopOf="@id/nav_bottom"-->
 <!--        app:layout_constraintEnd_toEndOf="parent"-->
 <!--        app:layout_constraintStart_toStartOf="parent" />-->

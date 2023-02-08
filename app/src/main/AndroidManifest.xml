@@ -100,7 +100,7 @@
                 android:value="" />
         </activity>
 
-        <service android:name=".service.TrackingService"
+        <service android:name=".running.service.TrackingService"
             android:foregroundServiceType="location"/>
 
         <meta-data
