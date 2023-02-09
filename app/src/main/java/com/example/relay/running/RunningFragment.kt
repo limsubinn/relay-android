@@ -28,6 +28,7 @@ import com.example.relay.R
 import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
 import com.example.relay.running.models.PathPoints
+import com.example.relay.running.models.RunStrResponse
 import com.example.relay.running.service.Polyline
 import com.example.relay.running.service.RunningInterface
 import com.example.relay.running.service.RunningService
@@ -68,6 +69,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
     private var curDistance = 0L
 
     private var listener: OnBottomSheetCallbacks? = null
+
+    var runningRecordIdx: Long = 0
 
     var currentMarker: Marker? = null
     var markerView: View? = null
@@ -275,7 +278,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
             viewModel.insertRun(run)
-            RunningService(this).tryPostRunEnd(distanceInMeters,locationList,avgSpeed.toLong(),100,formattedTime)
+            RunningService(this).tryPostRunEnd(distanceInMeters,locationList,avgSpeed.toLong(),runningRecordIdx,formattedTime)
             locationList.clear()
             val showToast = Toast.makeText(context, "DB 저장",Toast.LENGTH_LONG)
             showToast.show()
@@ -454,8 +457,26 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         markerView = LayoutInflater.from(context).inflate(com.example.relay.R.drawable.marker,null)
     }
 
-    override fun onPostRunStrSuccess() {
+    override fun onPostRunStrSuccess(response: RunStrResponse) {
         Log.d("RunStart", "onPostRunStrSuccess")
+
+//        val res = response.result
+//
+//        if (res.goalType == "TIME"){
+//            binding.tvGoal.text = "${res.goal}"
+//            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(res.goal.toLong() - curTimeInMillis + 1000, true)
+//            binding.tvTimer.text = formattedGoalTime
+//
+//        } else {
+//            binding.tvGoal.text = "${res.goal}"
+//            var distanceInMeters = 0
+//            for(polyline in pathPoints) {
+//                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
+//            }
+//            val formattedGoalDistance = res.goal - distanceInMeters
+//            binding.tvTimer.text = formattedGoalDistance.toString()
+//        }
+//        runningRecordIdx = res.runningRecordIdx
     }
 
     override fun onPostRunStrFailure(message: String) {
