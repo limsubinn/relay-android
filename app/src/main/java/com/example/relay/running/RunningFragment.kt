@@ -13,7 +13,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -28,6 +27,7 @@ import com.example.relay.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.relay.R
 import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
+import com.example.relay.running.models.PathPoints
 import com.example.relay.running.service.Polyline
 import com.example.relay.running.service.RunningInterface
 import com.example.relay.running.service.RunningService
@@ -43,6 +43,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.lang.Math.round
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @AndroidEntryPoint
@@ -55,6 +57,11 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
 
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+    var locationList = mutableListOf<PathPoints>()
+
+    var mNow: Long = 0
+    var mDate: Date? = null
+    var mFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
 
     private var curTimeInMillis = 0L
 
@@ -263,10 +270,13 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
                 //binding.tvDistance.text = distanceInMeters.toString()
             }
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             val dateTimestamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
             viewModel.insertRun(run)
+            RunningService(this).tryPostRunEnd(distanceInMeters,locationList,avgSpeed.toLong(),100,formattedTime)
+            locationList.clear()
             val showToast = Toast.makeText(context, "DB 저장",Toast.LENGTH_LONG)
             showToast.show()
             stopRun()
@@ -428,6 +438,11 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         if (currentMarker != null) currentMarker!!.remove()
         val currentLatLng = LatLng(location.latitude, location.longitude)
         val markerOptions = MarkerOptions()
+        mNow = System.currentTimeMillis()
+        mDate = Date(mNow)
+        val time = mFormat.format(mDate).toString()
+        locationList.add(PathPoints(location.latitude, location.longitude,isTracking.toString(),time))
+        Log.d("LocationList","${locationList}")
         markerOptions.position(currentLatLng)
         markerOptions.draggable(true)
         currentMarker = map?.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon)))
@@ -448,10 +463,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
     }
 
     override fun onPostRunEndSuccess() {
-        TODO("Not yet implemented")
+        Log.d("RunEnd", "onPostRunEndSuccess")
     }
 
     override fun onPostRunEndFailure(message: String) {
-        TODO("Not yet implemented")
+        Log.d("RunEnd", "onPostRunEndFailure")
     }
 }

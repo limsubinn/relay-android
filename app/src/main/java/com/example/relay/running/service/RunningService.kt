@@ -32,7 +32,7 @@ class RunningService(val runningInterface: RunningInterface) {
         }))
     }
 
-    fun tryPostRunEnd(distance: Long, locationList: MutableList<PathPoints>, pace: Long, runningRecordIdx: Long, time: String){
+    fun tryPostRunEnd(distance: Int, locationList: MutableList<PathPoints>, pace: Long, runningRecordIdx: Long, time: String){
         retrofit.postRunEndRes(RunEndRequest(distance, locationList, pace, runningRecordIdx, time)).enqueue((object : retrofit2.Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 Log.d("RunEnd", "success")
