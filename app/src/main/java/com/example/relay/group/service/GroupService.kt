@@ -2,10 +2,7 @@ package com.example.relay.group.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
-import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.group.models.GroupInfoResponse
-import com.example.relay.group.models.GroupListResponse
-import com.example.relay.group.models.MemberResponse
+import com.example.relay.group.models.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -109,6 +106,32 @@ class GetMemberListService(val memberInterface: GetMemberListInterface) {
                 Log.d("MemberResponse", "fail")
                 t.printStackTrace()
                 memberInterface.onGetMemberListFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class GetClubDailyService(val dailyInterface: GetClubDailyInterface) {
+
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryGetClubDaily(clubIdx: Long, date: String){
+        retrofit.getClubDailyRes(clubIdx, date).enqueue(object : Callback<GroupDailyRecordResponse>{
+            override fun onResponse(call: Call<GroupDailyRecordResponse>, response: Response<GroupDailyRecordResponse>) {
+                Log.d("GroupDailyResponse", "success")
+
+                if (response.code() == 200) {
+                    dailyInterface.onGetClubDailySuccess(response.body() as GroupDailyRecordResponse)
+                } else {
+                    Log.d("GroupInfoResponse", "4xx error")
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
+            }
+
+            override fun onFailure(call: Call<GroupDailyRecordResponse>, t: Throwable) {
+                Log.d("GroupDailyResponse", "fail")
+                t.printStackTrace()
+                dailyInterface.onGetClubDailyFailure(t.message ?: "통신 오류")
             }
         })
     }
