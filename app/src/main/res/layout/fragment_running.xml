@@ -59,11 +59,11 @@
                     android:layout_marginTop="5dp"
                     android:text="크게 보기"
                     android:textColor="@color/main"
-                    android:textSize="12sp"
+                    android:textSize="9sp"
                     android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="@+id/imageView"
-                    app:layout_constraintStart_toStartOf="@+id/imageView"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView" />
+                    app:layout_constraintEnd_toEndOf="@+id/img_look_big"
+                    app:layout_constraintStart_toStartOf="@+id/img_look_big"
+                    app:layout_constraintTop_toBottomOf="@+id/img_look_big" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/constraintLayout"
@@ -73,7 +73,7 @@
                     android:layout_marginTop="40dp"
                     android:layout_marginEnd="35dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintStart_toEndOf="@+id/img_look_big"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
@@ -134,12 +134,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <ImageView
-                    android:id="@+id/imageView"
-                    android:layout_width="46dp"
-                    android:layout_height="46dp"
+                    android:id="@+id/img_look_big"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
                     android:layout_marginStart="30dp"
                     android:layout_marginTop="60dp"
-                    android:src="@drawable/img_bottomsheet_icon"
+                    android:src="@drawable/ico_running_big"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -183,7 +183,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="35dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintStart_toEndOf="@+id/img_look_big"
                     app:layout_constraintTop_toBottomOf="@id/constraintLayout">
 
                     <TextView
