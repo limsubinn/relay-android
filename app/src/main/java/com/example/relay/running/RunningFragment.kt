@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
@@ -28,6 +29,8 @@ import com.example.relay.R
 import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
 import com.example.relay.running.service.Polyline
+import com.example.relay.running.service.RunningInterface
+import com.example.relay.running.service.RunningService
 import com.example.relay.running.service.TrackingService
 import com.example.relay.ui.viewmodels.RunningViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -43,7 +46,7 @@ import java.lang.Math.round
 
 
 @AndroidEntryPoint
-class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
+class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningInterface {
 
     private val viewModel: RunningViewModel by viewModels()
     private lateinit var binding: FragmentRunningBinding
@@ -99,9 +102,9 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
 //        setCustomMarkerView()
 
-
         binding.btnStart1.setOnClickListener {
             startActivity(Intent(context,RunSplashActivity::class.java))
+            RunningService(this).tryPostRunStart(66)   //달리기 시작 API
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
             startRun()
@@ -119,13 +122,16 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             endRunAndSaveToDB()
         }
 
-        binding.tvLookBig.setOnClickListener {
+        //크게 보기(다이얼로그 띄우기)
+        binding.imgLookBig.setOnClickListener {
             val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_running, null)
-            val mBuilder = AlertDialog.Builder(context)
+            val mBuilder = AlertDialog.Builder(context)  //괄호 안 context, R.drawable.four_rounded_shape 해주면 전체화면 꽉 참
                 .setView(mDialogView)
             val  mAlertDialog = mBuilder.show()
 
-            val button = mDialogView.findViewById<ImageView>(R.id.img_close)
+            mAlertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))  //배경 투명처리 해줘야 배경 모양 드러남
+
+            val button = mDialogView.findViewById<TextView>(R.id.img_close)
                 button.setOnClickListener {
                 mAlertDialog.dismiss()
             }
@@ -155,6 +161,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         return binding.root
     }
 
+    //observer로 변동사항 표시
     private fun subscribeToObservers() {
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
             updateTracking(it)
@@ -181,6 +188,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         })
     }
 
+    //달리기 시작
     private fun startRun() {
         if(isTracking) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
@@ -199,6 +207,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //달리기 종료
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
         binding.layoutTimer.visibility = View.GONE
@@ -245,6 +254,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //달리기 종료 시 DB 저장
     private fun endRunAndSaveToDB() {
         map?.snapshot { bmp ->
             var distanceInMeters = 0
@@ -263,6 +273,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //달리기 추적 선 연결
     private fun addAllPolylines() {
         for(polyline in pathPoints) {
             val polylineOptions = PolylineOptions()
@@ -274,6 +285,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //가장 최신으로 추가되는 추적 선 연결
     private fun addLatestPolyline() {
         if(pathPoints.isNotEmpty() && pathPoints.last().size > 1){
             val preLastLating = pathPoints.last()[pathPoints.last().size - 2]
@@ -291,8 +303,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-
-
+    //위치 권한 허용
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {
             return
@@ -412,6 +423,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 //        }
 //    }
 
+    //현재 위치 마커 표시 함수
     fun setCurrentLocation(location: LatLng) {
         if (currentMarker != null) currentMarker!!.remove()
         val currentLatLng = LatLng(location.latitude, location.longitude)
@@ -425,5 +437,21 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun setCustomMarkerView() {
         markerView = LayoutInflater.from(context).inflate(com.example.relay.R.drawable.marker,null)
+    }
+
+    override fun onPostRunStrSuccess() {
+        Log.d("RunStart", "onPostRunStrSuccess")
+    }
+
+    override fun onPostRunStrFailure(message: String) {
+        Log.d("RunStart", "onPostRunStrFailure")
+    }
+
+    override fun onPostRunEndSuccess() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPostRunEndFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }
