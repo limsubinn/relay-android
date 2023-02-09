@@ -142,6 +142,16 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 //            select(date - 1) // 오늘 날짜 선택
         }
 
+
+        // 달력 버튼
+        binding.btnCalendar.setOnClickListener {
+            // 그룹페이지 -> 그룹레코드
+            parentFragmentManager.setFragmentResult("go_to_group_record",
+                bundleOf("curDate" to curDate)
+            )
+            mainActivity?.groupFragmentChange(6) // 기록 페이지로 이동
+        }
+
         // 그룹 목록 버튼
         binding.btnRight.setOnClickListener{
             mainActivity?.groupFragmentChange(1)
@@ -205,11 +215,20 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             binding.btnJoinTeam.text = "탈퇴하기"
             clubIdx = res.clubIdx
 
+            // 기록 -> 그룹페이지
+            setFragmentResultListener("record_to_group") { requestKey, bundle ->
+
+                curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
+                year = Integer.parseInt(curDate.substring(0, 4))
+                month = Integer.parseInt(curDate.substring(5, 7))
+                date = Integer.parseInt(curDate.substring(8, 10))
+            }
+
             binding.selCalendar.apply {
-                setDates(getFutureDatesOfCurrentMonth())
+                setDates(getFutureDatesOfSelectMonth(month, year))
                 initialPositionIndex = date - 3
                 init()
-                select(date - 1) // 오늘 날짜 선택
+                select(date - 1) // 날짜 선택
             }
 
             GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
@@ -299,6 +318,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     }
 
     override fun onGetClubDailyFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, "해당 그룹의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }
