@@ -34,8 +34,7 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
                 if (name.isEmpty() || email.isEmpty() || pw.isEmpty())
                     Toast.makeText(this@LastCheckActivity, "prefs 오류" , Toast.LENGTH_SHORT).show()
                 else
-                    SignUpService(this).tryPostLocalSignIn()
-
+                    SignUpService(this).tryPostLocalSignUp()
             }
         }
     }

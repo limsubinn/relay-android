@@ -8,14 +8,17 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivitySignupBinding
+import com.example.relay.login.service.LogInSNSInterface
+import com.example.relay.login.service.LogInService
+import com.example.relay.login.service.LogInSnsService
+import com.kakao.sdk.user.model.User
 
-class SignupActivity : AppCompatActivity() {
+class SignupActivity : AppCompatActivity(), LogInSNSInterface {
     private val viewBinding: ActivitySignupBinding by lazy {
         ActivitySignupBinding.inflate(layoutInflater)
     }
 
     private lateinit var getResultText: ActivityResultLauncher<Intent>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,6 +62,11 @@ class SignupActivity : AppCompatActivity() {
                 // startActivity(intent)
                 getResultText.launch(intent)
             }
+        }
+
+        viewBinding.btnSnsKakao.setOnClickListener{
+            // 카카오와 연결, 서버 연동x
+            LogInSnsService(this).tryKakaoLogIn(this)
         }
     }
 }

@@ -8,3 +8,7 @@ interface LogInInterface {
     fun onPostLocalLogInWrongPwd()
     fun onPostLocalLogInFailure(message: String)
 }
+
+interface LogInSNSInterface{
+
+}
