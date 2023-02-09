@@ -1,7 +1,9 @@
 package com.example.relay.running.service
 
+import com.example.relay.running.models.RunStrResponse
+
 interface RunningInterface {
-    fun onPostRunStrSuccess()
+    fun onPostRunStrSuccess(response: RunStrResponse)
     fun onPostRunStrFailure(message: String)
 
     fun onPostRunEndSuccess()

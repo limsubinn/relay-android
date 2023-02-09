@@ -3,9 +3,8 @@ package com.example.relay.running.service
 import android.util.Log
 import com.example.relay.ApplicationClass
 import com.example.relay.BaseResponse
-import com.example.relay.running.models.PathPoints
-import com.example.relay.running.models.RunEndRequest
-import com.example.relay.running.models.RunStrRequest
+import com.example.relay.running.models.*
+import com.example.relay.timetable.models.GroupTimetableRes
 import retrofit2.Call
 import retrofit2.Response
 
@@ -14,17 +13,17 @@ class RunningService(val runningInterface: RunningInterface) {
     private val retrofit: RunningRetrofit = ApplicationClass.sRetrofit.create(RunningRetrofit::class.java)
 
     fun tryPostRunStart(profileIdx:Long){
-        retrofit.postRunStrRes(RunStrRequest(profileIdx)).enqueue((object : retrofit2.Callback<BaseResponse> {
-            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+        retrofit.postRunStrRes(RunStrRequest(profileIdx)).enqueue((object : retrofit2.Callback<RunStrResponse> {
+            override fun onResponse(call: Call<RunStrResponse>, response: Response<RunStrResponse>) {
                 Log.d("RunStart", "success")
                 if (response.isSuccessful) { // response.code == 200
-                    runningInterface.onPostRunStrSuccess()
+                    runningInterface.onPostRunStrSuccess(response.body() as RunStrResponse)
                 }else {
                     Log.d("RunStart", "failure")
                 }
             }
 
-            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+            override fun onFailure(call: Call<RunStrResponse>, t: Throwable) {
                 Log.d("RunStart", t.message!!)
                 t.printStackTrace()
                 runningInterface.onPostRunStrFailure(t.message ?: "통신 오류")
