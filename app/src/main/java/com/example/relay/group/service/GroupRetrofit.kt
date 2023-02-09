@@ -1,6 +1,7 @@
 package com.example.relay.group.service
 
 import com.example.relay.group.models.*
+import com.example.relay.mypage.models.DailyRecordResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -32,4 +33,11 @@ interface GroupRetrofit {
         @Path("clubIdx") clubIdx: Long,
         @Query("date") date: String
     ) : Call<MemberResponse>
+
+    // 해당 그룹 일별 기록 조회
+    @GET("/record/summary/club")
+    fun getClubDailyRes(
+        @Query("clubIdx") clubIdx: Long,
+        @Query("date") date: String
+    ) : Call<GroupDailyRecordResponse>
 }

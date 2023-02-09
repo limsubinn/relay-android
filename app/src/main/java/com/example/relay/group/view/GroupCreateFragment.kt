@@ -56,8 +56,6 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val goalType = arrayOf("목표 없음", "시간", "거리", "스피드")
-
         // 모집중 상태
         binding.swRecruitStatus.isChecked = true
 
@@ -85,6 +83,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             alertDialog?.show()
 
             val itemView = dialogView.list_dialog_item
+            val goalType = arrayOf("목표 없음", "시간", "거리")
 
             itemView.adapter =
                activity?.let { it1 -> ArrayAdapter(it1, android.R.layout.simple_list_item_1, goalType) }
@@ -118,7 +117,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
 
                 // 최대, 최소값 설정
                 dialogView.np_hour.minValue = 0
-                dialogView.np_hour.maxValue = 23
+                dialogView.np_hour.maxValue = 3
                 dialogView.np_min.minValue = 0
                 dialogView.np_min.maxValue = 59
                 dialogView.np_sec.minValue = 0
@@ -147,7 +146,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                 dialogView.btn_cancel.setOnClickListener {
                     alertDialog?.dismiss()
                 }
-            } else if ((binding.tvGoalType.text.equals("거리")) || (binding.tvGoalType.text.equals("스피드"))) {
+            } else if ((binding.tvGoalType.text.equals("거리"))) {
                 val dialogView = layoutInflater.inflate(R.layout.dialog_goal_km, null)
                 val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
@@ -159,7 +158,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
 
                 // 최대, 최소값 설정
                 dialogView.np1.minValue = 0
-                dialogView.np1.maxValue = 99
+                dialogView.np1.maxValue = 40
                 dialogView.np2.minValue = 0
                 dialogView.np2.maxValue = 99
 
@@ -173,7 +172,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                     var n2 = dialogView.np2.value.toString().padStart(2, '0')
 
                     if ((n1 == "00" && n2 == "00")) {
-                        Toast.makeText(activity, "${binding.tvGoalType.text}를 설정해주세요!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "거리를 설정해주세요!", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.tvGoalValue.text = "${n1} : ${n2}"
                         alertDialog?.dismiss()

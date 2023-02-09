@@ -57,14 +57,18 @@ class GroupListFragment: Fragment(), GetClubListInterface {
 
         // EditText에서 엔터 키를 누르면 검색한 클럽의 리스트를 가져온다.
         binding.etGroupSearch.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            var search = binding.etGroupSearch.text.toString()
+
             when (keyCode) {
-                KeyEvent.KEYCODE_ENTER -> {
-                    val search = binding.etGroupSearch.text.toString()
+                KeyEvent.KEYCODE_ENTER -> { // 엔터키
                     GetClubListService(this).tryGetClubList(search)
 
                     // 키보드 내리기
                     val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+                KeyEvent.KEYCODE_DEL -> { // 백스페이스
+                    binding.etGroupSearch.setText(search.replaceFirst(".$".toRegex(), ""))
                 }
             }
             true
