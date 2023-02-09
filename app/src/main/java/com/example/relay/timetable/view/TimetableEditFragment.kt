@@ -18,6 +18,7 @@ import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.models.Schedule
+import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 
 class TimetableEditFragment : Fragment(), TimetableInterface {
@@ -60,25 +61,30 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
                 dialogView.btn_check.setOnClickListener{
                     alertDialog?.dismiss()
                 }
-
             } else {
                 TimetableService(this).tryPostMySchedules(66, scheduleList)
+                // val tf:TimetableFragment = parentFragmentManager.findFragmentByTag("MainTimetable") as TimetableFragment
+                // val tf:TimetableFragment = parentFragmentManager.findFragmentByTag("MainTimetable") as TimetableFragment
+                // tf.testUpdateTimetable(scheduleRvAdapter.getUpdatedSchedules())
+                // (activity as MainActivity).refreshTimetableFragment()
             }
-            val emptyFragment = TimetableEmptyFragment()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container_edit, emptyFragment)
-                .commit()
+
         }
 
         binding.btnBack.setOnClickListener{
-            // 빈 Fragment 로 변경
-            val emptyFragment = TimetableEmptyFragment()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container_edit, emptyFragment)
+                .remove(this)
                 .commit()
         }
+    }
+
+    fun refreshTimetableFragment(){
+        (activity as MainActivity).refreshTimetableFragment()
+        parentFragmentManager
+            .beginTransaction()
+            .remove(this)
+            .commit()
     }
 
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
@@ -107,6 +113,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
     override fun onPostMyTimetableSuccess() {
         Log.d("Timetable", "onPostMyTimetableSuccess: ")
+        refreshTimetableFragment()
     }
 
     override fun onPostMyTimetableFailure(message: String) {

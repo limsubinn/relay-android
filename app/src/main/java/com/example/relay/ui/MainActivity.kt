@@ -1,10 +1,15 @@
 package com.example.relay.ui
 
 import android.os.Bundle
+import android.text.TextUtils.replace
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
@@ -19,6 +24,7 @@ import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.concurrent.fixedRateTimer
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MainInterface {
@@ -69,7 +75,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
                     R.id.menu_timetable -> {
                         supportFragmentManager
                             .beginTransaction()
-                            .replace(binding.containerFragment.id, TimetableFragment())
+                            .replace(binding.containerFragment.id, TimetableFragment(), "MainTimetable")
                             .commitAllowingStateLoss()
                     }
                 }
@@ -156,6 +162,20 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 .replace(binding.containerFragment.id, GroupCreateNFragment())
                 .commitAllowingStateLoss()
         }
+    }
+
+    fun refreshTimetableFragment() {
+        val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
+        ft.replace(binding.containerFragment.id, TimetableFragment(), "MainTimetable")
+            .commitAllowingStateLoss()
+        Log.d("Timetable", "refreshTimetableFragment: complete")
+    }
+
+    fun reload(){
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
     }
 
     override fun onGetUserInfoSuccess(response: UserInfoResponse) {

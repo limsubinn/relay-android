@@ -1,12 +1,13 @@
 package com.example.relay.timetable.view
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableBinding
 import com.example.relay.group.GetUserClubInterface
@@ -16,6 +17,7 @@ import com.example.relay.timetable.service.TimetableInterface
 import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
+import com.example.relay.timetable.models.Schedule
 import com.islandparadise14.mintable.model.ScheduleEntity
 
 class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
@@ -58,8 +60,9 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
             val editFragment = TimetableEditFragment()
             parentFragmentManager
                 .beginTransaction()
-                .replace(R.id.container_edit, editFragment)
+                .add(R.id.container_edit, editFragment)
                 .commit()
+            parentFragmentManager.executePendingTransactions()
         }
 
         /* clubIdx 받기
@@ -79,7 +82,6 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         viewBinding = null
     }
 
-    @SuppressLint("LogNotTimber")
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
         if (response.code == 1000){
             val clubMemList = response.result
@@ -90,7 +92,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
                     val schedule = ScheduleEntity(
                         1,
                         mem.nickName,
-                        s.day.toInt(),
+                        s.day,
                         s.start,
                         s.end,
                         color,
@@ -140,7 +142,6 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         TODO("Not yet implemented")
     }
 
-    @SuppressLint("LogNotTimber")
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
         if (response.code == 1000) {
             clubIdx = response.result.clubIdx
