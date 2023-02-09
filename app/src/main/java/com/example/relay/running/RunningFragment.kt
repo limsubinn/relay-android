@@ -469,6 +469,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
                 val calculateTime = TrackingUtility.getFormattedStopWatchTime((res.goal * 1000).toLong(), true)
                 val calculateTimetoMillis = res.goal * 1000
                 binding.tvGoal.text = "${calculateTime}"
+                binding.km.visibility = View.GONE
                 TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
                     curTimeInMillis = it
                     val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(
@@ -481,7 +482,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
                     binding.tvTimer.text = formattedGoalTime
                 })
             } else {
-                binding.tvGoal.text = "${res.goal}"
+                binding.tvGoal.text = "${res.goal} km"
+                binding.km.visibility = View.VISIBLE
                 TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
                     pathPoints = it
                     val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
