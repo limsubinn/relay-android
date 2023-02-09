@@ -193,7 +193,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             curTimeInMillis = it
             val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
-            binding.tvTimer.text = formattedGoalTime
+            //binding.tvTimer.text = formattedGoalTime
             binding.tvTime.text = formattedTime
         })
     }
@@ -460,23 +460,35 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
     override fun onPostRunStrSuccess(response: RunStrResponse) {
         Log.d("RunStart", "onPostRunStrSuccess")
 
-//        val res = response.result
-//
-//        if (res.goalType == "TIME"){
-//            binding.tvGoal.text = "${res.goal}"
-//            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(res.goal.toLong() - curTimeInMillis + 1000, true)
-//            binding.tvTimer.text = formattedGoalTime
-//
-//        } else {
-//            binding.tvGoal.text = "${res.goal}"
-//            var distanceInMeters = 0
-//            for(polyline in pathPoints) {
-//                distanceInMeters += TrackingUtility.calculatePolylineLength(polyline).toInt()
-//            }
-//            val formattedGoalDistance = res.goal - distanceInMeters
-//            binding.tvTimer.text = formattedGoalDistance.toString()
-//        }
-//        runningRecordIdx = res.runningRecordIdx
+        val res = response.result
+
+        if (runningRecordIdx != null){
+            runningRecordIdx = res.runningRecordIdx
+            Log.d("runningRecordIdx","${runningRecordIdx}")
+            if (res.goalType == "TIME"){
+                val calculateTime = TrackingUtility.getFormattedStopWatchTime((res.goal * 1000).toLong(), true)
+                val calculateTimetoMillis = res.goal * 1000
+                binding.tvGoal.text = "${calculateTime}"
+                TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+                    curTimeInMillis = it
+                    val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(
+                        (calculateTimetoMillis - curTimeInMillis + 1000).toLong(),
+                        true
+                    )
+                    val formattedTime =
+                        TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+                    binding.tvTime.text = formattedTime
+                    binding.tvTimer.text = formattedGoalTime
+                })
+            } else {
+                binding.tvGoal.text = "${res.goal}"
+                TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
+                    pathPoints = it
+                    val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
+                    binding.tvTimer.text = (res.goal - formattedDistance).toString()
+                })
+            }
+        }
     }
 
     override fun onPostRunStrFailure(message: String) {
