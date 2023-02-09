@@ -26,6 +26,7 @@ class GroupRecordFragment: Fragment() {
     private val binding get() = _binding!!
 
     private val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
+    private var clubIdx = 0L
     private var status = 0 // 거리, 시간, 속도 선택 상태
     val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
     private var curDate = ""
@@ -60,6 +61,7 @@ class GroupRecordFragment: Fragment() {
         setFragmentResultListener("go_to_group_record") { requestKey, bundle ->
 
             curDate = bundle.getString("curDate", "")
+            clubIdx = bundle.getLong("clubIdx", 0L)
 
             if (curDate.isNotEmpty()) {
                 val selDate = simpleDateFormat.parse(curDate)
@@ -103,7 +105,7 @@ class GroupRecordFragment: Fragment() {
 
             // 그룹레코드 -> 그룹페이지
             parentFragmentManager.setFragmentResult("record_to_group",
-                bundleOf("curDate" to curDate)
+                bundleOf("clubIdx" to clubIdx, "curDate" to curDate)
             )
             mainActivity?.groupFragmentChange(0) // 그룹페이지로 이동
         }

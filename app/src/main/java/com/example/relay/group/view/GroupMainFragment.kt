@@ -3,6 +3,9 @@ package com.example.relay.group.view
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -147,7 +150,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         binding.btnCalendar.setOnClickListener {
             // 그룹페이지 -> 그룹레코드
             parentFragmentManager.setFragmentResult("go_to_group_record",
-                bundleOf("curDate" to curDate)
+                bundleOf("clubIdx" to clubIdx, "curDate" to curDate)
             )
             mainActivity?.groupFragmentChange(6) // 기록 페이지로 이동
         }
@@ -157,24 +160,37 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             mainActivity?.groupFragmentChange(1)
         }
 
-        // 리스트, 멤버 -> 메인
-        setFragmentResultListener("go_to_main") {requestKey, bundle ->
-            clubIdx = bundle.getLong("clubIdx", 0L)
-            recruitStatus = bundle.getString("recruitStatus", "")
+//        // 리스트, 멤버 -> 메인
+//        setFragmentResultListener("go_to_main") {requestKey, bundle ->
+//            clubIdx = bundle.getLong("clubIdx", 0L)
+//            recruitStatus = bundle.getString("recruitStatus", "")
+//
+//            Log.d("main", clubIdx.toString())
+//
+//            if (recruitStatus == "recruiting") {
+//                binding.btnJoinTeam.visibility = View.VISIBLE
+//            } else {
+//                binding.btnJoinTeam.visibility = View.GONE
+//            }
 
-            if (recruitStatus == "recruiting") {
-                binding.btnJoinTeam.visibility = View.VISIBLE
-            } else {
-                binding.btnJoinTeam.visibility = View.GONE
-            }
+//            binding.selCalendar.apply {
+//                setDates(getFutureDatesOfCurrentMonth())
+//                initialPositionIndex = date - 3
+//                init()
+//                select(date - 1) // 오늘 날짜 선택
+//            }
+//
+//            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+//        }
+//
+//        // 사용자 그룹명 가져오기
+//        Handler(Looper.getMainLooper()).postDelayed({
+//            if (clubIdx == 0L) {
+//                GetUserClubService(this).tryGetUserClub(userIdx)
+//            }
+//        }, 1)
 
-            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
-        }
-
-        // 사용자 그룹명 가져오기
-        if (clubIdx == 0L) {
             GetUserClubService(this).tryGetUserClub(userIdx)
-        }
     }
 
     override fun onDestroyView() {
@@ -217,11 +233,32 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
             // 기록 -> 그룹페이지
             setFragmentResultListener("record_to_group") { requestKey, bundle ->
+                clubIdx = bundle.getLong("clubIdx")
+
+                if (clubIdx != res.clubIdx) {
+                    binding.btnJoinTeam.text = "가입하기"
+                }
 
                 curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
                 year = Integer.parseInt(curDate.substring(0, 4))
                 month = Integer.parseInt(curDate.substring(5, 7))
                 date = Integer.parseInt(curDate.substring(8, 10))
+            }
+
+            // 목록, 메인 -> 그룹페이지
+            setFragmentResultListener("go_to_main") {requestKey, bundle ->
+                clubIdx = bundle.getLong("clubIdx", 0L)
+                recruitStatus = bundle.getString("recruitStatus", "")
+
+                if (clubIdx != res.clubIdx) {
+                    binding.btnJoinTeam.text = "가입하기"
+                }
+
+                if (recruitStatus == "recruiting") {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
+                } else {
+                    binding.btnJoinTeam.visibility = View.GONE
+                }
             }
 
             binding.selCalendar.apply {
