@@ -2,28 +2,52 @@ package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import com.bumptech.glide.Glide
+import com.example.relay.ApplicationClass
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMemberPageBinding
+import com.example.relay.group.service.GetClubDailyService
+import com.example.relay.group.service.GetMemberListService
+import com.example.relay.mypage.models.DailyRecordResponse
+import com.example.relay.mypage.models.UserProfileResponse
+import com.example.relay.mypage.service.MypageInterface
+import com.example.relay.mypage.service.MypageService
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import java.text.SimpleDateFormat
 import java.util.*
 
 
-class MemberPageFragment: Fragment() {
+class MemberPageFragment: Fragment(), MypageInterface {
     private var _binding: FragmentMemberPageBinding? = null
     private val binding get() = _binding!!
 
     private val calendar = Calendar.getInstance()
     private var currentMonth = 0
+    private var currentYear = 0
+    private var curDate = ""
+
+    val today = GregorianCalendar()
+    var year: Int = today.get(Calendar.YEAR)
+    var month: Int = today.get(Calendar.MONTH)
+    var date: Int = today.get(Calendar.DATE)
+
+    private var userIdx = 0L
+    private var hostIdx = 0L
+    private var clubIdx = 0L
+    private var recruitStatus = ""
 
     private var mainActivity: MainActivity? = null
 
@@ -52,14 +76,31 @@ class MemberPageFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val today = GregorianCalendar()
-        var year: Int = today.get(Calendar.YEAR)
-        var month: Int = today.get(Calendar.MONTH)
-        var date: Int = today.get(Calendar.DATE)
+        // 멤버리스트 -> 멤버페이지
+        setFragmentResultListener("go_to_member_page") { requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx")
+            hostIdx = bundle.getLong("hostIdx")
+            recruitStatus = bundle.getString("recruitStatus", "")
+            userIdx = bundle.getLong("userIdx")
+
+            MypageService(this).tryGetUserProfile(userIdx)
+        }
+
+        // 멤버페이지 -> 멤버리스트
+        binding.btnNext.setOnClickListener {
+            // 멤버 페이지 -> 멤버 리스트
+            parentFragmentManager.setFragmentResult("go_to_member_list",
+                bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
+            )
+            Log.d("memberPage2", clubIdx.toString())
+            mainActivity?.groupFragmentChange(2) // 멤버리스트로 이동
+        }
 
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
         currentMonth = calendar[Calendar.MONTH]
+
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
         val myCalendarViewManager = object : CalendarViewManager {
             override fun setCalendarViewResourceId(
@@ -81,7 +122,6 @@ class MemberPageFragment: Fragment() {
                 isSelected: Boolean
             ) {
                 // bind data to calendar item views
-                // findViewId 안 쓰고 싶은데 자꾸 바인딩이 안 된다 ㅠㅠ,,,,,
                 holder.itemView.findViewById<TextView>(R.id.tv_date_calendar_item).text =
                     DateUtils.getDayNumber(date)
 
@@ -97,6 +137,7 @@ class MemberPageFragment: Fragment() {
 
         val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
+                curDate = simpleDateFormat.format(date)
                 return true
             }
         }
@@ -107,16 +148,17 @@ class MemberPageFragment: Fragment() {
             }
         }
 
-        val singleRowCalendar = binding.selCalendar.apply {
+        binding.selCalendar.apply {
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
 
-            setDates(getFutureDatesOfCurrentMonth())
-            initialPositionIndex = date - 3
-            init()
-            select(date - 1) // 오늘 날짜 선택
+//            setDates(getFutureDatesOfCurrentMonth())
+//            initialPositionIndex = date - 3
+//            init()
+//            select(date - 1) // 오늘 날짜 선택
         }
+
 
         // 달력 버튼
         binding.btnCalendar.setOnClickListener {
@@ -159,5 +201,29 @@ class MemberPageFragment: Fragment() {
         }
         calendar.add(Calendar.DATE, -1)
         return list
+    }
+
+    override fun onGetUserProfileSuccess(response: UserProfileResponse) {
+        if (response.isSuccess) {
+            val res = response.result
+
+            binding.profileName.text = "${res.nickname} / ${res.clubName}"
+            binding.tvIntro.text = res.statusMsg
+            Glide.with(binding.profileImg.context)
+                .load(res.imgUrl)
+                .into(binding.profileImg)
+        }
+    }
+
+    override fun onGetUserProfileFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetDailyRecordSuccess(response: DailyRecordResponse) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onGetDailyRecordFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

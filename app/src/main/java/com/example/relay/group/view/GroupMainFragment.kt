@@ -76,11 +76,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val today = GregorianCalendar()
-        var year: Int = today.get(Calendar.YEAR)
-        var month: Int = today.get(Calendar.MONTH)
-        var date: Int = today.get(Calendar.DATE)
-
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
         currentMonth = calendar[Calendar.MONTH]
@@ -307,7 +302,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
-            parentFragmentManager.setFragmentResult("main_to_member",
+            parentFragmentManager.setFragmentResult("go_to_member_list",
                 bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus, "hostIdx" to res.hostIdx))
             mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
         }

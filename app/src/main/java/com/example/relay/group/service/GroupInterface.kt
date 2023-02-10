@@ -17,12 +17,12 @@ interface GetClubDetailInterface {
     fun onGetClubDetailFailure(message: String)
 }
 
-interface GetMemberListInterface {
-    fun onGetMemberListSuccess(response: MemberResponse)
-    fun onGetMemberListFailure(message: String)
-}
-
 interface GetClubDailyInterface {
     fun onGetClubDailySuccess(response: GroupDailyRecordResponse)
     fun onGetClubDailyFailure(message: String)
+}
+
+interface GetMemberListInterface {
+    fun onGetMemberListSuccess(response: MemberResponse)
+    fun onGetMemberListFailure(message: String)
 }
