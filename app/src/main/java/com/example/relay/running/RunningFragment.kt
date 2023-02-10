@@ -2,6 +2,7 @@ package com.example.relay.running
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -15,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintSet.Layout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -29,10 +31,8 @@ import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
 import com.example.relay.running.models.PathPoints
 import com.example.relay.running.models.RunStrResponse
+import com.example.relay.running.service.*
 import com.example.relay.running.service.Polyline
-import com.example.relay.running.service.RunningInterface
-import com.example.relay.running.service.RunningService
-import com.example.relay.running.service.TrackingService
 import com.example.relay.ui.viewmodels.RunningViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -278,8 +278,26 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
             viewModel.insertRun(run)
-            RunningService(this).tryPostRunEnd(distanceInMeters,locationList,avgSpeed.toLong(),runningRecordIdx,formattedTime)
+            RunningService(this).tryPostRunEnd((distanceInMeters / 1000f).toInt(),locationList,avgSpeed.toLong(),runningRecordIdx,formattedTime)
             locationList.clear()
+
+            // 종료 시 오늘의 달리기 기록 표출
+            val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_running_end, null)
+            val mBuilder = AlertDialog.Builder(context)  //괄호 안 context, R.drawable.four_rounded_shape 해주면 전체화면 꽉 참
+                .setView(mDialogView)
+            val  mAlertDialog = mBuilder.show()
+
+            mAlertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))  //배경 투명처리 해줘야 배경 모양 드러남
+
+            val button = mDialogView.findViewById<TextView>(R.id.tv_close2)
+            button.setOnClickListener {
+                mAlertDialog.dismiss()
+            }
+
+            mDialogView.findViewById<TextView>(R.id.tv_big_km2).text = (distanceInMeters / 1000f).toString()
+            mDialogView.findViewById<TextView>(R.id.tv_big_time2).text = formattedTime
+            mDialogView.findViewById<TextView>(R.id.tv_big_avg_pace2).text = avgSpeed.toString()
+
             val showToast = Toast.makeText(context, "DB 저장",Toast.LENGTH_LONG)
             showToast.show()
             stopRun()
@@ -497,8 +515,18 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         Log.d("RunStart", "onPostRunStrFailure")
     }
 
-    override fun onPostRunEndSuccess() {
+    override fun onPostRunEndSuccess(response: RunEndResponse) {
         Log.d("RunEnd", "onPostRunEndSuccess")
+
+        val res = response.result
+
+        if (res.isSuccess == "y"){
+            Log.d("isSuccess", "목표달성")
+            Toast.makeText(context, "목표달성", Toast.LENGTH_SHORT).show()
+        }else{
+            Log.d("isSuccess", "목표실패")
+            Toast.makeText(context, "목표실패", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onPostRunEndFailure(message: String) {
