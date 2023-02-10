@@ -1,12 +1,14 @@
 package com.example.relay.group.view
 
 import android.content.Context
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -83,16 +85,17 @@ class MemberPageFragment: Fragment(), MypageInterface {
             recruitStatus = bundle.getString("recruitStatus", "")
             userIdx = bundle.getLong("userIdx")
 
-            MypageService(this).tryGetUserProfile(userIdx)
+            // 유저 프로필
+            // MypageService(this).tryGetUserProfile(userIdx)
         }
 
         // 멤버페이지 -> 멤버리스트
-        binding.btnNext.setOnClickListener {
+        binding.btnRight.setOnClickListener {
             // 멤버 페이지 -> 멤버 리스트
             parentFragmentManager.setFragmentResult("go_to_member_list",
                 bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
             )
-            Log.d("memberPage2", clubIdx.toString())
+
             mainActivity?.groupFragmentChange(2) // 멤버리스트로 이동
         }
 
@@ -138,6 +141,7 @@ class MemberPageFragment: Fragment(), MypageInterface {
         val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
                 curDate = simpleDateFormat.format(date)
+                MypageService(this@MemberPageFragment).tryGetDailyRecord(curDate, userIdx)
                 return true
             }
         }
@@ -153,10 +157,10 @@ class MemberPageFragment: Fragment(), MypageInterface {
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
 
-//            setDates(getFutureDatesOfCurrentMonth())
-//            initialPositionIndex = date - 3
-//            init()
-//            select(date - 1) // 오늘 날짜 선택
+            setDates(getFutureDatesOfCurrentMonth())
+            initialPositionIndex = date - 3
+            init()
+            select(date - 1) // 오늘 날짜 선택
         }
 
 
@@ -212,15 +216,53 @@ class MemberPageFragment: Fragment(), MypageInterface {
             Glide.with(binding.profileImg.context)
                 .load(res.imgUrl)
                 .into(binding.profileImg)
+
+            // 기록
+            MypageService(this).tryGetDailyRecord(curDate, userIdx)
         }
     }
 
     override fun onGetUserProfileFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, "유저의 프로필을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onGetDailyRecordSuccess(response: DailyRecordResponse) {
-        TODO("Not yet implemented")
+        if (response.isSuccess) {
+            val res = response.result
+
+            binding.tvNotRecord.visibility = View.GONE
+            binding.recordLayout.visibility = View.VISIBLE
+
+            // 거리, 시간, 페이스
+            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "목표없음")) {
+                binding.goalValue.visibility = View.GONE
+                binding.goalTarget.text = res.time.toString() // 수정 필요
+                binding.goalTarget.setTextColor(Color.BLACK)
+                binding.goalType.text = "시간"
+            } else {
+                binding.goalType.text = res.goalType
+
+                if (res.goalType == "시간") {
+                    binding.goalValue.text = res.time.toString() // 수정 필요
+                    binding.goalTarget.text = res.goalValue.toString() // 수정 필요
+                    binding.otherType.text = "거리"
+                    binding.otherValue.text = res.distance.toString() + "km"
+                } else {
+                    binding.goalValue.text = res.distance.toString() + "km"
+                    binding.goalTarget.text = res.goalValue.toString() + "km"
+                    binding.otherType.text = "시간"
+                    binding.otherValue.text = res.time.toString() // 수정 필요
+                }
+
+                binding.runningPace.text = res.pace.toString() // 수정 필요
+            }
+        } else {
+            binding.tvNotRecord.visibility = View.VISIBLE
+            binding.recordLayout.visibility = View.GONE
+
+            binding.tvNotRecord.text = response.message
+        }
+
     }
 
     override fun onGetDailyRecordFailure(message: String) {
