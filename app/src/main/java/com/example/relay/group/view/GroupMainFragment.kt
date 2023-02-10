@@ -160,6 +160,13 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             mainActivity?.groupFragmentChange(1)
         }
 
+        // 그룹 시간표 버튼
+        binding.btnTimetable.setOnClickListener{
+            parentFragmentManager.setFragmentResult("go_to_timetable",
+                bundleOf("clubIdx" to clubIdx))
+            mainActivity?.groupFragmentChange(7) // 그룹 시간표로 이동
+        }
+
 //        // 리스트, 멤버 -> 메인
 //        setFragmentResultListener("go_to_main") {requestKey, bundle ->
 //            clubIdx = bundle.getLong("clubIdx", 0L)
