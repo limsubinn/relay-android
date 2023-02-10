@@ -22,6 +22,7 @@ import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.mypage.service.MypageInterface
 import com.example.relay.mypage.service.MypageService
+import com.example.relay.mypage.view.decorator.SelectDecorator
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
@@ -86,7 +87,31 @@ class MemberPageFragment: Fragment(), MypageInterface {
             userIdx = bundle.getLong("userIdx")
 
             // 유저 프로필
-            // MypageService(this).tryGetUserProfile(userIdx)
+            MypageService(this).tryGetUserProfile(userIdx)
+        }
+
+        // 레코드 -> 멤버
+        setFragmentResultListener("record_to_member") { requestKey, bundle ->
+
+            curDate = bundle.getString("curDate", "")
+            userIdx = bundle.getLong("userIdx", 0L)
+            clubIdx = bundle.getLong("clubIdx", 0L)
+            hostIdx = bundle.getLong("hostIdx", 0L)
+            recruitStatus = bundle.getString("recruitStatus", "")
+
+            year = Integer.parseInt(curDate.substring(0, 4))
+            month = Integer.parseInt(curDate.substring(5, 7))
+            date = Integer.parseInt(curDate.substring(8, 10))
+
+            // 유저 프로필
+            MypageService(this).tryGetUserProfile(userIdx)
+
+            binding.selCalendar.apply {
+                setDates(getFutureDatesOfSelectMonth(month, year))
+                initialPositionIndex = date - 3
+                init()
+                select(date-1)
+            }
         }
 
         // 멤버페이지 -> 멤버리스트
@@ -166,15 +191,11 @@ class MemberPageFragment: Fragment(), MypageInterface {
 
         // 달력 버튼
         binding.btnCalendar.setOnClickListener {
-            mainActivity?.mypageFragmentChange(1);
-
-            // 선택된 날짜로 가로 달력 교체
-//                    singleRowCalendar.apply {
-//                        setDates(getFutureDatesOfSelectMonth(m))
-//                        initialPositionIndex = d-3
-//                        init()
-//                        select(d-1)
-//                    }
+            // 멤버 -> 레코드
+            parentFragmentManager.setFragmentResult("go_to_member_record",
+                bundleOf("curDate" to curDate, "userIdx" to userIdx, "clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
+            )
+            mainActivity?.groupFragmentChange(7) // 기록 페이지로 이동
         }
 
     }
@@ -185,16 +206,19 @@ class MemberPageFragment: Fragment(), MypageInterface {
     }
 
     private fun getFutureDatesOfCurrentMonth(): List<Date> {
+        currentYear = calendar[Calendar.YEAR]
         currentMonth = calendar[Calendar.MONTH]
         return getDates(mutableListOf())
     }
 
-    private fun getFutureDatesOfSelectMonth(month: Int): List<Date> {
-        currentMonth = month
+    private fun getFutureDatesOfSelectMonth(month: Int, year: Int): List<Date> {
+        currentMonth = month-1
+        currentYear = year
         return getDates(mutableListOf())
     }
 
     private fun getDates(list: MutableList<Date>): List<Date> {
+        calendar.set(Calendar.YEAR, currentYear)
         calendar.set(Calendar.MONTH, currentMonth)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
         list.add(calendar.time)
@@ -218,7 +242,7 @@ class MemberPageFragment: Fragment(), MypageInterface {
                 .into(binding.profileImg)
 
             // 기록
-            MypageService(this).tryGetDailyRecord(curDate, userIdx)
+            // MypageService(this).tryGetDailyRecord(curDate, userIdx)
         }
     }
 

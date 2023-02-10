@@ -166,6 +166,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 .beginTransaction()
                 .replace(binding.containerFragment.id, GroupRecordFragment())
                 .commitAllowingStateLoss()
+        } else if (index == 7) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, MemberRecordFragment())
+                .commitAllowingStateLoss()
         }
     }
 
