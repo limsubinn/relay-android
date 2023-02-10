@@ -171,7 +171,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         Log.d("Timetable", "refreshTimetableFragment: complete")
     }
 
-    fun reload(){
+    fun reloadActivity(){
         finish()
         overridePendingTransition(0, 0)
         startActivity(intent)

@@ -63,10 +63,6 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
                 }
             } else {
                 TimetableService(this).tryPostMySchedules(66, scheduleList)
-                // val tf:TimetableFragment = parentFragmentManager.findFragmentByTag("MainTimetable") as TimetableFragment
-                // val tf:TimetableFragment = parentFragmentManager.findFragmentByTag("MainTimetable") as TimetableFragment
-                // tf.testUpdateTimetable(scheduleRvAdapter.getUpdatedSchedules())
-                // (activity as MainActivity).refreshTimetableFragment()
             }
 
         }
@@ -79,7 +75,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
         }
     }
 
-    fun refreshTimetableFragment(){
+    private fun refreshTimetableFragment(){
         (activity as MainActivity).refreshTimetableFragment()
         parentFragmentManager
             .beginTransaction()
