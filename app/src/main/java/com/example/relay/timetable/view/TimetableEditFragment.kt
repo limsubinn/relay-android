@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.relay.ApplicationClass
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
 import com.example.relay.timetable.adapter.ScheduleRvAdapter
@@ -24,7 +26,9 @@ import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 class TimetableEditFragment : Fragment(), TimetableInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
+
     private var scheduleList = mutableListOf<Schedule>()
+    private val userIdx = prefs.getLong("userIdx", 0L)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,7 +43,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
-        TimetableService(this).tryGetMySchedules(66)
+        TimetableService(this).tryGetMySchedules(userIdx)
 
         binding.containerRv.adapter = scheduleRvAdapter
 
@@ -62,25 +66,22 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
                     alertDialog?.dismiss()
                 }
             } else {
-                TimetableService(this).tryPostMySchedules(66, scheduleList)
+                TimetableService(this).tryPostMySchedules(userIdx, scheduleList)
             }
 
         }
 
         binding.btnBack.setOnClickListener{
-            parentFragmentManager
-                .beginTransaction()
-                .remove(this)
-                .commit()
+            backToTimetableFragment()
         }
     }
 
-    private fun refreshTimetableFragment(){
-        (activity as MainActivity).refreshTimetableFragment()
+    private fun backToTimetableFragment(){
         parentFragmentManager
             .beginTransaction()
             .remove(this)
             .commit()
+        (activity as MainActivity).timetableChangeFragment(0)
     }
 
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
@@ -109,7 +110,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
     override fun onPostMyTimetableSuccess() {
         Log.d("Timetable", "onPostMyTimetableSuccess: ")
-        refreshTimetableFragment()
+        backToTimetableFragment()
     }
 
     override fun onPostMyTimetableFailure(message: String) {

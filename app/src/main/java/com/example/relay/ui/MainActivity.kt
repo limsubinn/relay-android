@@ -19,6 +19,7 @@ import com.example.relay.ui.service.MainService
 import com.example.relay.mypage.view.MyRecordFragment
 import com.example.relay.mypage.view.MypageFragment
 import com.example.relay.running.RunningFragment
+import com.example.relay.timetable.view.TimetableEditMainFragment
 import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
@@ -180,11 +181,27 @@ class MainActivity : AppCompatActivity(), MainInterface {
         }
     }
 
+    fun timetableChangeFragment(index: Int) {
+        when(index){
+            0 -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.containerFragment.id, TimetableFragment())
+                    .commitAllowingStateLoss()
+            }
+            1 -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.containerFragment.id, TimetableEditMainFragment())
+                    .commitAllowingStateLoss()
+            }
+        }
+    }
+
     fun refreshTimetableFragment() {
         val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
         ft.replace(binding.containerFragment.id, TimetableFragment(), "MainTimetable")
             .commitAllowingStateLoss()
-        Log.d("Timetable", "refreshTimetableFragment: complete")
     }
 
     fun reloadActivity(){
