@@ -223,7 +223,9 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         if (response.code != 2008) { // 가입한 그룹 존재 o
             val res = response.result
 
+            binding.btnJoinTeam.visibility = View.VISIBLE
             binding.btnJoinTeam.text = "탈퇴하기"
+
             clubIdx = res.clubIdx
 
             // 기록 -> 그룹페이지
@@ -231,6 +233,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 clubIdx = bundle.getLong("clubIdx")
 
                 if (clubIdx != res.clubIdx) {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
                     binding.btnJoinTeam.text = "가입하기"
                 }
 
@@ -246,14 +249,19 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 recruitStatus = bundle.getString("recruitStatus", "")
 
                 if (clubIdx != res.clubIdx) {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
                     binding.btnJoinTeam.text = "가입하기"
+
+                    if (recruitStatus == "recruiting") {
+                        binding.btnJoinTeam.visibility = View.VISIBLE
+                    } else {
+                        binding.btnJoinTeam.visibility = View.GONE
+                    }
+                } else {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
+                    binding.btnJoinTeam.text = "탈퇴하기"
                 }
 
-                if (recruitStatus == "recruiting") {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                } else {
-                    binding.btnJoinTeam.visibility = View.GONE
-                }
             }
 
             binding.selCalendar.apply {
