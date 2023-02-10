@@ -1,8 +1,7 @@
-package com.example.relay.running
+package com.example.relay.running.view
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -16,7 +15,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintSet.Layout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -29,6 +27,8 @@ import com.example.relay.Constants.REQUEST_CODE_LOCATION_PERMISSION
 import com.example.relay.R
 import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
+import com.example.relay.running.OnBottomSheetCallbacks
+import com.example.relay.running.TrackingUtility
 import com.example.relay.running.models.PathPoints
 import com.example.relay.running.models.RunStrResponse
 import com.example.relay.running.service.*
@@ -113,7 +113,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
 //        setCustomMarkerView()
 
         binding.btnStart1.setOnClickListener {
-            startActivity(Intent(context,RunSplashActivity::class.java))
+            startActivity(Intent(context, RunSplashActivity::class.java))
             RunningService(this).tryPostRunStart(66)   //달리기 시작 API
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
@@ -155,8 +155,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
                 pathPoints = it
                 val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
-                val formattedAvgDistance = TrackingUtility.calculateAvgPace(pathPoints.last(),curTimeInMillis, true)
-                val formattedNowDistance = TrackingUtility.calculateNowPace(pathPoints.last(),curTimeInMillis, true)
+                val formattedAvgDistance =
+                    TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
+                val formattedNowDistance =
+                    TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
                 mDialogView.findViewById<TextView>(R.id.tv_big_km).text = formattedDistance.toString()
                 mDialogView.findViewById<TextView>(R.id.tv_big_avg_pace).text = formattedAvgDistance
                 mDialogView.findViewById<TextView>(R.id.tv_big_now_pace).text = formattedNowDistance
@@ -182,8 +184,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             addLatestPolyline()
             moveCameraToUser()
             val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
-            val formattedAvgDistance = TrackingUtility.calculateAvgPace(pathPoints.last(),curTimeInMillis, true)
-            val formattedNowDistance = TrackingUtility.calculateNowPace(pathPoints.last(),curTimeInMillis, true)
+            val formattedAvgDistance =
+                TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
+            val formattedNowDistance =
+                TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
             binding.tvDistance.text = formattedDistance.toString()
             binding.tvPace2.text = formattedAvgDistance
             binding.tvPace1.text = formattedNowDistance
@@ -191,7 +195,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
             curTimeInMillis = it
-            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
+            val formattedGoalTime =
+                TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             //binding.tvTimer.text = formattedGoalTime
             binding.tvTime.text = formattedTime
@@ -484,7 +489,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             runningRecordIdx = res.runningRecordIdx
             Log.d("runningRecordIdx","${runningRecordIdx}")
             if (res.goalType == "TIME"){
-                val calculateTime = TrackingUtility.getFormattedStopWatchTime((res.goal * 1000).toLong(), true)
+                val calculateTime =
+                    TrackingUtility.getFormattedStopWatchTime((res.goal * 1000).toLong(), true)
                 val calculateTimetoMillis = res.goal * 1000
                 binding.tvGoal.text = "${calculateTime}"
                 binding.km.visibility = View.GONE
@@ -504,7 +510,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
                 binding.km.visibility = View.VISIBLE
                 TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
                     pathPoints = it
-                    val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
+                    val formattedDistance =
+                        TrackingUtility.calculatePolylineLength(pathPoints.last())
                     binding.tvTimer.text = (res.goal - formattedDistance).toString()
                 })
             }

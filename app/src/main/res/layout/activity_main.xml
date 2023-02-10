@@ -41,7 +41,7 @@
 <!--        android:elevation="1dp"-->
 <!--        app:behavior_peekHeight="270dp"-->
 <!--        android:id="@+id/filter_fragment"-->
-<!--        android:name="com.example.relay.running.WindowFragment"-->
+<!--        android:name="com.example.relay.running.view.WindowFragment"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent"-->
 <!--        app:behavior_skipCollapsed="true"-->

@@ -13,7 +13,7 @@ import com.example.relay.group.view.*
 import com.example.relay.ui.service.MainService
 import com.example.relay.mypage.view.MyRecordFragment
 import com.example.relay.mypage.view.MypageFragment
-import com.example.relay.running.RunningFragment
+import com.example.relay.running.view.RunningFragment
 import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse

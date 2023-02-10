@@ -1,4 +1,4 @@
-package com.example.relay.running
+package com.example.relay.running.view
 
 import android.app.Dialog
 import android.content.Context
