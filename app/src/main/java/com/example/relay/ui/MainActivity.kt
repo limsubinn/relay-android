@@ -15,13 +15,14 @@ import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*
-import com.example.relay.mypage.MainService
-import com.example.relay.mypage.MyRecordFragment
-import com.example.relay.mypage.MypageFragment
+import com.example.relay.ui.service.MainService
+import com.example.relay.mypage.view.MyRecordFragment
+import com.example.relay.mypage.view.MypageFragment
 import com.example.relay.running.RunningFragment
 import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
+import com.example.relay.ui.service.MainInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.concurrent.fixedRateTimer
@@ -149,7 +150,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         } else if (index == 2) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(binding.containerFragment.id, GroupMemberFragment())
+                .replace(binding.containerFragment.id, MemberListFragment())
                 .commitAllowingStateLoss()
         } else if (index == 3) {
             supportFragmentManager
@@ -160,6 +161,16 @@ class MainActivity : AppCompatActivity(), MainInterface {
             supportFragmentManager
                 .beginTransaction()
                 .replace(binding.containerFragment.id, GroupCreateNFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 5) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, MemberPageFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 6) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, GroupRecordFragment())
                 .commitAllowingStateLoss()
         }
     }
@@ -196,7 +207,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
     }
 
     override fun onGetProfileListSuccess(response: UserProfileListResponse) {
-        val res = response.result[1] // 수정 필요 !!!
+        val res = response.result[0] // 기본 프로필
         val userIdx = res.userIdx
 
         val editor = prefs.edit()

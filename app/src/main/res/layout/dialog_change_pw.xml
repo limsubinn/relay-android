@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="370dp"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_corner_round">
+
+    <TextView
+        android:id="@+id/tv_title_change_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="24sp"
+        android:text="비밀번호 변경"
+        android:layout_marginTop="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv_before_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="기존 비밀번호"
+        android:layout_marginTop="30dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toStartOf="@id/et_before_pw"
+        app:layout_constraintTop_toBottomOf="@id/tv_title_change_pw" />
+
+    <EditText
+        android:id="@+id/et_before_pw"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:background="@drawable/et_new_pw"
+        android:textColor="@color/text_dark_gray"
+        android:textSize="16sp"
+        android:inputType="textPassword"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_before_pw"/>
+
+    <TextView
+        android:id="@+id/tv_new_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="새 비밀번호"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toStartOf="@id/et_new_pw"
+        app:layout_constraintTop_toBottomOf="@id/et_before_pw" />
+
+    <EditText
+        android:id="@+id/et_new_pw"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:background="@drawable/et_new_pw"
+        android:textColor="@color/text_dark_gray"
+        android:textSize="16sp"
+        android:hint="@string/least_pw_length_en"
+        android:inputType="textPassword"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_new_pw"/>
+
+    <TextView
+        android:id="@+id/tv_check_pw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:text="비밀번호 확인"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        app:layout_constraintStart_toStartOf="@id/et_check_pw"
+        app:layout_constraintTop_toBottomOf="@id/et_new_pw" />
+
+    <EditText
+        android:id="@+id/et_check_pw"
+        android:layout_width="250dp"
+        android:layout_height="40dp"
+        android:background="@drawable/et_new_pw"
+        android:textColor="@color/text_dark_gray"
+        android:textSize="16sp"
+        android:hint="@string/least_pw_length_en"
+        android:inputType="textPassword"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="15dp"
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_check_pw"/>
+
+    <TextView
+        android:id="@+id/btn_pw_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="취소"
+        android:gravity="center"
+        android:background="@drawable/btn_cancel"
+        android:layout_marginVertical="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_check_pw"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.15"/>
+
+    <TextView
+        android:id="@+id/btn_pw_save"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:text="확인"
+        android:gravity="center"
+        android:background="@drawable/btn_save"
+        android:layout_marginVertical="30dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_check_pw"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.85"/>
+</androidx.constraintlayout.widget.ConstraintLayout>

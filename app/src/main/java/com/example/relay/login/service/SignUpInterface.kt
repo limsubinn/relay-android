@@ -9,6 +9,6 @@ interface SignUpInterface {
     fun onPostLocalSignUpInFailure(message: String)
 
     // 프로필 신규 생성
-    fun onPostUserProfileSuccess(response: UserProfileRes)
-    fun onPostUserProfileFailure(message: String)
+//    fun onPostUserProfileSuccess(response: UserProfileRes)
+//    fun onPostUserProfileFailure(message: String)
 }

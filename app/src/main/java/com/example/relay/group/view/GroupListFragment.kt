@@ -15,9 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
-import com.example.relay.group.GetClubListInterface
-import com.example.relay.group.GetClubListService
-import com.example.relay.group.adapter.GroupListRVAdapter
+import com.example.relay.group.service.GetClubListInterface
+import com.example.relay.group.service.GetClubListService
+import com.example.relay.group.view.adapter.GroupListRVAdapter
 import com.example.relay.group.models.GroupListResponse
 import com.example.relay.group.models.GroupListResult
 import com.example.relay.ui.MainActivity
@@ -57,14 +57,18 @@ class GroupListFragment: Fragment(), GetClubListInterface {
 
         // EditText에서 엔터 키를 누르면 검색한 클럽의 리스트를 가져온다.
         binding.etGroupSearch.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
+            var search = binding.etGroupSearch.text.toString()
+
             when (keyCode) {
-                KeyEvent.KEYCODE_ENTER -> {
-                    val search = binding.etGroupSearch.text.toString()
+                KeyEvent.KEYCODE_ENTER -> { // 엔터키
                     GetClubListService(this).tryGetClubList(search)
 
                     // 키보드 내리기
                     val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+                }
+                KeyEvent.KEYCODE_DEL -> { // 백스페이스
+                    binding.etGroupSearch.setText(search.replaceFirst(".$".toRegex(), ""))
                 }
             }
             true
@@ -92,32 +96,21 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.rvGroupAll.adapter = listAdapter
         binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)
 
-//        if (res != null) {
-//            clubList.addAll(res)
-//        }
-//
-//        listAdapter.notifyDataSetChanged()
-
-
         // 리사이클러뷰 아이템 클릭 이벤트
         listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val clubIdx = clubList[position].clubIdx
-                val content = clubList[position].content
-                val imgURL = clubList[position].imgURL
-                val name = clubList[position].name
                 val recruitStatus = clubList[position].recruitStatus
 
                 // 리스트 -> 메인
                 parentFragmentManager.setFragmentResult("go_to_main",
-                    bundleOf("clubIdx" to clubIdx, "content" to content,
-                    "imgURL" to imgURL, "name" to name, "recruitStatus" to recruitStatus))
+                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
         })
 
         // 모집 상태
-        val recruitList = listOf("전체", "모집중", "모집완료")
+        val recruitList = listOf("모집전체", "모집중", "모집완료")
         val recruitAdapter = activity?.let {
             ArrayAdapter<String>(
                 it,
@@ -131,19 +124,19 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.spRecruitStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 clubList.clear()
-                if (p2 == 1) {
+                if (p2 == 1) { // 모집중
                     res.forEach {
                         if (it.recruitStatus == "recruiting") {
                             clubList.add(it)
                         }
                     }
-                } else if (p2 == 2) {
+                } else if (p2 == 2) { // 모집 완료
                     res.forEach {
                         if (it.recruitStatus != "recruiting") {
                             clubList.add(it)
                         }
                     }
-                } else {
+                } else { // 전체
                     clubList.addAll(res)
                 }
                 listAdapter.notifyDataSetChanged()
@@ -156,9 +149,18 @@ class GroupListFragment: Fragment(), GetClubListInterface {
             override fun onNothingSelected(p0: AdapterView<*>?) {
                 TODO("Not yet implemented")
             }
-
         }
 
+        // 러너 레벨
+        val levelList = listOf("레벨전체", "초보러너", "중급러너", "프로러너")
+        val levelAdapter = activity?.let {
+            ArrayAdapter<String>(
+                it,
+                R.layout.spinner_item,
+                levelList
+            )
+        }
+        // 레벨 api 아직 x
     }
 
     override fun onGetClubListFailure(message: String) {
