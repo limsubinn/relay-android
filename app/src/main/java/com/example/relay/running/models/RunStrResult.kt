@@ -8,4 +8,4 @@ data class RunStrResult(
     @SerializedName("goalType") val goalType: String,
     @SerializedName("runningRecordIdx") val runningRecordIdx: Long,
     @SerializedName("start") val start: String,
-    )
+)

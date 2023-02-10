@@ -32,17 +32,17 @@ class RunningService(val runningInterface: RunningInterface) {
     }
 
     fun tryPostRunEnd(distance: Int, locationList: MutableList<PathPoints>, pace: Long, runningRecordIdx: Long, time: String){
-        retrofit.postRunEndRes(RunEndRequest(distance, locationList, pace, runningRecordIdx, time)).enqueue((object : retrofit2.Callback<BaseResponse> {
-            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+        retrofit.postRunEndRes(RunEndRequest(distance, locationList, pace, runningRecordIdx, time)).enqueue((object : retrofit2.Callback<RunEndResponse> {
+            override fun onResponse(call: Call<RunEndResponse>, response: Response<RunEndResponse>) {
                 Log.d("RunEnd", "success")
                 if (response.isSuccessful) { // response.code == 200
-                    runningInterface.onPostRunEndSuccess()
+                    runningInterface.onPostRunEndSuccess(response.body() as RunEndResponse)
                 }else {
                     Log.d("RunEnd", "failure")
                 }
             }
 
-            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+            override fun onFailure(call: Call<RunEndResponse>, t: Throwable) {
                 Log.d("RunEnd", t.message!!)
                 t.printStackTrace()
                 runningInterface.onPostRunEndFailure(t.message ?: "통신 오류")

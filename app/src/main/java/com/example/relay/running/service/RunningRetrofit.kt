@@ -17,5 +17,5 @@ interface RunningRetrofit {
     @POST("/record/finish")
     fun postRunEndRes(
         @Body runningFinishReq: RunEndRequest
-    ) : Call<BaseResponse>
+    ) : Call<RunEndResponse>
 }

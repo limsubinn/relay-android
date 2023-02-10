@@ -6,6 +6,6 @@ interface RunningInterface {
     fun onPostRunStrSuccess(response: RunStrResponse)
     fun onPostRunStrFailure(message: String)
 
-    fun onPostRunEndSuccess()
+    fun onPostRunEndSuccess(response: RunEndResponse)
     fun onPostRunEndFailure(message: String)
 }
