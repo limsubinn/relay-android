@@ -5,12 +5,15 @@ import com.example.relay.ApplicationClass
 import com.example.relay.BaseResponse
 import com.example.relay.running.models.*
 import com.example.relay.timetable.models.GroupTimetableRes
+import com.example.relay.timetable.models.MyTimetableRes
+import com.example.relay.timetable.service.TimetableRetrofit
 import retrofit2.Call
 import retrofit2.Response
 
 class RunningService(val runningInterface: RunningInterface) {
 
     private val retrofit: RunningRetrofit = ApplicationClass.sRetrofit.create(RunningRetrofit::class.java)
+    private val retrofit2: TimetableRetrofit = ApplicationClass.sRetrofit.create(TimetableRetrofit::class.java)
 
     fun tryPostRunStart(profileIdx:Long){
         retrofit.postRunStrRes(RunStrRequest(profileIdx)).enqueue((object : retrofit2.Callback<RunStrResponse> {
@@ -46,6 +49,23 @@ class RunningService(val runningInterface: RunningInterface) {
                 Log.d("RunEnd", t.message!!)
                 t.printStackTrace()
                 runningInterface.onPostRunEndFailure(t.message ?: "통신 오류")
+            }
+        }))
+    }
+
+    fun tryGetMySchedules(profileIdx: Long){
+        retrofit2.getMyTimetableReq(profileIdx).enqueue((object : retrofit2.Callback<MyTimetableRes>{
+            override fun onResponse(call: Call<MyTimetableRes>, response: Response<MyTimetableRes>) {
+                if (response.isSuccessful)  // response.code == 200
+                    runningInterface.onGetMyTimetableSuccess(response.body() as MyTimetableRes)
+                else
+                    Log.d("Timetable", "tryGetMySchedules failure")
+            }
+
+            override fun onFailure(call: Call<MyTimetableRes>, t: Throwable) {
+                Log.d("Timetable", t.message!!)
+                t.printStackTrace()
+                runningInterface.onGetMyTimetableFailure(t.message ?: "통신 오류")
             }
         }))
     }
