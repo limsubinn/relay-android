@@ -29,6 +29,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
 
     private val userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx: Long = 0
+    private var clubName: String = "팀"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,7 +61,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
 
         binding.btnEdit.setOnClickListener{
             parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
-                bundleOf("clubIdx" to clubIdx)
+                bundleOf("clubIdx" to clubIdx, "clubName" to clubName)
             )
             (activity as MainActivity).timetableChangeFragment(1)
         }
@@ -118,8 +119,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
                 sList.add(schedule)
             }
             binding.timetable.updateSchedules(sList)
-        } else
-            Log.d("Timetable", "onGetMyTimetableSuccess: code-${response.code}")
+        }
     }
 
     override fun onGetMyTimetableFailure(message: String) {
@@ -129,7 +129,12 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
         if (response.code == 1000) {
             clubIdx = response.result.clubIdx
+            clubName = response.result.name + " 팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
+        } else {
+            Log.d("Timetable", "TimetableFragment 클럽정보 받아오기 : ${response.code}")
+            binding.btnEdit.visibility = View.GONE
+            binding.btnMyTimetable.visibility = View.GONE
         }
     }
 

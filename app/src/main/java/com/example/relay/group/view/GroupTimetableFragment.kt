@@ -25,6 +25,7 @@ class GroupTimetableFragment : Fragment(), TimetableGetInterface {
     private val colorCode =  arrayOf("#FE0000", "#01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
+    private var clubName = ""
 
     private var mainActivity: MainActivity? = null
 
@@ -71,6 +72,7 @@ class GroupTimetableFragment : Fragment(), TimetableGetInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
+            clubName = bundle.getString("clubName", "오류") + "팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }

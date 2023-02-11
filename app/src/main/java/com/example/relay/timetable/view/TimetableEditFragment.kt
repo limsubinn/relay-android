@@ -66,7 +66,6 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
             } else {
                 TimetablePostService(this).tryPostMySchedules(userIdx, scheduleList)
             }
-
         }
 
         binding.btnBack.setOnClickListener{
@@ -75,10 +74,6 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     private fun backToTimetableFragment(){
-        parentFragmentManager
-            .beginTransaction()
-            .remove(this)
-            .commit()
         (activity as MainActivity).timetableChangeFragment(0)
     }
 

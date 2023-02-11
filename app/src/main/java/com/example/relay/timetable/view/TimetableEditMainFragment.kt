@@ -25,6 +25,7 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private val colorCode =  arrayOf("#FE0000", "#01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
     private var userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
+    private var clubName = "팀"
 
     private var mainActivity: MainActivity? = null
 
@@ -52,17 +53,8 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-/*
-        parentFragmentManager
-            .beginTransaction()
-            .add(R.id.container_edit, TimetableEditFragment())
-            .commit()
-*/
+
         binding.btnBack.setOnClickListener{
-            parentFragmentManager
-                .beginTransaction()
-                .remove(this)
-                .commitAllowingStateLoss()
             (activity as MainActivity).timetableChangeFragment(0)
         }
 
@@ -77,6 +69,7 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
+            binding.tvTitle.text = bundle.getString("clubName", "오류") + "팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }
