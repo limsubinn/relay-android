@@ -20,6 +20,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.relay.ApplicationClass
 import com.example.relay.Constants
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
@@ -73,13 +74,12 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
     var nFormat: SimpleDateFormat = SimpleDateFormat("HH:mm:ss")
 
     private var curTimeInMillis = 0L
-
     private var curDistance = 0L
 
     private var listener: OnBottomSheetCallbacks? = null
 
     var runningRecordIdx: Long = 0
-
+    private val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
     private var scheduleList = mutableListOf<MemSchedule>()
 
     var currentMarker: Marker? = null
@@ -121,12 +121,12 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             addAllPolylines()
         }
 
-        RunningService(this).tryGetMySchedules(66)
+        RunningService(this).tryGetMySchedules(userIdx)
 
 //        setCustomMarkerView()
 
         binding.btnStart1.setOnClickListener {
-            RunningService(this).tryPostRunStart(66) //달리기 시작 API
+            RunningService(this).tryPostRunStart(userIdx) //달리기 시작 API
             startActivity(Intent(context, RunSplashActivity::class.java))
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
@@ -626,6 +626,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         scheduleList = res.clone() as MutableList<MemSchedule>
         Log.d("scheduleList", "${milliseconds(time)}")
         Log.d("scheduleList", "${scheduleList}")
+        Log.d("profileIdx", "${userIdx}")
 
 
 
