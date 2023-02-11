@@ -86,7 +86,7 @@ class MySettingService(val mySettingInterface: MySettingInterface) {
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
 
     fun tryPatchUserMsg(statusMsg: String){
-        retrofit.patchUserMsgReq(statusMsg).enqueue(object : Callback<ChangeMsgResponse>{
+        retrofit.patchUserMsgReq(ChangeMsgRequest(statusMsg)).enqueue(object : Callback<ChangeMsgResponse>{
             override fun onResponse(call: Call<ChangeMsgResponse>, response: Response<ChangeMsgResponse>) {
                 Log.d("ChangeMsgResponse", "success")
 

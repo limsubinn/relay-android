@@ -398,16 +398,14 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             val mm = min.toInt().toString().padStart(2, '0')
             val ss = sec.toInt().toString().padStart(2, '0')
 
-            // 목표값 수정 필요
             if (res.goalType == "NOGOAL") {
-                val sec = res.totalTime
                 binding.goalValue.visibility = View.GONE
                 binding.goalTarget.setTextColor(Color.BLACK)
                 binding.goalTarget.text = "${hh} : ${mm} : ${ss}"
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"
-                binding.otherValue.text = res.totalDist.toString()
+                binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "TIME") {
                 binding.goalValue.visibility = View.VISIBLE
                 binding.goalValue.text = "${hh} : ${mm} : ${ss}"
@@ -419,7 +417,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "DISTANCE") {
                 binding.goalValue.visibility = View.VISIBLE
-                binding.goalValue.text = res.totalDist.toString()
+                binding.goalValue.text = res.totalDist.toString()  + "km"
                 binding.goalTarget.setTextColor(Color.RED)
                 binding.goalTarget.text = res.goalValue.toString()
                 binding.goalType.text = "거리"
@@ -428,7 +426,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.otherValue.text = "${hh} : ${mm} : ${ss}"
             }
 
-            binding.runningPace.text = res.avgPace.toString()
+            binding.runningPace.text = res.avgPace.toString() + "km/h"
         }
     }
 

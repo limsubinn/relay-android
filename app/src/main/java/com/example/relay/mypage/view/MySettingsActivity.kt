@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
@@ -17,6 +18,7 @@ import com.example.relay.mypage.service.MySettingInterface
 import com.example.relay.mypage.service.MySettingService
 import com.example.relay.mypage.models.ChangeMsgResponse
 import com.example.relay.mypage.models.ChangePwdResponse
+import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_change_msg.view.*
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
 
@@ -25,12 +27,19 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
         ActivityMySettingsBinding.inflate(layoutInflater)
     }
 
+    private var msg = ""
+
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
 
         viewBinding.btnBack.setOnClickListener {
+            if (msg.isNotEmpty()) { // 상태메시지 변경
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra("msg", msg)
+                startActivity(intent)
+            }
             finish()
         }
 
@@ -109,7 +118,7 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
                 }
 
                 dialogView.btn_msg_save.setOnClickListener {
-                    val msg = dialogView.et_msg.text.toString()
+                    msg = dialogView.et_msg.text.toString()
                     MySettingService(this).tryPatchUserMsg(msg)
                     alertDialog?.dismiss()
                 }
@@ -118,7 +127,12 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
     }
 
     override fun onPatchUserMsgSuccess(response: ChangeMsgResponse) {
-        Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+        if (response.isSuccess) {
+            Toast.makeText(this, response.result, Toast.LENGTH_SHORT).show()
+            viewBinding.tvInfo.text = msg
+        } else {
+            Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onPatchUserMsgFailure(message: String) {
