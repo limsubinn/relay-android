@@ -304,6 +304,25 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
             binding.tvIntro.text = "가입된 그룹이 없습니다."
 
+            // 기록 -> 그룹페이지
+            setFragmentResultListener("record_to_group") { requestKey, bundle ->
+                clubIdx = bundle.getLong("clubIdx")
+
+                curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
+                year = Integer.parseInt(curDate.substring(0, 4))
+                month = Integer.parseInt(curDate.substring(5, 7))
+                date = Integer.parseInt(curDate.substring(8, 10))
+
+                binding.selCalendar.apply {
+                    setDates(getFutureDatesOfSelectMonth(month, year))
+                    initialPositionIndex = date - 3
+                    init()
+                    select(date - 1) // 날짜 선택
+                }
+
+                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+            }
+
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
                 recruitStatus = bundle.getString("recruitStatus", "")
