@@ -26,3 +26,8 @@ interface GetClubDailyInterface {
     fun onGetClubDailySuccess(response: GroupDailyRecordResponse)
     fun onGetClubDailyFailure(message: String)
 }
+
+interface PostClubJoinInInterface {
+    fun onPostClubJoinInSuccess()
+    fun onPostClubJoinInFailure(message: String)
+}

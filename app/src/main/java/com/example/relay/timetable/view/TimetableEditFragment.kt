@@ -9,10 +9,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
+import com.example.relay.group.models.GroupAcceptedResponse
+import com.example.relay.group.service.GetUserClubInterface
+import com.example.relay.group.service.GetUserClubService
+import com.example.relay.group.service.PostClubJoinInInterface
+import com.example.relay.group.service.PostClubJoinInService
 import com.example.relay.timetable.adapter.ScheduleRvAdapter
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
@@ -21,12 +27,14 @@ import com.example.relay.timetable.service.*
 import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 
-class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostInterface {
+class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostInterface, GetUserClubInterface, PostClubJoinInInterface{
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
 
     private var scheduleList = mutableListOf<Schedule>()
     private val userIdx = prefs.getLong("userIdx", 0L)
+    private var clubIdx = 0L
+    private var serverClubIdx = 0L
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -63,6 +71,20 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
                 dialogView.btn_check.setOnClickListener{
                     alertDialog?.dismiss()
                 }
+            } else if (serverClubIdx == 0L){
+                PostClubJoinInService(this).tryPostClubJoinIn(userIdx, clubIdx, scheduleList)
+            } else if ( serverClubIdx != clubIdx) {
+                val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+                dialogView.tv_no.text = "다른 그룹에 참여중입니다."
+                alertDialog?.setView(dialogView)
+                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDialog?.show()
+
+                dialogView.btn_check.setOnClickListener{
+                    alertDialog?.dismiss()
+                }
             } else {
                 TimetablePostService(this).tryPostMySchedules(userIdx, scheduleList)
             }
@@ -74,7 +96,24 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     private fun backToTimetableFragment(){
-        (activity as MainActivity).timetableChangeFragment(0)
+        (activity as MainActivity).timetableFragmentChange(0)
+    }
+
+    private fun clubIdxSetting(){
+        setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx", 0L)
+            TimetableGetService(this).tryGetGroupSchedules(clubIdx)
+        }
+    }
+
+    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
+        if (response.code != 2008 && response.code < 3000){
+            serverClubIdx = response.result.clubIdx
+        }
+    }
+
+    override fun onGetUserClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
@@ -108,5 +147,13 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
 
     override fun onPostMyTimetableFailure(message: String) {
         Log.d("Timetable", "onPostMyTimetableFailure: ")
+    }
+
+    override fun onPostClubJoinInSuccess() {
+        (activity as MainActivity).groupFragmentChange(0)
+    }
+
+    override fun onPostClubJoinInFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

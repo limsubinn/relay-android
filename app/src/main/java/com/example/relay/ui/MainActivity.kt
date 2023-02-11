@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         }
     }
 
-    fun timetableChangeFragment(index: Int) {
+    fun timetableFragmentChange(index: Int) {
         when(index){
             0 -> {
                 supportFragmentManager

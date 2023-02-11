@@ -168,6 +168,21 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             mainActivity?.groupFragmentChange(7) // 그룹 시간표로 이동
         }
 
+        // 가입하기 버튼
+        binding.btnJoinTeam.setOnClickListener{
+            when (binding.btnJoinTeam.text){
+                "가입하기" -> {
+                    parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
+                        bundleOf("clubIdx" to clubIdx, "clubName" to clubName))
+                    mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
+                }
+                "탈퇴하기" -> {
+
+                }
+                else -> throw IllegalArgumentException("잘못된 값")
+            }
+        }
+
 //        // 리스트, 멤버 -> 메인
 //        setFragmentResultListener("go_to_main") {requestKey, bundle ->
 //            clubIdx = bundle.getLong("clubIdx", 0L)

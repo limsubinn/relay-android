@@ -63,7 +63,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
             parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
                 bundleOf("clubIdx" to clubIdx, "clubName" to clubName)
             )
-            (activity as MainActivity).timetableChangeFragment(1)
+            (activity as MainActivity).timetableFragmentChange(1)
         }
 
         GetUserClubService(this).tryGetUserClub(userIdx)

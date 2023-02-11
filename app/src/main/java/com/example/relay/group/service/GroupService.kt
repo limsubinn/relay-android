@@ -2,7 +2,9 @@ package com.example.relay.group.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
+import com.example.relay.BaseResponse
 import com.example.relay.group.models.*
+import com.example.relay.timetable.models.Schedule
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -132,6 +134,26 @@ class GetClubDailyService(val dailyInterface: GetClubDailyInterface) {
                 Log.d("GroupDailyResponse", "fail")
                 t.printStackTrace()
                 dailyInterface.onGetClubDailyFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PostClubJoinInService(val clubJoinInInterface: PostClubJoinInInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPostClubJoinIn(profileIdx:Long, clubIdx: Long, schedule: List<Schedule>){
+        retrofit.postClubJoinIn(clubIdx, GroupJoinInRequest(profileIdx, schedule)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if (response.isSuccessful){
+                    clubJoinInInterface.onPostClubJoinInSuccess()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("GroupDailyResponse", "failure")
+                t.printStackTrace()
+                clubJoinInInterface.onPostClubJoinInFailure(t.message ?: "통신 오류")
             }
         })
     }
