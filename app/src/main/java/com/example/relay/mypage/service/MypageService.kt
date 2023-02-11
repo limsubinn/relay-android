@@ -11,8 +11,8 @@ class MypageService(val mypageInterface: MypageInterface) {
 
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
 
-    fun tryGetUserProfile(profileIdx: Long, name: String){
-        retrofit.getProfileRes(profileIdx, name).enqueue(object : Callback<UserProfileResponse>{
+    fun tryGetUserProfile(profileIdx: Long){
+        retrofit.getProfileRes(profileIdx).enqueue(object : Callback<UserProfileResponse>{
             override fun onResponse(call: Call<UserProfileResponse>, response: Response<UserProfileResponse>) {
                 Log.d("UserProfileResponse", "success")
                 // Log.d("UserProfileResponse", response.body().toString())

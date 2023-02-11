@@ -189,12 +189,9 @@ class MypageFragment: Fragment(), MypageInterface {
         }
 
         // 프로필 불러오기
-        if (name != null) {
-            if ((userIdx != 0L) && (name.isNotEmpty())) {
-                MypageService(this).tryGetUserProfile(userIdx, name)
-            }
+        if ((userIdx != 0L)) {
+            MypageService(this).tryGetUserProfile(userIdx)
         }
-
     }
 
     override fun onDestroyView() {

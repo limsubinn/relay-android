@@ -1,6 +1,7 @@
 package com.example.relay.group.service
 
 import com.example.relay.group.models.*
+import com.example.relay.mypage.models.MonthRecordResponse
 
 interface GetUserClubInterface {
     fun onGetUserClubSuccess(response: GroupAcceptedResponse)
@@ -25,6 +26,11 @@ interface GetMemberListInterface {
 interface GetClubDailyInterface {
     fun onGetClubDailySuccess(response: GroupDailyRecordResponse)
     fun onGetClubDailyFailure(message: String)
+}
+
+interface GetClubMonthInterface {
+    fun onGetClubMonthSuccess(response: MonthRecordResponse)
+    fun onGetClubMonthFailure(message: String)
 }
 
 interface PostClubJoinInInterface {
