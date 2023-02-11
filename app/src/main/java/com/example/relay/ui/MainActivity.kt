@@ -214,7 +214,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
             1 -> {
                 supportFragmentManager
                     .beginTransaction()
-                    .replace(binding.containerFragment.id, TimetableEditMainFragment())
+                    .replace(binding.containerFragment.id, TimetableEditMainFragment(), "TimetableEditMain")
                     .commitAllowingStateLoss()
             }
         }

@@ -25,6 +25,8 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import kotlinx.android.synthetic.main.fragment_group_main.view.*
+import kotlinx.android.synthetic.main.item_rv_group_list.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,7 +46,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
-    private var clubName = ""
     private var recruitStatus = ""
 
     private var mainActivity: MainActivity? = null
@@ -155,7 +156,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // 그룹 시간표 버튼
         binding.btnTimetable.setOnClickListener{
             parentFragmentManager.setFragmentResult("go_to_timetable",
-                bundleOf("clubIdx" to clubIdx, "clubName" to clubName))
+                bundleOf("clubIdx" to clubIdx, "clubName" to binding.profileLayout.profile_team.text))
             mainActivity?.groupFragmentChange(7) // 그룹 시간표로 이동
         }
 
@@ -164,7 +165,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             when (binding.btnJoinTeam.text){
                 "가입하기" -> {
                     parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
-                        bundleOf("clubIdx" to clubIdx, "clubName" to clubName))
+                        bundleOf("clubIdx" to clubIdx, "clubName" to binding.profileLayout.profile_team.text))
                     mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
                 }
                 "탈퇴하기" -> {
@@ -246,7 +247,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             binding.btnJoinTeam.text = "탈퇴하기"
 
             clubIdx = res.clubIdx
-            clubName = res.name
 
             // 기록 -> 그룹페이지
             setFragmentResultListener("record_to_group") { requestKey, bundle ->
