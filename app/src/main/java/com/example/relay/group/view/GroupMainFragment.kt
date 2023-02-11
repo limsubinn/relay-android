@@ -341,7 +341,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"
-                binding.otherValue.text = res.totalDist.toString()
+                binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "DISTANCE") {
                 binding.goalValue.visibility = View.VISIBLE
                 binding.goalValue.text = res.totalDist.toString()
