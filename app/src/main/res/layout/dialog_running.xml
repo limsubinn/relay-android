@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/four_rounded_shape">
 
     <TextView
         android:id="@+id/tv_big_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="75dp"
+        android:layout_marginTop="25dp"
         android:text="00:00:00"
         android:textColor="@color/black"
         android:textSize="80sp"
@@ -48,7 +49,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="25dp"
-        android:text="00.0"
+        android:text="00.00"
         android:textColor="@color/black"
         android:textSize="80sp"
         android:textStyle="bold"
@@ -87,7 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="25dp"
-        android:text="00:00"
+        android:text="00.00"
         android:textColor="@color/black"
         android:textSize="50sp"
         android:textStyle="bold"
@@ -124,7 +125,7 @@
         android:id="@+id/divider3"
         android:layout_width="1dp"
         android:layout_height="150dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginBottom="100dp"
         android:background="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -135,7 +136,7 @@
         android:id="@+id/tv_big_avg_pace"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="00:00"
+        android:text="00.00"
         android:textColor="@color/black"
         android:textSize="50sp"
         android:textStyle="bold"
@@ -168,14 +169,18 @@
         app:layout_constraintStart_toStartOf="@+id/tv_big_avg_pace"
         app:layout_constraintTop_toBottomOf="@+id/tv_text_big_avg_pace" />
 
-    <ImageView
+
+    <TextView
         android:id="@+id/img_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="15dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_close_24" />
+        android:layout_marginBottom="30dp"
+        android:text="닫기"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

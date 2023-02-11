@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +14,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
+import com.example.relay.Constants
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
 import com.example.relay.mypage.models.DailyRecordResponse
+import com.example.relay.mypage.models.LocationList
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.mypage.service.MypageInterface
 import com.example.relay.mypage.service.MypageService
+import com.example.relay.running.service.Polyline
 import com.example.relay.ui.MainActivity
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
@@ -43,6 +50,13 @@ class MypageFragment: Fragment(), MypageInterface {
     private val userIdx = prefs.getLong("userIdx", 0L)
     private val name = prefs.getString("name", "")
 
+    private var map: GoogleMap? = null
+    private lateinit var mapView: MapView
+
+    private var pathPoints = mutableListOf<Polyline>()
+    private var locationList = mutableListOf<LocationList>()
+    var latLngList = mutableListOf<LatLng>()
+
     private var mainActivity: MainActivity? = null
 
     override fun onAttach(context: Context) {
@@ -63,6 +77,13 @@ class MypageFragment: Fragment(), MypageInterface {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMypageBinding.inflate(inflater, container, false)
+        mapView = binding.mypageMapView
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync {
+            moveCameraToUser()
+            map = it
+            addAllPolylines()
+        }
         return binding.root
     }
 
@@ -207,6 +228,58 @@ class MypageFragment: Fragment(), MypageInterface {
         return list
     }
 
+    private fun moveCameraToUser() {
+        if(pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()){
+            map?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    pathPoints.last().last(),
+                    10f
+                )
+            )
+        }
+    }
+
+    private fun addAllPolylines() {
+        for(latLngList in pathPoints) {
+            val polylineOptions = PolylineOptions()
+                .color(Color.parseColor("#FFFF3E00"))
+                .width(Constants.POLYLINE_WIDTH)
+                .addAll(latLngList)
+            map?.addPolyline(polylineOptions)
+
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onStop()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView?.onDestroy()
+    }
+
     override fun onGetUserProfileSuccess(response: UserProfileResponse) {
         val res = response.result
 
@@ -248,7 +321,19 @@ class MypageFragment: Fragment(), MypageInterface {
 
             binding.tvNotRecord.visibility = View.GONE
             binding.recordLayout.visibility = View.VISIBLE
-            binding.runningmap.visibility = View.VISIBLE
+            binding.mypageMapView.visibility = View.VISIBLE
+
+            locationList = res.locationList.clone() as MutableList<LocationList>
+            for (i in 0 until locationList.size){
+                val location = LatLng(locationList[i].latitude.toDouble(), locationList[i].longitude.toDouble())
+                latLngList.add(location)
+            }
+
+            binding.mypageMapView.getMapAsync {
+                moveCameraToUser()
+                map = it
+                addAllPolylines()
+            }
 
             // 거리, 시간, 페이스
             if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "목표없음")) {
@@ -276,7 +361,7 @@ class MypageFragment: Fragment(), MypageInterface {
         } else {
             binding.tvNotRecord.visibility = View.VISIBLE
             binding.recordLayout.visibility = View.GONE
-            binding.runningmap.visibility = View.GONE
+            binding.mypageMapView.visibility = View.GONE
 
             binding.tvNotRecord.text = response.message
         }

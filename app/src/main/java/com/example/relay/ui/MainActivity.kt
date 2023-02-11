@@ -11,22 +11,21 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.example.relay.ApplicationClass.Companion.prefs
-import com.example.relay.OnBottomSheetCallbacks
+import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*
 import com.example.relay.ui.service.MainService
 import com.example.relay.mypage.view.MyRecordFragment
 import com.example.relay.mypage.view.MypageFragment
-import com.example.relay.running.RunningFragment
 import com.example.relay.timetable.view.TimetableEditMainFragment
+import com.example.relay.running.view.RunningFragment
 import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
 import com.example.relay.ui.service.MainInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.concurrent.fixedRateTimer
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), MainInterface {

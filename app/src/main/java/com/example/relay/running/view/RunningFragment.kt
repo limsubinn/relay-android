@@ -1,18 +1,20 @@
-package com.example.relay.running
+package com.example.relay.running.view
 
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -20,18 +22,21 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.relay.Constants
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
-import com.example.relay.Constants.ACTION_RESUME_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
 import com.example.relay.Constants.MAP_ZOOM
 import com.example.relay.Constants.POLYLINE_WIDTH
 import com.example.relay.Constants.REQUEST_CODE_LOCATION_PERMISSION
-import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
-import com.example.relay.TrackingUtility
 import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
-import com.example.relay.service.Polyline
-import com.example.relay.service.TrackingService
+import com.example.relay.running.OnBottomSheetCallbacks
+import com.example.relay.running.TrackingUtility
+import com.example.relay.running.models.PathPoints
+import com.example.relay.running.models.RunStrResponse
+import com.example.relay.running.service.*
+import com.example.relay.running.service.Polyline
+import com.example.relay.timetable.models.MemSchedule
+import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.ui.viewmodels.RunningViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -40,14 +45,18 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gun0912.tedpermission.provider.TedPermissionProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.dialog_running.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.lang.Math.round
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @AndroidEntryPoint
-class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
+class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningInterface {
 
     private val viewModel: RunningViewModel by viewModels()
     private lateinit var binding: FragmentRunningBinding
@@ -56,12 +65,22 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+    var locationList = mutableListOf<PathPoints>()
+
+    var mNow: Long = 0
+    var mDate: Date? = null
+    var mFormat: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    var nFormat: SimpleDateFormat = SimpleDateFormat("HH:mm:ss")
 
     private var curTimeInMillis = 0L
 
     private var curDistance = 0L
 
     private var listener: OnBottomSheetCallbacks? = null
+
+    var runningRecordIdx: Long = 0
+
+    private var scheduleList = mutableListOf<MemSchedule>()
 
     var currentMarker: Marker? = null
     var markerView: View? = null
@@ -101,11 +120,14 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             map = it
             addAllPolylines()
         }
+
+        RunningService(this).tryGetMySchedules(66)
+
 //        setCustomMarkerView()
 
-
         binding.btnStart1.setOnClickListener {
-            startActivity(Intent(context,RunSplashActivity::class.java))
+            RunningService(this).tryPostRunStart(66) //달리기 시작 API
+            startActivity(Intent(context, RunSplashActivity::class.java))
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
             startRun()
@@ -123,13 +145,16 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             endRunAndSaveToDB()
         }
 
-        binding.tvLookBig.setOnClickListener {
+        //크게 보기(다이얼로그 띄우기)
+        binding.imgLookBig.setOnClickListener {
             val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_running, null)
-            val mBuilder = AlertDialog.Builder(context)
+            val mBuilder = AlertDialog.Builder(context)  //괄호 안 context, R.drawable.four_rounded_shape 해주면 전체화면 꽉 참
                 .setView(mDialogView)
             val  mAlertDialog = mBuilder.show()
 
-            val button = mDialogView.findViewById<ImageView>(R.id.img_close)
+            mAlertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))  //배경 투명처리 해줘야 배경 모양 드러남
+
+            val button = mDialogView.findViewById<TextView>(R.id.img_close)
                 button.setOnClickListener {
                 mAlertDialog.dismiss()
             }
@@ -143,8 +168,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
                 pathPoints = it
                 val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
-                val formattedAvgDistance = TrackingUtility.calculateAvgPace(pathPoints.last(),curTimeInMillis, true)
-                val formattedNowDistance = TrackingUtility.calculateNowPace(pathPoints.last(),curTimeInMillis, true)
+                val formattedAvgDistance =
+                    TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
+                val formattedNowDistance =
+                    TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
                 mDialogView.findViewById<TextView>(R.id.tv_big_km).text = formattedDistance.toString()
                 mDialogView.findViewById<TextView>(R.id.tv_big_avg_pace).text = formattedAvgDistance
                 mDialogView.findViewById<TextView>(R.id.tv_big_now_pace).text = formattedNowDistance
@@ -159,6 +186,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         return binding.root
     }
 
+    //observer로 변동사항 표시
     private fun subscribeToObservers() {
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
             updateTracking(it)
@@ -169,8 +197,10 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             addLatestPolyline()
             moveCameraToUser()
             val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
-            val formattedAvgDistance = TrackingUtility.calculateAvgPace(pathPoints.last(),curTimeInMillis, true)
-            val formattedNowDistance = TrackingUtility.calculateNowPace(pathPoints.last(),curTimeInMillis, true)
+            val formattedAvgDistance =
+                TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
+            val formattedNowDistance =
+                TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
             binding.tvDistance.text = formattedDistance.toString()
             binding.tvPace2.text = formattedAvgDistance
             binding.tvPace1.text = formattedNowDistance
@@ -178,13 +208,15 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
             curTimeInMillis = it
-            val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
+            val formattedGoalTime =
+                TrackingUtility.getFormattedStopWatchTime(2400000 - curTimeInMillis + 1000, true)
             val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
-            binding.tvTimer.text = formattedGoalTime
+            //binding.tvTimer.text = formattedGoalTime
             binding.tvTime.text = formattedTime
         })
     }
 
+    //달리기 시작
     private fun startRun() {
         if(isTracking) {
             sendCommandToService(ACTION_PAUSE_SERVICE)
@@ -203,6 +235,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //달리기 종료
     private fun stopRun() {
         sendCommandToService(ACTION_STOP_SERVICE)
         binding.layoutTimer.visibility = View.GONE
@@ -249,6 +282,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //달리기 종료 시 DB 저장
     private fun endRunAndSaveToDB() {
         map?.snapshot { bmp ->
             var distanceInMeters = 0
@@ -257,16 +291,38 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
                 //binding.tvDistance.text = distanceInMeters.toString()
             }
             val avgSpeed = round((distanceInMeters / 1000f) / (curTimeInMillis / 1000f / 60 / 60) * 10) / 10f
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
             val dateTimestamp = Calendar.getInstance().timeInMillis
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
             viewModel.insertRun(run)
+            RunningService(this).tryPostRunEnd((distanceInMeters / 1000f).toInt(),locationList,avgSpeed.toLong(),runningRecordIdx,formattedTime)
+            locationList.clear()
+
+            // 종료 시 오늘의 달리기 기록 표출
+            val mDialogView = LayoutInflater.from(context).inflate(R.layout.dialog_running_end, null)
+            val mBuilder = AlertDialog.Builder(context)  //괄호 안 context, R.drawable.four_rounded_shape 해주면 전체화면 꽉 참
+                .setView(mDialogView)
+            val  mAlertDialog = mBuilder.show()
+
+            mAlertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))  //배경 투명처리 해줘야 배경 모양 드러남
+
+            val button = mDialogView.findViewById<TextView>(R.id.tv_close2)
+            button.setOnClickListener {
+                mAlertDialog.dismiss()
+            }
+
+            mDialogView.findViewById<TextView>(R.id.tv_big_km2).text = (distanceInMeters / 1000f).toString()
+            mDialogView.findViewById<TextView>(R.id.tv_big_time2).text = formattedTime
+            mDialogView.findViewById<TextView>(R.id.tv_big_avg_pace2).text = avgSpeed.toString()
+
             val showToast = Toast.makeText(context, "DB 저장",Toast.LENGTH_LONG)
             showToast.show()
             stopRun()
         }
     }
 
+    //달리기 추적 선 연결
     private fun addAllPolylines() {
         for(polyline in pathPoints) {
             val polylineOptions = PolylineOptions()
@@ -278,6 +334,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
+    //가장 최신으로 추가되는 추적 선 연결
     private fun addLatestPolyline() {
         if(pathPoints.isNotEmpty() && pathPoints.last().size > 1){
             val preLastLating = pathPoints.last()[pathPoints.last().size - 2]
@@ -295,8 +352,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         }
     }
 
-
-
+    //위치 권한 허용
     private fun requestPermissions() {
         if(TrackingUtility.hasLocationPermissions(requireContext())) {
             return
@@ -416,10 +472,16 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 //        }
 //    }
 
+    //현재 위치 마커 표시 함수
     fun setCurrentLocation(location: LatLng) {
         if (currentMarker != null) currentMarker!!.remove()
         val currentLatLng = LatLng(location.latitude, location.longitude)
         val markerOptions = MarkerOptions()
+        mNow = System.currentTimeMillis()
+        mDate = Date(mNow)
+        val time = mFormat.format(mDate).toString()
+        locationList.add(PathPoints(location.latitude, location.longitude,booleanToString(isTracking),time))
+        Log.d("LocationList","${locationList}")
         markerOptions.position(currentLatLng)
         markerOptions.draggable(true)
         currentMarker = map?.addMarker(markerOptions.icon(BitmapDescriptorFactory.fromBitmap(markerIcon)))
@@ -429,5 +491,160 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
     private fun setCustomMarkerView() {
         markerView = LayoutInflater.from(context).inflate(com.example.relay.R.drawable.marker,null)
+    }
+
+    //isTracking 보내기 위한 처리
+    fun booleanToString(isTracking: Boolean): String{
+        if (isTracking == true){
+            return "running"
+        } else return "pause"
+    }
+
+    //string 시간 값 -> milliseconds로 변환
+    fun milliseconds(date: String?): Long {
+        //String date_ = date;
+        val sdf = SimpleDateFormat("HH:mm:ss")
+        try {
+            val mDate = sdf.parse(date)
+            val timeInMilliseconds = mDate.time
+            println("Date in milli :: $timeInMilliseconds")
+            return timeInMilliseconds
+        } catch (e: ParseException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+        }
+        return 0
+    }
+
+    //시간표에 맞는 요일로 변경
+    private fun doDayOfWeek(): Int? {
+        val cal: Calendar = Calendar.getInstance()
+        val nWeek: Int = cal.get(Calendar.DAY_OF_WEEK)
+        var rWeek: Int? = null
+
+        if (nWeek == 1) { // 일
+            rWeek = 7
+        } else if (nWeek == 2) {  //월
+            rWeek = 1
+        } else if (nWeek == 3) {  //화
+            rWeek = 2
+        } else if (nWeek == 4) {  //수
+            rWeek = 3
+        } else if (nWeek == 5) {  //목
+            rWeek = 4
+        } else if (nWeek == 6) {  //금
+            rWeek = 5
+        } else if (nWeek == 7) {  //토
+            rWeek = 6
+        }
+        return rWeek
+    }
+
+    override fun onPostRunStrSuccess(response: RunStrResponse) {
+        Log.d("RunStart", "onPostRunStrSuccess")
+
+        val res = response.result
+
+        if (response.isSuccess == false){
+            binding.btnStart1.setOnClickListener {
+                stopRun()
+                Toast.makeText(context, "${response.message}", Toast.LENGTH_SHORT).show()
+            }
+        }else{
+            if (runningRecordIdx != null){
+                runningRecordIdx = res.runningRecordIdx
+                Log.d("runningRecordIdx","${runningRecordIdx}")
+                if (res.goalType == "TIME"){
+                    val calculateTime =
+                        TrackingUtility.getFormattedStopWatchTime((res.goal * 1000).toLong(), true)
+                    val calculateTimetoMillis = res.goal * 1000
+                    binding.tvGoal.text = "${calculateTime}"
+                    binding.km.visibility = View.GONE
+                    TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+                        curTimeInMillis = it
+                        val formattedGoalTime = TrackingUtility.getFormattedStopWatchTime(
+                            (calculateTimetoMillis - curTimeInMillis + 1000).toLong(),
+                            true
+                        )
+                        val formattedTime =
+                            TrackingUtility.getFormattedStopWatchTime(curTimeInMillis, true)
+                        binding.tvTime.text = formattedTime
+                        binding.tvTimer.text = formattedGoalTime
+                    })
+                } else {
+                    binding.tvGoal.text = "${res.goal} km"
+                    binding.km.visibility = View.VISIBLE
+                    TrackingService.pathPoints.observe(viewLifecycleOwner, Observer{
+                        pathPoints = it
+                        val formattedDistance =
+                            TrackingUtility.calculatePolylineLength(pathPoints.last())
+                        binding.tvTimer.text = (res.goal - formattedDistance).toString()
+                    })
+                }
+            }
+        }
+    }
+
+    override fun onPostRunStrFailure(message: String) {
+        Log.d("RunStart", "onPostRunStrFailure")
+    }
+
+    override fun onPostRunEndSuccess(response: RunEndResponse) {
+        Log.d("RunEnd", "onPostRunEndSuccess")
+
+        val res = response.result
+
+        if (response.isSuccess == true){
+            Log.d("isSuccess", "${response.isSuccess}")
+            if (res.isSuccess == "y"){
+                Log.d("isSuccess", "목표달성")
+                Toast.makeText(context, "목표달성", Toast.LENGTH_SHORT).show()
+            }else{
+                Log.d("isSuccess", "목표실패")
+                Toast.makeText(context, "목표실패", Toast.LENGTH_SHORT).show()
+            }
+        }else {
+            Log.d("isSuccess", "${response.message}")
+            Log.d("isSuccess", "${runningRecordIdx}")
+
+        }
+
+    }
+
+    override fun onPostRunEndFailure(message: String) {
+        Log.d("RunEnd", "onPostRunEndFailure")
+    }
+
+    override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
+        Log.d("timetable", "onGetMyTimetableSuccess")
+
+        val res = response.result
+        val today: Int? = doDayOfWeek()
+        mNow = System.currentTimeMillis()
+        mDate = Date(mNow)
+        val time = nFormat.format(mDate)
+        scheduleList = res.clone() as MutableList<MemSchedule>
+        Log.d("scheduleList", "${milliseconds(time)}")
+        Log.d("scheduleList", "${scheduleList}")
+
+
+
+        for(i in 0 until scheduleList.size){
+            if (today == scheduleList[i].day){
+                Log.d("scheduleList", "${milliseconds(scheduleList[i].start)}")
+                if (milliseconds(time) >= milliseconds(scheduleList[i].start) && milliseconds(scheduleList[i].end) >= milliseconds(time)){
+                    binding.btnStart1.visibility = View.VISIBLE
+                    break
+                }
+            } else binding.btnStart1.visibility = View.GONE
+
+        }
+        Log.d("scheduleList", "${today}")
+        Log.d("scheduleList", "${time}")
+        Log.d("scheduleList", "${scheduleList}")
+    }
+
+    override fun onGetMyTimetableFailure(message: String) {
+        Log.d("timetable", "onGetMyTimetableFailure")
     }
 }
