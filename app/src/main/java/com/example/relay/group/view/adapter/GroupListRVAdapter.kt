@@ -4,10 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.relay.databinding.ItemRvGroupListBinding
-import com.example.relay.group.models.GroupListResult
+import com.example.relay.group.models.GroupInfoResult
 
-class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): RecyclerView.Adapter<GroupListRVAdapter.DataViewHolder>() {
+class GroupListRVAdapter(private val dataList: ArrayList<GroupInfoResult>): RecyclerView.Adapter<GroupListRVAdapter.DataViewHolder>() {
 
     // 아이템 클릭 인터페이스
     interface ItemClickListener {
@@ -25,19 +26,19 @@ class GroupListRVAdapter(private val dataList: ArrayList<GroupListResult>): Recy
     // ViewHolder 객체
     inner class DataViewHolder(val binding: ItemRvGroupListBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(data: GroupListResult) {
+        fun bind(data: GroupInfoResult) {
             binding.teamName.text = data.name
             binding.teamIntro.text = data.content
 
-            if (data.recruitStatus == "recruiting") {
-                binding.teamRecruitStatus.text = "모집중"
-            } else {
-                binding.teamRecruitStatus.text = "모집완료"
-            }
+//            if (data.recruitStatus == "recruiting") {
+//                binding.teamRecruitStatus.text = "모집중"
+//            } else {
+//                binding.teamRecruitStatus.text = "모집완료"
+//            }
 
-//            Glide.with(binding.teamImg.context)
-//                .load(data.imgURL)
-//                .into(binding.teamImg)
+            Glide.with(binding.teamImg.context)
+                .load(data.imgURL)
+                .into(binding.teamImg)
         }
     }
 

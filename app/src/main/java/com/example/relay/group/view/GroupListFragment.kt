@@ -15,11 +15,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
+import com.example.relay.group.models.GroupInfoResult
 import com.example.relay.group.service.GetClubListInterface
 import com.example.relay.group.service.GetClubListService
 import com.example.relay.group.view.adapter.GroupListRVAdapter
 import com.example.relay.group.models.GroupListResponse
-import com.example.relay.group.models.GroupListResult
 import com.example.relay.ui.MainActivity
 
 class GroupListFragment: Fragment(), GetClubListInterface {
@@ -90,7 +90,7 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         val res = response.result
 
         // 리사이클러뷰
-        val clubList: ArrayList<GroupListResult> = arrayListOf()
+        val clubList: ArrayList<GroupInfoResult> = arrayListOf()
         val listAdapter = GroupListRVAdapter(clubList)
 
         binding.rvGroupAll.adapter = listAdapter
@@ -100,11 +100,12 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val clubIdx = clubList[position].clubIdx
-                val recruitStatus = clubList[position].recruitStatus
+                // val recruitStatus = clubList[position].recruitStatus
 
                 // 리스트 -> 메인
                 parentFragmentManager.setFragmentResult("go_to_main",
-                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
+                    bundleOf("clubIdx" to clubIdx))
+                        //, "recruitStatus" to recruitStatus))
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
         })
@@ -121,21 +122,23 @@ class GroupListFragment: Fragment(), GetClubListInterface {
 
         binding.spRecruitStatus.adapter = recruitAdapter
         binding.spRecruitStatus.setSelection(0)
+
         binding.spRecruitStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 clubList.clear()
                 if (p2 == 1) { // 모집중
-                    res.forEach {
-                        if (it.recruitStatus == "recruiting") {
-                            clubList.add(it)
-                        }
-                    }
+                    clubList.addAll(res)
+//                    res.forEach {
+//                        if (it.recruitStatus == "recruiting") {
+//                            clubList.add(it)
+//                        }
+//                    }
                 } else if (p2 == 2) { // 모집 완료
-                    res.forEach {
-                        if (it.recruitStatus != "recruiting") {
-                            clubList.add(it)
-                        }
-                    }
+//                    res.forEach {
+//                        if (it.recruitStatus != "recruiting") {
+//                            clubList.add(it)
+//                        }
+//                    }
                 } else { // 전체
                     clubList.addAll(res)
                 }
