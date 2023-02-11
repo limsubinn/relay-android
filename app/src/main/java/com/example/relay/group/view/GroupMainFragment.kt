@@ -426,7 +426,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.otherValue.text = "${hh} : ${mm} : ${ss}"
             }
 
-            binding.runningPace.text = res.avgPace.toString()
+            binding.runningPace.text = res.avgPace.toString() + "km/h"
         }
     }
 

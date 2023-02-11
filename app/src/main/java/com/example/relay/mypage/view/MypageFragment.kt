@@ -382,7 +382,7 @@ class MypageFragment: Fragment(), MypageInterface {
                     binding.otherValue.text = "${hh} : ${mm} : ${ss}"
                 }
 
-                binding.runningPace.text = res.pace.toString()
+                binding.runningPace.text = res.pace.toString() + "km/h"
             }
         } else {
             binding.tvNotRecord.visibility = View.VISIBLE
