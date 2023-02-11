@@ -49,6 +49,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
+        GetUserClubService(this).tryGetUserClub(userIdx)
         TimetableGetService(this).tryGetMySchedules(userIdx)
 
         binding.containerRv.adapter = scheduleRvAdapter
@@ -72,8 +73,9 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
                     alertDialog?.dismiss()
                 }
             } else if (serverClubIdx == 0L){
+                Log.d("Timetable", "onViewCreated: 그룹 신청하기")
                 PostClubJoinInService(this).tryPostClubJoinIn(userIdx, clubIdx, scheduleList)
-            } else if ( serverClubIdx != clubIdx) {
+            } else if ( serverClubIdx != clubIdx ) {
                 val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
                 val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
@@ -84,6 +86,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
 
                 dialogView.btn_check.setOnClickListener{
                     alertDialog?.dismiss()
+                    (activity as MainActivity).groupFragmentChange(0)
                 }
             } else {
                 TimetablePostService(this).tryPostMySchedules(userIdx, scheduleList)
@@ -91,23 +94,31 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
         }
 
         binding.btnBack.setOnClickListener{
-            backToTimetableFragment()
+            if (serverClubIdx == clubIdx)
+                backToTimetableFragment()
+            else
+                backToClubMainFragment()
         }
+
+        clubIdxSetting()
     }
 
     private fun backToTimetableFragment(){
         (activity as MainActivity).timetableFragmentChange(0)
     }
 
+    private fun backToClubMainFragment(){
+        (activity as MainActivity).groupFragmentChange(0)
+    }
+
     private fun clubIdxSetting(){
-        setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
+        setFragmentResultListener("forJoin") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
-            TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 2008 && response.code < 3000){
+        if (response.code != 2008){
             serverClubIdx = response.result.clubIdx
         }
     }
@@ -150,7 +161,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onPostClubJoinInSuccess() {
-        (activity as MainActivity).groupFragmentChange(0)
+        backToClubMainFragment()
     }
 
     override fun onPostClubJoinInFailure(message: String) {
