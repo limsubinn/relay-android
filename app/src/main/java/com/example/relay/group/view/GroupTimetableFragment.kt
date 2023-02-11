@@ -8,18 +8,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResultListener
-import com.example.relay.ApplicationClass
 import com.example.relay.ApplicationClass.Companion.prefs
-import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupTimetableBinding
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
-import com.example.relay.timetable.service.TimetableInterface
-import com.example.relay.timetable.service.TimetableService
+import com.example.relay.timetable.service.TimetableGetInterface
+import com.example.relay.timetable.service.TimetableGetService
 import com.example.relay.ui.MainActivity
 import com.islandparadise14.mintable.model.ScheduleEntity
 
-class GroupTimetableFragment : Fragment(), TimetableInterface {
+class GroupTimetableFragment : Fragment(), TimetableGetInterface {
     private var _binding: FragmentGroupTimetableBinding ?= null
     private val binding get() = _binding!!
 
@@ -73,7 +71,7 @@ class GroupTimetableFragment : Fragment(), TimetableInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
-            TimetableService(this).tryGetGroupSchedules(clubIdx)
+            TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }
 
@@ -110,14 +108,6 @@ class GroupTimetableFragment : Fragment(), TimetableInterface {
     }
 
     override fun onGetMyTimetableFailure(message: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPostMyTimetableSuccess() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPostMyTimetableFailure(message: String) {
         TODO("Not yet implemented")
     }
 }

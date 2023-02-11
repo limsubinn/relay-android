@@ -9,17 +9,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.setFragmentResultListener
 import com.example.relay.ApplicationClass
-import com.example.relay.R
-import com.example.relay.databinding.FragmentGroupTimetableBinding
 import com.example.relay.databinding.FragmentTimetableEditMainBinding
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
-import com.example.relay.timetable.service.TimetableInterface
-import com.example.relay.timetable.service.TimetableService
+import com.example.relay.timetable.service.TimetableGetInterface
+import com.example.relay.timetable.service.TimetableGetService
 import com.example.relay.ui.MainActivity
 import com.islandparadise14.mintable.model.ScheduleEntity
 
-class TimetableEditMainFragment : Fragment(), TimetableInterface {
+class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private var _binding: FragmentTimetableEditMainBinding ?= null
     private val binding get() = _binding!!
 
@@ -54,12 +52,12 @@ class TimetableEditMainFragment : Fragment(), TimetableInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+/*
         parentFragmentManager
             .beginTransaction()
             .add(R.id.container_edit, TimetableEditFragment())
             .commit()
-
+*/
         binding.btnBack.setOnClickListener{
             parentFragmentManager
                 .beginTransaction()
@@ -79,7 +77,7 @@ class TimetableEditMainFragment : Fragment(), TimetableInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
-            TimetableService(this).tryGetGroupSchedules(clubIdx)
+            TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }
 
@@ -116,14 +114,6 @@ class TimetableEditMainFragment : Fragment(), TimetableInterface {
     }
 
     override fun onGetMyTimetableFailure(message: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPostMyTimetableSuccess() {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPostMyTimetableFailure(message: String) {
         TODO("Not yet implemented")
     }
 }

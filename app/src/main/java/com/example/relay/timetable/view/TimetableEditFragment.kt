@@ -10,20 +10,18 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.relay.ApplicationClass
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
 import com.example.relay.timetable.adapter.ScheduleRvAdapter
-import com.example.relay.timetable.service.TimetableInterface
-import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.models.Schedule
+import com.example.relay.timetable.service.*
 import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 
-class TimetableEditFragment : Fragment(), TimetableInterface {
+class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
 
@@ -43,7 +41,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
-        TimetableService(this).tryGetMySchedules(userIdx)
+        TimetableGetService(this).tryGetMySchedules(userIdx)
 
         binding.containerRv.adapter = scheduleRvAdapter
 
@@ -66,7 +64,7 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
                     alertDialog?.dismiss()
                 }
             } else {
-                TimetableService(this).tryPostMySchedules(userIdx, scheduleList)
+                TimetablePostService(this).tryPostMySchedules(userIdx, scheduleList)
             }
 
         }
