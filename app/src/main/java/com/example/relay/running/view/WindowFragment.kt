@@ -1,13 +1,12 @@
-package com.example.relay.running
+package com.example.relay.running.view
 
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.relay.OnBottomSheetCallbacks
 import com.example.relay.R
-import com.example.relay.databinding.FragmentWindowBinding
+import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.ui.MainActivity
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment

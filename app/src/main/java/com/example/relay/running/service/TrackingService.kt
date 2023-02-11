@@ -1,4 +1,4 @@
-package com.example.relay.service
+package com.example.relay.running.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -18,23 +18,19 @@ import androidx.lifecycle.Observer
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_RESUME_SERVICE
 import com.example.relay.Constants.ACTION_START_OR_RESUME_SERVICE
-import com.example.relay.Constants.ACTION_START_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
 import com.example.relay.Constants.FASTEST_LOCATION_INTERVAL
 import com.example.relay.Constants.LOCATION_UPDATE_INTERVAL
 import com.example.relay.Constants.NOTIFICATION_CHANNEL_ID
 import com.example.relay.Constants.NOTIFICATION_CHANNEL_NAME
 import com.example.relay.Constants.TIMER_UPDATE_INTERVAL
-import com.example.relay.TrackingUtility
+import com.example.relay.running.TrackingUtility
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

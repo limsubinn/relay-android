@@ -6,14 +6,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.relay.ApplicationClass.Companion.prefs
-import com.example.relay.OnBottomSheetCallbacks
+import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*
 import com.example.relay.ui.service.MainService
 import com.example.relay.mypage.view.MyRecordFragment
 import com.example.relay.mypage.view.MypageFragment
-import com.example.relay.running.RunningFragment
+import com.example.relay.running.view.RunningFragment
 import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
