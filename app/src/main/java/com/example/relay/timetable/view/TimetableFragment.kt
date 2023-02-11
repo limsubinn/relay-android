@@ -48,14 +48,14 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnMyTimetable.setOnClickListener{
-            if (binding.tvTitle.text == "팀 시간표") {
+            if (binding.tvTitle.text != "개인 시간표") {
                 binding.timetable.initTable(day)
                 TimetableGetService(this).tryGetMySchedules(userIdx)
                 binding.tvTitle.text = "개인 시간표"
             } else {
                 binding.timetable.initTable(day)
                 TimetableGetService(this).tryGetGroupSchedules(clubIdx)
-                binding.tvTitle.text = "팀 시간표"
+                binding.tvTitle.text = "${clubName} 팀"
             }
         }
 
@@ -130,10 +130,9 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
         if (response.code == 1000) {
             clubIdx = response.result.clubIdx
             clubName = response.result.name
-            binding.tvTitle.text = clubName + " 팀"
+            binding.tvTitle.text = "${clubName} 팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         } else {
-            Log.d("Timetable", "TimetableFragment 클럽정보 받아오기 : ${response.code}")
             binding.btnEdit.visibility = View.GONE
             binding.btnMyTimetable.visibility = View.GONE
         }
