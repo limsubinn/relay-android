@@ -25,6 +25,8 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
         ActivityMySettingsBinding.inflate(layoutInflater)
     }
 
+    private var msg = ""
+
     @SuppressLint("CommitPrefEdits")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +111,7 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
                 }
 
                 dialogView.btn_msg_save.setOnClickListener {
-                    val msg = dialogView.et_msg.text.toString()
+                    msg = dialogView.et_msg.text.toString()
                     MySettingService(this).tryPatchUserMsg(msg)
                     alertDialog?.dismiss()
                 }
@@ -118,7 +120,12 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
     }
 
     override fun onPatchUserMsgSuccess(response: ChangeMsgResponse) {
-        Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+        if (response.isSuccess) {
+            Toast.makeText(this, response.result, Toast.LENGTH_SHORT).show()
+            viewBinding.tvInfo.text = msg
+        } else {
+            Toast.makeText(this, response.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onPatchUserMsgFailure(message: String) {
