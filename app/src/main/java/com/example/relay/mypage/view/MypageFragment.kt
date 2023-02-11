@@ -332,28 +332,57 @@ class MypageFragment: Fragment(), MypageInterface {
                 addAllPolylines()
             }
 
-            // 거리, 시간, 페이스
-            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "목표없음")) {
-                binding.goalValue.visibility = View.GONE
-                binding.goalTarget.text = res.time.toString() // 수정 필요
-                binding.goalTarget.setTextColor(Color.BLACK)
-                binding.goalType.text = "시간"
-            } else {
-                binding.goalType.text = res.goalType
+            var sec = res.time
+            var min = sec / 60
+            val hour = min / 60
+            min %= 60
+            sec %= 60
 
-                if (res.goalType == "시간") {
-                    binding.goalValue.text = res.time.toString() // 수정 필요
-                    binding.goalTarget.text = res.goalValue.toString() // 수정 필요
+            val hh = hour.toInt().toString().padStart(2, '0')
+            val mm = min.toInt().toString().padStart(2, '0')
+            val ss = sec.toInt().toString().padStart(2, '0')
+
+            // 거리, 시간, 페이스
+            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "NOGOAL")) {
+                binding.goalValue.visibility = View.GONE
+                binding.goalTarget.setTextColor(Color.BLACK)
+                binding.goalTarget.text = "${hh} : ${mm} : ${ss}"
+                binding.goalType.text = "시간"
+
+                binding.otherType.text = "거리"
+                binding.otherValue.text = res.distance.toString() + "km"
+            } else {
+                if (res.goalType == "TIME") {
+                    var goalSec = res.goalValue
+                    var goalMin = goalSec / 60
+                    val goalHour = goalMin / 60
+                    goalMin %= 60
+                    goalSec %= 60
+
+                    val goalH = goalHour.toInt().toString().padStart(2, '0')
+                    val goalM = goalMin.toInt().toString().padStart(2, '0')
+                    val goalS = goalSec.toInt().toString().padStart(2, '0')
+
+                    binding.goalValue.visibility = View.VISIBLE
+                    binding.goalValue.text = "${hh} : ${mm} : ${ss}"
+                    binding.goalTarget.setTextColor(Color.RED)
+                    binding.goalTarget.text = "${goalH} : ${goalM} : ${goalS}"
+                    binding.goalType.text = "시간"
+
                     binding.otherType.text = "거리"
                     binding.otherValue.text = res.distance.toString() + "km"
                 } else {
-                    binding.goalValue.text = res.distance.toString() + "km"
-                    binding.goalTarget.text = res.goalValue.toString() + "km"
+                    binding.goalValue.visibility = View.VISIBLE
+                    binding.goalValue.text = res.distance.toString()  + "km"
+                    binding.goalTarget.setTextColor(Color.RED)
+                    binding.goalTarget.text = res.goalValue.toString()
+                    binding.goalType.text = "거리"
+
                     binding.otherType.text = "시간"
-                    binding.otherValue.text = res.time.toString() // 수정 필요
+                    binding.otherValue.text = "${hh} : ${mm} : ${ss}"
                 }
 
-                binding.runningPace.text = res.pace.toString() // 수정 필요
+                binding.runningPace.text = res.pace.toString()
             }
         } else {
             binding.tvNotRecord.visibility = View.VISIBLE
