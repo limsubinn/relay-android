@@ -44,7 +44,7 @@ class MemberPageFragment: Fragment(), MypageInterface {
 
     val today = GregorianCalendar()
     var year: Int = today.get(Calendar.YEAR)
-    var month: Int = today.get(Calendar.MONTH)
+    var month: Int = today.get(Calendar.MONTH) + 1
     var date: Int = today.get(Calendar.DATE)
 
     private var userIdx = 0L
@@ -106,12 +106,12 @@ class MemberPageFragment: Fragment(), MypageInterface {
             // 유저 프로필
             MypageService(this).tryGetUserProfile(userIdx)
 
-            binding.selCalendar.apply {
-                setDates(getFutureDatesOfSelectMonth(month, year))
-                initialPositionIndex = date - 3
-                init()
-                select(date-1)
-            }
+//            binding.selCalendar.apply {
+//                setDates(getFutureDatesOfSelectMonth(month, year))
+//                initialPositionIndex = date - 3
+//                init()
+//                select(date-1)
+//            }
         }
 
         // 멤버페이지 -> 멤버리스트
@@ -182,10 +182,10 @@ class MemberPageFragment: Fragment(), MypageInterface {
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
 
-            setDates(getFutureDatesOfCurrentMonth())
-            initialPositionIndex = date - 3
-            init()
-            select(date - 1) // 오늘 날짜 선택
+//            setDates(getFutureDatesOfCurrentMonth())
+//            initialPositionIndex = date - 3
+//            init()
+//            select(date - 1) // 오늘 날짜 선택
         }
 
 
@@ -240,6 +240,13 @@ class MemberPageFragment: Fragment(), MypageInterface {
             Glide.with(binding.profileImg.context)
                 .load(res.imgUrl)
                 .into(binding.profileImg)
+
+            binding.selCalendar.apply {
+                setDates(getFutureDatesOfSelectMonth(month, year))
+                initialPositionIndex = date - 3
+                init()
+                select(date - 1) // 오늘 날짜 선택
+            }
 
             // 기록
             // MypageService(this).tryGetDailyRecord(curDate, userIdx)

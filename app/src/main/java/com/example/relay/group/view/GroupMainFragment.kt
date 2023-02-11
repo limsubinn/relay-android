@@ -43,7 +43,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     val today = GregorianCalendar()
     var year: Int = today.get(Calendar.YEAR)
-    var month: Int = today.get(Calendar.MONTH)
+    var month: Int = today.get(Calendar.MONTH) + 1
     var date: Int = today.get(Calendar.DATE)
 
     private var userIdx = prefs.getLong("userIdx", 0L)
