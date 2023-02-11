@@ -50,7 +50,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
         binding.btnMyTimetable.setOnClickListener{
             if (binding.tvTitle.text == "팀 시간표") {
                 binding.timetable.initTable(day)
-                TimetableGetService(this).tryGetMySchedules(66)
+                TimetableGetService(this).tryGetMySchedules(userIdx)
                 binding.tvTitle.text = "개인 시간표"
             } else {
                 binding.timetable.initTable(day)
