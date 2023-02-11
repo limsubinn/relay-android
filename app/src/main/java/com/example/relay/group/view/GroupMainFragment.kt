@@ -185,7 +185,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 //            }
 //        }, 1)
 
-            GetUserClubService(this).tryGetUserClub(userIdx)
+        GetUserClubService(this).tryGetUserClub(userIdx)
     }
 
     override fun onDestroyView() {
@@ -279,6 +279,31 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             binding.teamLayout.visibility = View.GONE
 
             binding.tvIntro.text = "가입된 그룹이 없습니다."
+
+            setFragmentResultListener("go_to_main") {requestKey, bundle ->
+                clubIdx = bundle.getLong("clubIdx", 0L)
+                recruitStatus = bundle.getString("recruitStatus", "")
+
+                binding.profileImg.visibility = View.VISIBLE
+                binding.profileTeam.visibility = View.VISIBLE
+                binding.teamLayout.visibility = View.VISIBLE
+
+                if (recruitStatus == "recruiting") {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
+                    binding.btnJoinTeam.text = "가입하기"
+                } else {
+                    binding.btnJoinTeam.visibility = View.GONE
+                }
+
+                binding.selCalendar.apply {
+                    setDates(getFutureDatesOfSelectMonth(month, year))
+                    initialPositionIndex = date - 3
+                    init()
+                    select(date - 1) // 날짜 선택
+                }
+
+                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+            }
         }
     }
 
