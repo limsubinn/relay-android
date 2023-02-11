@@ -22,7 +22,7 @@ import com.example.relay.mypage.models.LocationList
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.mypage.service.MypageInterface
 import com.example.relay.mypage.service.MypageService
-import com.example.relay.service.Polyline
+import com.example.relay.running.service.Polyline
 import com.example.relay.ui.MainActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap

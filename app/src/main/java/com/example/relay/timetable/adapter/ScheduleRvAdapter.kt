@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
@@ -25,8 +26,8 @@ import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.dialog_timepicker.view.*
 import kotlinx.android.synthetic.main.item_rv_edit_table.view.*
-import kotlinx.android.synthetic.main.item_rv_edit_table.view.btn_goal_type
 import java.util.*
+
 
 class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Schedule>): RecyclerView.Adapter<ScheduleRvAdapter.DataViewHolder>() {
     private val context = context
@@ -204,7 +205,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
                         // 기본값 설정
                         np1.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(0, 2))
-                        np2.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 5))
+                        np2.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 4))
                     }
 
                     // 저장 버튼
@@ -234,30 +235,36 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                     alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     alertDialog.show()
 
+                    val formatter =
+                        NumberPicker.Formatter { value ->
+                            "" + value + "0"
+                        }
+
                     with(dialogView){
+                        np_min.setFormatter(formatter)
+
                         // 최대, 최소값 설정
                         np_hour.minValue = 0
                         np_hour.maxValue = 23
                         np_min.minValue = 0
-                        np_min.maxValue = 59
+                        np_min.maxValue = 5
                         np_sec.minValue = 0
-                        np_sec.maxValue = 59
+                        np_sec.maxValue = 0
 
                         // 기본값 설정
                         np_hour.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(0, 2))
-                        np_min.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 5))
+                        np_min.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 4))
                         np_sec.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(6, 8))
                     }
 
                     // 저장 버튼
                     dialogView.btn_save.setOnClickListener {
                         val hour = alertDialog.np_hour.value.toString().padStart(2, '0')
-                        val min = alertDialog.np_min.value.toString().padStart(2, '0')
-                        val sec = alertDialog.np_sec.value.toString().padStart(2, '0')
-                        if ((hour == "00" && min == "00" && sec == "00")) {
+                        val min = (alertDialog.np_min.value * 10).toString()
+                        if ((hour == "00" && min == "00")) {
                             Toast.makeText(context, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
                         } else {
-                            val goal = alertDialog.np_hour.value * 3600 + alertDialog.np_min.value * 60 + alertDialog.np_sec.value
+                            val goal = alertDialog.np_hour.value * 3600 + alertDialog.np_min.value * 600 + alertDialog.np_sec.value
                             dataList[position].goal = goal.toFloat()
                             notifyDataSetChanged()
                             alertDialog.dismiss()

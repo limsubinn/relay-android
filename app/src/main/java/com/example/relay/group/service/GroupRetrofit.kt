@@ -1,11 +1,10 @@
 package com.example.relay.group.service
 
+import com.example.relay.BaseResponse
 import com.example.relay.group.models.*
 import com.example.relay.mypage.models.DailyRecordResponse
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface GroupRetrofit {
     // 그룹 목록 조회 (전체, 검색)
@@ -40,4 +39,11 @@ interface GroupRetrofit {
         @Query("clubIdx") clubIdx: Long,
         @Query("date") date: String
     ) : Call<GroupDailyRecordResponse>
+
+    // 그룹에 가입 신청하기
+    @POST("/clubs/member-status/{clubIdx}")
+    fun postClubJoinIn(
+        @Path("clubIdx") clubIdx: Long,
+        @Body userInfo: GroupJoinInRequest
+    ) : Call<BaseResponse>
 }
