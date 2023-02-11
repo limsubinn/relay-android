@@ -237,7 +237,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
                     1 -> { // 시간
                         for (i in res) {
                             date = i.date
-                            value = i.totalTime
+                            value = i.totalTime / 60 // 분 단위
 
                             if ((value > 0.0) && (value < 20.0)) {
                                 if (date == curDate) {

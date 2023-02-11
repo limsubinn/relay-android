@@ -3,9 +3,6 @@ package com.example.relay.group.view
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +19,6 @@ import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupDailyRecordResponse
 import com.example.relay.group.models.GroupInfoResponse
 import com.example.relay.group.service.*
-import com.example.relay.mypage.service.MypageService
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
@@ -392,18 +388,29 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         if (response.isSuccess) {
             val res = response.result
 
+            var sec = res.totalTime
+            var min = sec / 60
+            val hour = min / 60
+            min %= 60
+            sec %= 60
+
+            val hh = hour.toInt().toString().padStart(2, '0')
+            val mm = min.toInt().toString().padStart(2, '0')
+            val ss = sec.toInt().toString().padStart(2, '0')
+
             // 목표값 수정 필요
             if (res.goalType == "NOGOAL") {
+                val sec = res.totalTime
                 binding.goalValue.visibility = View.GONE
                 binding.goalTarget.setTextColor(Color.BLACK)
-                binding.goalTarget.text = res.totalTime.toString()
+                binding.goalTarget.text = "${hh} : ${mm} : ${ss}"
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"
                 binding.otherValue.text = res.totalDist.toString()
             } else if (res.goalType == "TIME") {
                 binding.goalValue.visibility = View.VISIBLE
-                binding.goalValue.text = res.totalTime.toString()
+                binding.goalValue.text = "${hh} : ${mm} : ${ss}"
                 binding.goalTarget.setTextColor(Color.RED)
                 binding.goalTarget.text = res.goalValue.toString()
                 binding.goalType.text = "시간"
@@ -418,7 +425,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.goalType.text = "거리"
 
                 binding.otherType.text = "시간"
-                binding.otherValue.text = res.totalTime.toString()
+                binding.otherValue.text = "${hh} : ${mm} : ${ss}"
             }
 
             binding.runningPace.text = res.avgPace.toString()
