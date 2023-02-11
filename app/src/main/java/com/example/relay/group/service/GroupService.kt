@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.relay.ApplicationClass
 import com.example.relay.BaseResponse
 import com.example.relay.group.models.*
+import com.example.relay.mypage.models.MonthRecordResponse
 import com.example.relay.timetable.models.Schedule
 import retrofit2.Call
 import retrofit2.Callback
@@ -125,7 +126,7 @@ class GetClubDailyService(val dailyInterface: GetClubDailyInterface) {
                 if (response.code() == 200) {
                     dailyInterface.onGetClubDailySuccess(response.body() as GroupDailyRecordResponse)
                 } else {
-                    Log.d("GroupInfoResponse", "4xx error")
+                    Log.d("GroupDailyResponse", "4xx error")
                     // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
@@ -134,6 +135,35 @@ class GetClubDailyService(val dailyInterface: GetClubDailyInterface) {
                 Log.d("GroupDailyResponse", "fail")
                 t.printStackTrace()
                 dailyInterface.onGetClubDailyFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class GetClubMonthService(val monthInterface: GetClubMonthInterface) {
+
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryGetClubMonth(clubIdx: Long, year: Int, month: Int){
+        retrofit.getClubMonthRes(clubIdx, year, month).enqueue(object : Callback<MonthRecordResponse> {
+            override fun onResponse(
+                call: Call<MonthRecordResponse>,
+                response: Response<MonthRecordResponse>
+            ) {
+                Log.d("GroupMonthResponse", "success")
+
+                if (response.code() == 200) {
+                    monthInterface.onGetClubMonthSuccess(response.body() as MonthRecordResponse)
+                } else {
+                    Log.d("GroupMonthResponse", "4xx error")
+                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                }
+            }
+
+            override fun onFailure(call: Call<MonthRecordResponse>, t: Throwable) {
+                Log.d("GroupMonthResponse", "fail")
+                t.printStackTrace()
+                monthInterface.onGetClubMonthFailure(t.message ?: "통신 오류")
             }
         })
     }

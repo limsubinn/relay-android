@@ -177,6 +177,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 .beginTransaction()
                 .add(binding.containerFragment.id, GroupTimetableFragment())
                 .commitAllowingStateLoss()
+        } else if (index == 8) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, MemberRecordFragment())
+                .commitAllowingStateLoss()
         }
     }
 

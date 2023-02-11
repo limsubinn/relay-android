@@ -7,8 +7,7 @@ import retrofit2.http.*
 interface MypageRetrofit {
     @GET("/users/profileList/{profileIdx}")
     fun getProfileRes(
-        @Path("profileIdx") profileIdx: Long,
-        @Query("name") name: String
+        @Path("profileIdx") profileIdx: Long
     ) : Call<UserProfileResponse>
 
     @PATCH("/users/pwd")
