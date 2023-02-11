@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.setFragmentResultListener
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentTimetableEditMainBinding
@@ -16,6 +17,7 @@ import com.example.relay.timetable.service.TimetableGetInterface
 import com.example.relay.timetable.service.TimetableGetService
 import com.example.relay.ui.MainActivity
 import com.islandparadise14.mintable.model.ScheduleEntity
+import kotlinx.android.synthetic.main.fragment_group_main.view.*
 
 class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private var _binding: FragmentTimetableEditMainBinding ?= null
@@ -75,9 +77,16 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
+            childFragmentManager.setFragmentResult("forJoin",
+                bundleOf("clubIdx" to clubIdx)
+            )
             binding.tvTitle.text = bundle.getString("clubName", "오류") + " 팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
+    }
+
+    fun getClubIdx():Long{
+        return clubIdx
     }
 
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
@@ -109,7 +118,22 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     }
 
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
-        TODO("Not yet implemented")
+        if (response.code == 1000){
+            val sList: ArrayList<ScheduleEntity> = ArrayList()
+            for (item in response.result){
+                val schedule = ScheduleEntity(
+                    1,
+                    "수정",
+                    item.day,
+                    item.start,
+                    item.end,
+                    colorCode[0],
+                    "#FFFFFF"
+                )
+                sList.add(schedule)
+            }
+            binding.timetable.updateSchedules(sList)
+        }
     }
 
     override fun onGetMyTimetableFailure(message: String) {

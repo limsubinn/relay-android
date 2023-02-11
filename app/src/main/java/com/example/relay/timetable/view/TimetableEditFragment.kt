@@ -94,6 +94,8 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
         binding.btnBack.setOnClickListener{
             backToTimetableFragment()
         }
+
+        clubIdxSetting()
     }
 
     private fun backToTimetableFragment(){
@@ -101,9 +103,8 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     private fun clubIdxSetting(){
-        setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
+        setFragmentResultListener("forJoin") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
-            TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }
 
