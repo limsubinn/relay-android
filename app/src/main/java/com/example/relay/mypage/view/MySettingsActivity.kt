@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
@@ -17,6 +18,7 @@ import com.example.relay.mypage.service.MySettingInterface
 import com.example.relay.mypage.service.MySettingService
 import com.example.relay.mypage.models.ChangeMsgResponse
 import com.example.relay.mypage.models.ChangePwdResponse
+import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_change_msg.view.*
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
 
@@ -33,6 +35,11 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
         setContentView(viewBinding.root)
 
         viewBinding.btnBack.setOnClickListener {
+            if (msg.isNotEmpty()) { // 상태메시지 변경
+                val intent = Intent(this, MainActivity::class.java)
+                intent.putExtra("msg", msg)
+                startActivity(intent)
+            }
             finish()
         }
 

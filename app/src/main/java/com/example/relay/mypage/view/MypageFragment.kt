@@ -49,6 +49,7 @@ class MypageFragment: Fragment(), MypageInterface {
 
     private val userIdx = prefs.getLong("userIdx", 0L)
     private val name = prefs.getString("name", "")
+    private var editedMsg = ""
 
     private var map: GoogleMap? = null
     private lateinit var mapView: MapView
@@ -89,6 +90,13 @@ class MypageFragment: Fragment(), MypageInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (arguments != null) {
+            editedMsg = arguments!!.getString("username").toString()
+            if (editedMsg.isNotEmpty()) {
+                binding.tvIntro.text = editedMsg
+            }
+        }
 
         val today = GregorianCalendar()
         var year: Int = today.get(Calendar.YEAR)
