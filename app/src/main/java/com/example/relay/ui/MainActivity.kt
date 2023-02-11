@@ -43,14 +43,29 @@ class MainActivity : AppCompatActivity(), MainInterface {
         // 유저 정보 받아오기
         MainService(this).tryGetUserInfo()
 
+        var bundle = intent.extras
+
+        if (bundle != null) { // 상태메시지 변경 후 Back 버튼
+            val msg = bundle.getString("msg")
+
+            if (msg != null) {
+                binding.navBottom.selectedItemId = R.id.menu_mypage
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.containerFragment.id, MypageFragment())
+                    .commitAllowingStateLoss()
+            }
+        } else {
+            binding.navBottom.selectedItemId = R.id.menu_running
+            supportFragmentManager
+                .beginTransaction()
+                .replace(binding.containerFragment.id, RunningFragment())
+                .commitAllowingStateLoss()
+        }
+
         supportActionBar?.elevation = 0f
 
         //configureBackdrop()
-
-        supportFragmentManager
-            .beginTransaction()
-            .replace(binding.containerFragment.id, RunningFragment())
-            .commitAllowingStateLoss()
 
         binding.navBottom.run {
             setOnItemSelectedListener {
@@ -76,13 +91,16 @@ class MainActivity : AppCompatActivity(), MainInterface {
                     R.id.menu_timetable -> {
                         supportFragmentManager
                             .beginTransaction()
-                            .replace(binding.containerFragment.id, TimetableFragment(), "MainTimetable")
+                            .replace(
+                                binding.containerFragment.id,
+                                TimetableFragment(),
+                                "MainTimetable"
+                            )
                             .commitAllowingStateLoss()
                     }
                 }
                 true
             }
-            selectedItemId = R.id.menu_running
         }
     }
 
@@ -245,5 +263,3 @@ class MainActivity : AppCompatActivity(), MainInterface {
         TODO("Not yet implemented")
     }
 }
-
-

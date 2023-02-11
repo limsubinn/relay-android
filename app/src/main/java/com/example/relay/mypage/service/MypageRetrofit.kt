@@ -17,7 +17,7 @@ interface MypageRetrofit {
 
     @PATCH("/users/changeProfile")
     fun patchUserMsgReq(
-        @Body profileReq: String
+        @Body profileReq: ChangeMsgRequest
     ) : Call<ChangeMsgResponse>
 
     @GET("/record")
