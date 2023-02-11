@@ -10,10 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@drawable/bg_gradient"
-        app:layout_constraintHeight_percent="0.2"
+        app:layout_constraintHeight_percent="0.15"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_arrow_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginHorizontal="15dp"/>
 
         <TextView
             android:id="@+id/tv_title"
@@ -26,17 +36,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="20dp"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-        <ImageButton
-            android:id="@+id/btn_edit"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:background="@drawable/ic_edit"
-            app:layout_constraintEnd_toStartOf="@id/btn_my_timetable"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginHorizontal="30dp"/>
 
         <ImageButton
             android:id="@+id/btn_my_timetable"
@@ -56,7 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/container_title"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/container_edit"
         android:scrollbars="none"
         android:overScrollMode="never"
         android:layout_marginBottom="5dp">
@@ -73,5 +74,16 @@
             app:yEndLine="true"/>
 
     </ScrollView>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/container_edit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.42"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:name="com.example.relay.timetable.view.TimetableEditFragment"
+        tools:layout="@layout/fragment_timetable_edit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

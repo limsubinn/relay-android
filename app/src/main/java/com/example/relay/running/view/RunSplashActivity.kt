@@ -1,4 +1,4 @@
-package com.example.relay.running
+package com.example.relay.running.view
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

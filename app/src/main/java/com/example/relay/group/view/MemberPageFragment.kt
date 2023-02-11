@@ -195,7 +195,7 @@ class MemberPageFragment: Fragment(), MypageInterface {
             parentFragmentManager.setFragmentResult("go_to_member_record",
                 bundleOf("curDate" to curDate, "userIdx" to userIdx, "clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
             )
-            mainActivity?.groupFragmentChange(7) // 기록 페이지로 이동
+            mainActivity?.groupFragmentChange(8) // 기록 페이지로 이동
         }
 
     }

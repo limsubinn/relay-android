@@ -1,19 +1,25 @@
 package com.example.relay.ui
 
 import android.os.Bundle
+import android.text.TextUtils.replace
 import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.example.relay.ApplicationClass.Companion.prefs
-import com.example.relay.OnBottomSheetCallbacks
+import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMainBinding
 import com.example.relay.group.view.*
 import com.example.relay.ui.service.MainService
 import com.example.relay.mypage.view.MyRecordFragment
 import com.example.relay.mypage.view.MypageFragment
-import com.example.relay.running.RunningFragment
+import com.example.relay.timetable.view.TimetableEditMainFragment
+import com.example.relay.running.view.RunningFragment
 import com.example.relay.timetable.view.TimetableFragment
 import com.example.relay.ui.models.UserInfoResponse
 import com.example.relay.ui.models.UserProfileListResponse
@@ -70,7 +76,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
                     R.id.menu_timetable -> {
                         supportFragmentManager
                             .beginTransaction()
-                            .replace(binding.containerFragment.id, TimetableFragment())
+                            .replace(binding.containerFragment.id, TimetableFragment(), "MainTimetable")
                             .commitAllowingStateLoss()
                     }
                 }
@@ -169,9 +175,44 @@ class MainActivity : AppCompatActivity(), MainInterface {
         } else if (index == 7) {
             supportFragmentManager
                 .beginTransaction()
+                .add(binding.containerFragment.id, GroupTimetableFragment())
+                .commitAllowingStateLoss()
+        } else if (index == 8) {
+            supportFragmentManager
+                .beginTransaction()
                 .replace(binding.containerFragment.id, MemberRecordFragment())
                 .commitAllowingStateLoss()
         }
+    }
+
+    fun timetableFragmentChange(index: Int) {
+        when(index){
+            0 -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.containerFragment.id, TimetableFragment())
+                    .commitAllowingStateLoss()
+            }
+            1 -> {
+                supportFragmentManager
+                    .beginTransaction()
+                    .replace(binding.containerFragment.id, TimetableEditMainFragment())
+                    .commitAllowingStateLoss()
+            }
+        }
+    }
+
+    fun refreshTimetableFragment() {
+        val ft: FragmentTransaction = supportFragmentManager.beginTransaction()
+        ft.replace(binding.containerFragment.id, TimetableFragment(), "MainTimetable")
+            .commitAllowingStateLoss()
+    }
+
+    fun reloadActivity(){
+        finish()
+        overridePendingTransition(0, 0)
+        startActivity(intent)
+        overridePendingTransition(0, 0)
     }
 
     override fun onGetUserInfoSuccess(response: UserInfoResponse) {

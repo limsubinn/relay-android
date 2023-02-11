@@ -1,30 +1,35 @@
 package com.example.relay.timetable.view
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.example.relay.R
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.FragmentTimetableBinding
 import com.example.relay.group.service.GetUserClubInterface
 import com.example.relay.group.service.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.timetable.service.TimetableInterface
-import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
+import com.example.relay.timetable.service.TimetableGetInterface
+import com.example.relay.timetable.service.TimetableGetService
+import com.example.relay.ui.MainActivity
 import com.islandparadise14.mintable.model.ScheduleEntity
 
-class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
+class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface {
     private var viewBinding: FragmentTimetableBinding? = null
     private val binding get() = viewBinding!!
+
     private val day = arrayOf("일", "월", "화", "수", "목", "금", "토")
     private val myColor = "#FE0000"
     private val colorCode =  arrayOf("#FE0000", "#01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
+
+    private val userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx: Long = 0
+    private var clubName: String = "팀"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,32 +50,23 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         binding.btnMyTimetable.setOnClickListener{
             if (binding.tvTitle.text == "팀 시간표") {
                 binding.timetable.initTable(day)
-                TimetableService(this).tryGetMySchedules(66)
+                TimetableGetService(this).tryGetMySchedules(66)
                 binding.tvTitle.text = "개인 시간표"
             } else {
                 binding.timetable.initTable(day)
-                TimetableService(this).tryGetGroupSchedules(clubIdx)
+                TimetableGetService(this).tryGetGroupSchedules(clubIdx)
                 binding.tvTitle.text = "팀 시간표"
             }
         }
 
         binding.btnEdit.setOnClickListener{
-            val editFragment = TimetableEditFragment()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container_edit, editFragment)
-                .commit()
+            parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
+                bundleOf("clubIdx" to clubIdx, "clubName" to clubName)
+            )
+            (activity as MainActivity).timetableFragmentChange(1)
         }
 
-        /* clubIdx 받기
-         val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)    // prefs 저장된 값 없음, 임의값은 동작
-        if (userIdx != 0L) {
-            GetUserClubService(this).tryGetUserClub(userIdx)
-        } else {
-            Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
-        } */
-
-        GetUserClubService(this).tryGetUserClub(66)
+        GetUserClubService(this).tryGetUserClub(userIdx)
     }
 
     // 메모리 누수 방지 (fragment 의 생명주기 > view 의 생명주기)
@@ -79,7 +75,6 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
         viewBinding = null
     }
 
-    @SuppressLint("LogNotTimber")
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {
         if (response.code == 1000){
             val clubMemList = response.result
@@ -90,7 +85,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
                     val schedule = ScheduleEntity(
                         1,
                         mem.nickName,
-                        s.day.toInt(),
+                        s.day,
                         s.start,
                         s.end,
                         color,
@@ -115,7 +110,7 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
                 val schedule = ScheduleEntity(
                     1,
                     "수정",
-                    item.day.toInt(),
+                    item.day,
                     item.start,
                     item.end,
                     myColor,
@@ -124,28 +119,23 @@ class TimetableFragment: Fragment(), TimetableInterface, GetUserClubInterface {
                 sList.add(schedule)
             }
             binding.timetable.updateSchedules(sList)
-        } else
-            Log.d("Timetable", "onGetMyTimetableSuccess: code-${response.code}")
+        }
     }
 
     override fun onGetMyTimetableFailure(message: String) {
         TODO("Not yet implemented")
     }
 
-    override fun onPostMyTimetableFailure(message: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onPostMyTimetableSuccess() {
-        TODO("Not yet implemented")
-    }
-
-    @SuppressLint("LogNotTimber")
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
         if (response.code == 1000) {
             clubIdx = response.result.clubIdx
-            TimetableService(this).tryGetGroupSchedules(clubIdx)
-            Log.d("Timetable", "onGetUserClubSuccess: clubIdx-$clubIdx")
+            clubName = response.result.name
+            binding.tvTitle.text = clubName + " 팀"
+            TimetableGetService(this).tryGetGroupSchedules(clubIdx)
+        } else {
+            Log.d("Timetable", "TimetableFragment 클럽정보 받아오기 : ${response.code}")
+            binding.btnEdit.visibility = View.GONE
+            binding.btnMyTimetable.visibility = View.GONE
         }
     }
 

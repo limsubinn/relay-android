@@ -32,3 +32,8 @@ interface GetClubMonthInterface {
     fun onGetClubMonthSuccess(response: MonthRecordResponse)
     fun onGetClubMonthFailure(message: String)
 }
+
+interface PostClubJoinInInterface {
+    fun onPostClubJoinInSuccess()
+    fun onPostClubJoinInFailure(message: String)
+}

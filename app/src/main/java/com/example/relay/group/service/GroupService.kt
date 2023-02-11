@@ -2,8 +2,10 @@ package com.example.relay.group.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
+import com.example.relay.BaseResponse
 import com.example.relay.group.models.*
 import com.example.relay.mypage.models.MonthRecordResponse
+import com.example.relay.timetable.models.Schedule
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -143,8 +145,11 @@ class GetClubMonthService(val monthInterface: GetClubMonthInterface) {
     private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
 
     fun tryGetClubMonth(clubIdx: Long, year: Int, month: Int){
-        retrofit.getClubMonthRes(clubIdx, year, month).enqueue(object : Callback<MonthRecordResponse>{
-            override fun onResponse(call: Call<MonthRecordResponse>, response: Response<MonthRecordResponse>) {
+        retrofit.getClubMonthRes(clubIdx, year, month).enqueue(object : Callback<MonthRecordResponse> {
+            override fun onResponse(
+                call: Call<MonthRecordResponse>,
+                response: Response<MonthRecordResponse>
+            ) {
                 Log.d("GroupMonthResponse", "success")
 
                 if (response.code() == 200) {
@@ -159,6 +164,26 @@ class GetClubMonthService(val monthInterface: GetClubMonthInterface) {
                 Log.d("GroupMonthResponse", "fail")
                 t.printStackTrace()
                 monthInterface.onGetClubMonthFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PostClubJoinInService(val clubJoinInInterface: PostClubJoinInInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPostClubJoinIn(profileIdx:Long, clubIdx: Long, schedule: List<Schedule>){
+        retrofit.postClubJoinIn(clubIdx, GroupJoinInRequest(profileIdx, schedule)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if (response.isSuccessful){
+                    clubJoinInInterface.onPostClubJoinInSuccess()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("GroupDailyResponse", "failure")
+                t.printStackTrace()
+                clubJoinInInterface.onPostClubJoinInFailure(t.message ?: "통신 오류")
             }
         })
     }
