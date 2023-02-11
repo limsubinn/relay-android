@@ -110,7 +110,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
                 val schedule = ScheduleEntity(
                     1,
                     "수정",
-                    item.day.toInt(),
+                    item.day,
                     item.start,
                     item.end,
                     myColor,
@@ -129,7 +129,8 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
         if (response.code == 1000) {
             clubIdx = response.result.clubIdx
-            clubName = response.result.name + " 팀"
+            clubName = response.result.name
+            binding.tvTitle.text = clubName + " 팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         } else {
             Log.d("Timetable", "TimetableFragment 클럽정보 받아오기 : ${response.code}")
