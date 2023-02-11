@@ -49,6 +49,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
+        GetUserClubService(this).tryGetUserClub(userIdx)
         TimetableGetService(this).tryGetMySchedules(userIdx)
 
         binding.containerRv.adapter = scheduleRvAdapter
@@ -109,7 +110,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 2008 && response.code < 3000){
+        if (response.code != 2008){
             serverClubIdx = response.result.clubIdx
         }
     }
