@@ -9,8 +9,6 @@ import android.graphics.drawable.ColorDrawable
 import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -33,6 +31,7 @@ import com.example.relay.db.Run
 import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.running.TrackingUtility
 import com.example.relay.running.models.PathPoints
+import com.example.relay.running.models.RunEndResponse
 import com.example.relay.running.models.RunStrResponse
 import com.example.relay.running.service.*
 import com.example.relay.running.service.Polyline
@@ -46,8 +45,6 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gun0912.tedpermission.provider.TedPermissionProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.lang.Math.round
@@ -196,14 +193,16 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
-            val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
-            val formattedAvgDistance =
-                TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
-            val formattedNowDistance =
-                TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
-            binding.tvDistance.text = formattedDistance.toString()
-            binding.tvPace2.text = formattedAvgDistance
-            binding.tvPace1.text = formattedNowDistance
+            if(pathPoints.size != 0){
+                val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
+                val formattedAvgDistance =
+                    TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
+                val formattedNowDistance =
+                    TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
+                binding.tvDistance.text = formattedDistance.toString()
+                binding.tvPace2.text = formattedAvgDistance
+                binding.tvPace1.text = formattedNowDistance
+            }
         })
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
@@ -296,7 +295,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
             viewModel.insertRun(run)
-            RunningService(this).tryPostRunEnd((distanceInMeters / 1000f).toInt(),locationList,avgSpeed.toLong(),runningRecordIdx,formattedTime)
+            Log.d("tryPostRunEnd", "${distanceInMeters / 1000f} ${locationList} ${avgSpeed} ${runningRecordIdx} ${formattedTime}")
+            RunningService(this).tryPostRunEnd((distanceInMeters / 1000f),locationList,avgSpeed,runningRecordIdx,formattedTime)
             locationList.clear()
 
             // 종료 시 오늘의 달리기 기록 표출

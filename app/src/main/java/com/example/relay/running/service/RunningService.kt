@@ -2,9 +2,7 @@ package com.example.relay.running.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
-import com.example.relay.BaseResponse
 import com.example.relay.running.models.*
-import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.service.TimetableRetrofit
 import retrofit2.Call
@@ -34,7 +32,7 @@ class RunningService(val runningInterface: RunningInterface) {
         }))
     }
 
-    fun tryPostRunEnd(distance: Int, locationList: MutableList<PathPoints>, pace: Long, runningRecordIdx: Long, time: String){
+    fun tryPostRunEnd(distance: Float, locationList: MutableList<PathPoints>, pace: Float, runningRecordIdx: Long, time: String){
         retrofit.postRunEndRes(RunEndRequest(distance, locationList, pace, runningRecordIdx, time)).enqueue((object : retrofit2.Callback<RunEndResponse> {
             override fun onResponse(call: Call<RunEndResponse>, response: Response<RunEndResponse>) {
                 Log.d("RunEnd", "success")
