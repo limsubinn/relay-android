@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,13 +14,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
+import com.example.relay.Constants
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMypageBinding
 import com.example.relay.mypage.models.DailyRecordResponse
+import com.example.relay.mypage.models.LocationList
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.mypage.service.MypageInterface
 import com.example.relay.mypage.service.MypageService
+import com.example.relay.running.service.Polyline
 import com.example.relay.ui.MainActivity
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
@@ -42,6 +49,14 @@ class MypageFragment: Fragment(), MypageInterface {
 
     private val userIdx = prefs.getLong("userIdx", 0L)
     private val name = prefs.getString("name", "")
+    private var editedMsg = ""
+
+    private var map: GoogleMap? = null
+    private lateinit var mapView: MapView
+
+    private var pathPoints = mutableListOf<Polyline>()
+    private var locationList = mutableListOf<LocationList>()
+    var latLngList = mutableListOf<LatLng>()
 
     private var mainActivity: MainActivity? = null
 
@@ -63,11 +78,25 @@ class MypageFragment: Fragment(), MypageInterface {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMypageBinding.inflate(inflater, container, false)
+        mapView = binding.mypageMapView
+        mapView.onCreate(savedInstanceState)
+        mapView.getMapAsync {
+            moveCameraToUser()
+            map = it
+            addAllPolylines()
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (arguments != null) {
+            editedMsg = arguments!!.getString("username").toString()
+            if (editedMsg.isNotEmpty()) {
+                binding.tvIntro.text = editedMsg
+            }
+        }
 
         val today = GregorianCalendar()
         var year: Int = today.get(Calendar.YEAR)
@@ -168,12 +197,9 @@ class MypageFragment: Fragment(), MypageInterface {
         }
 
         // 프로필 불러오기
-        if (name != null) {
-            if ((userIdx != 0L) && (name.isNotEmpty())) {
-                MypageService(this).tryGetUserProfile(userIdx, name)
-            }
+        if ((userIdx != 0L)) {
+            MypageService(this).tryGetUserProfile(userIdx)
         }
-
     }
 
     override fun onDestroyView() {
@@ -205,6 +231,58 @@ class MypageFragment: Fragment(), MypageInterface {
         }
         calendar.add(Calendar.DATE, -1)
         return list
+    }
+
+    private fun moveCameraToUser() {
+        if(pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()){
+            map?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    pathPoints.last().last(),
+                    10f
+                )
+            )
+        }
+    }
+
+    private fun addAllPolylines() {
+        for(latLngList in pathPoints) {
+            val polylineOptions = PolylineOptions()
+                .color(Color.parseColor("#FFFF3E00"))
+                .width(Constants.POLYLINE_WIDTH)
+                .addAll(latLngList)
+            map?.addPolyline(polylineOptions)
+
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onStop()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView?.onDestroy()
     }
 
     override fun onGetUserProfileSuccess(response: UserProfileResponse) {
@@ -248,35 +326,76 @@ class MypageFragment: Fragment(), MypageInterface {
 
             binding.tvNotRecord.visibility = View.GONE
             binding.recordLayout.visibility = View.VISIBLE
-            binding.runningmap.visibility = View.VISIBLE
+            binding.mypageMapView.visibility = View.VISIBLE
+
+            locationList = res.locationList.clone() as MutableList<LocationList>
+            for (i in 0 until locationList.size){
+                val location = LatLng(locationList[i].latitude.toDouble(), locationList[i].longitude.toDouble())
+                latLngList.add(location)
+            }
+
+            binding.mypageMapView.getMapAsync {
+                moveCameraToUser()
+                map = it
+                addAllPolylines()
+            }
+
+            var sec = res.time
+            var min = sec / 60
+            val hour = min / 60
+            min %= 60
+            sec %= 60
+
+            val hh = hour.toInt().toString().padStart(2, '0')
+            val mm = min.toInt().toString().padStart(2, '0')
+            val ss = sec.toInt().toString().padStart(2, '0')
 
             // 거리, 시간, 페이스
-            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "목표없음")) {
+            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "NOGOAL")) {
                 binding.goalValue.visibility = View.GONE
-                binding.goalTarget.text = res.time.toString() // 수정 필요
                 binding.goalTarget.setTextColor(Color.BLACK)
+                binding.goalTarget.text = "${hh} : ${mm} : ${ss}"
                 binding.goalType.text = "시간"
-            } else {
-                binding.goalType.text = res.goalType
 
-                if (res.goalType == "시간") {
-                    binding.goalValue.text = res.time.toString() // 수정 필요
-                    binding.goalTarget.text = res.goalValue.toString() // 수정 필요
+                binding.otherType.text = "거리"
+                binding.otherValue.text = res.distance.toString() + "km"
+            } else {
+                if (res.goalType == "TIME") {
+                    var goalSec = res.goalValue
+                    var goalMin = goalSec / 60
+                    val goalHour = goalMin / 60
+                    goalMin %= 60
+                    goalSec %= 60
+
+                    val goalH = goalHour.toInt().toString().padStart(2, '0')
+                    val goalM = goalMin.toInt().toString().padStart(2, '0')
+                    val goalS = goalSec.toInt().toString().padStart(2, '0')
+
+                    binding.goalValue.visibility = View.VISIBLE
+                    binding.goalValue.text = "${hh} : ${mm} : ${ss}"
+                    binding.goalTarget.setTextColor(Color.RED)
+                    binding.goalTarget.text = "${goalH} : ${goalM} : ${goalS}"
+                    binding.goalType.text = "시간"
+
                     binding.otherType.text = "거리"
                     binding.otherValue.text = res.distance.toString() + "km"
                 } else {
-                    binding.goalValue.text = res.distance.toString() + "km"
-                    binding.goalTarget.text = res.goalValue.toString() + "km"
+                    binding.goalValue.visibility = View.VISIBLE
+                    binding.goalValue.text = res.distance.toString()  + "km"
+                    binding.goalTarget.setTextColor(Color.RED)
+                    binding.goalTarget.text = res.goalValue.toString()
+                    binding.goalType.text = "거리"
+
                     binding.otherType.text = "시간"
-                    binding.otherValue.text = res.time.toString() // 수정 필요
+                    binding.otherValue.text = "${hh} : ${mm} : ${ss}"
                 }
 
-                binding.runningPace.text = res.pace.toString() // 수정 필요
+                binding.runningPace.text = res.pace.toString() + "km/h"
             }
         } else {
             binding.tvNotRecord.visibility = View.VISIBLE
             binding.recordLayout.visibility = View.GONE
-            binding.runningmap.visibility = View.GONE
+            binding.mypageMapView.visibility = View.GONE
 
             binding.tvNotRecord.text = response.message
         }

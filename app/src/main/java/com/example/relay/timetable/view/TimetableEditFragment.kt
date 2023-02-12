@@ -9,21 +9,32 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
+import com.example.relay.group.models.GroupAcceptedResponse
+import com.example.relay.group.models.GroupNewRequest
+import com.example.relay.group.service.*
 import com.example.relay.timetable.adapter.ScheduleRvAdapter
-import com.example.relay.timetable.service.TimetableInterface
-import com.example.relay.timetable.service.TimetableService
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.models.Schedule
+import com.example.relay.timetable.service.*
+import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 
-class TimetableEditFragment : Fragment(), TimetableInterface {
+class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostInterface, GetUserClubInterface,
+    PostClubJoinInInterface, PostNewClubInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
+
     private var scheduleList = mutableListOf<Schedule>()
+    private val userIdx = prefs.getLong("userIdx", 0L)
+    private var clubIdx = 0L
+    private var serverClubIdx = 0L
+    private var newGroup:GroupNewRequest ?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,7 +49,8 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
         val scheduleRvAdapter = ScheduleRvAdapter(requireActivity(), scheduleList)
 
-        TimetableService(this).tryGetMySchedules(66)
+        GetUserClubService(this).tryGetUserClub(userIdx)
+        TimetableGetService(this).tryGetMySchedules(userIdx)
 
         binding.containerRv.adapter = scheduleRvAdapter
 
@@ -60,25 +72,80 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
                 dialogView.btn_check.setOnClickListener{
                     alertDialog?.dismiss()
                 }
+            } else if (clubIdx < 0){
+                Log.d("Timetable", "onViewCreated: 그룹 생성하기")
+                newGroup?.timeTable = scheduleList
+                PostNewClubService(this).tryPostNewClub(newGroup!!)
+            } else if (serverClubIdx == 0L){
+                Log.d("Timetable", "onViewCreated: 그룹 신청하기")
+                PostClubJoinInService(this).tryPostClubJoinIn(userIdx, clubIdx, scheduleList)
+            } else if ( serverClubIdx != clubIdx ) {
+                val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
+                dialogView.tv_no.text = "다른 그룹에 참여중입니다."
+                alertDialog?.setView(dialogView)
+                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDialog?.show()
+
+                dialogView.btn_check.setOnClickListener{
+                    alertDialog?.dismiss()
+                    (activity as MainActivity).groupFragmentChange(0)
+                }
             } else {
-                TimetableService(this).tryPostMySchedules(66, scheduleList)
+                TimetablePostService(this).tryPostMySchedules(userIdx, scheduleList)
             }
-            val emptyFragment = TimetableEmptyFragment()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container_edit, emptyFragment)
-                .commit()
         }
 
         binding.btnBack.setOnClickListener{
-            // 빈 Fragment 로 변경
-            val emptyFragment = TimetableEmptyFragment()
-            parentFragmentManager
-                .beginTransaction()
-                .replace(R.id.container_edit, emptyFragment)
-                .commit()
+            if (serverClubIdx == clubIdx)
+                backToTimetableFragment()
+            else
+                backToClubMainFragment()
         }
+
+        clubIdxSetting()
+    }
+
+    private fun backToTimetableFragment(){
+        (activity as MainActivity).timetableFragmentChange(0)
+    }
+
+    private fun backToClubMainFragment(){
+        (activity as MainActivity).groupFragmentChange(0)
+    }
+
+    private fun clubIdxSetting(){
+        setFragmentResultListener("forJoin") {requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx", 0L)
+            Log.d("Timetable", "clubIdxSetting: in edit 1")
+        }
+
+        setFragmentResultListener(("forNewGroup")) {requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx", -2L)
+            newGroup =  GroupNewRequest(
+                bundle.getString("content", "러너들!"),
+                bundle.getFloat("goal", 0F),
+                bundle.getString("goalType", "TIME"),
+                userIdx,
+                "임시 이미지 URL",
+                bundle.getInt("level", 0),
+                bundle.getInt("maxNum", 8),
+                bundle.getString("name", "디폴트"),
+                scheduleList
+            )
+            Log.d("Timetable", "clubIdxSetting: in edit 2")
+        }
+    }
+
+    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
+        if (response.code != 2008){
+            serverClubIdx = response.result.clubIdx
+        }
+    }
+
+    override fun onGetUserClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
@@ -107,9 +174,26 @@ class TimetableEditFragment : Fragment(), TimetableInterface {
 
     override fun onPostMyTimetableSuccess() {
         Log.d("Timetable", "onPostMyTimetableSuccess: ")
+        backToTimetableFragment()
     }
 
     override fun onPostMyTimetableFailure(message: String) {
         Log.d("Timetable", "onPostMyTimetableFailure: ")
+    }
+
+    override fun onPostClubJoinInSuccess() {
+        backToClubMainFragment()
+    }
+
+    override fun onPostClubJoinInFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPostNewClubSuccess() {
+        backToClubMainFragment()
+    }
+
+    override fun onPostNewClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

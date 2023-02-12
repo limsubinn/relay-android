@@ -1,4 +1,4 @@
-package com.example.relay.mypage.view
+package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
@@ -17,15 +17,18 @@ import com.example.relay.mypage.service.MyRecordService
 import com.example.relay.mypage.models.MonthRecordResponse
 import com.example.relay.mypage.view.decorator.*
 import com.example.relay.ui.MainActivity
-import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import java.text.SimpleDateFormat
 
 
-class MyRecordFragment: Fragment(), MyRecordInterface {
+class MemberRecordFragment: Fragment(), MyRecordInterface {
     private var _binding: FragmentMyRecordBinding? = null
     private val binding get() = _binding!!
 
-    private val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
+    private var userIdx = 0L
+    private var clubIdx = 0L
+    private var hostIdx = 0L
+    private var recruitStatus = ""
+
     private var status = 0 // 거리, 시간, 속도 선택 상태
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
     private var curDate = ""
@@ -58,10 +61,14 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 마이페이지 -> 마이레코드
-        setFragmentResultListener("go_to_my_record") { requestKey, bundle ->
+        // 멤버 -> 레코드
+        setFragmentResultListener("go_to_member_record") { requestKey, bundle ->
 
             curDate = bundle.getString("curDate", "")
+            userIdx = bundle.getLong("userIdx", 0L)
+            clubIdx = bundle.getLong("clubIdx", 0L)
+            hostIdx = bundle.getLong("hostIdx", 0L)
+            recruitStatus = bundle.getString("recruitStatus", "")
 
             if (curDate.isNotEmpty()) {
                 val selDate = simpleDateFormat.parse(curDate)
@@ -73,8 +80,8 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
                 binding.calendarView.addDecorator(activity?.let { SelectDecorator(selDate, it) })
                 binding.calendarView.setCurrentDate(selDate)
 
-            // 월별 기록 불러오기
-            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
+                // 월별 기록 불러오기
+                MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
             }
         }
 
@@ -117,11 +124,11 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             val selDate = date.date
             curDate = simpleDateFormat.format(selDate)
 
-            // 마이레코드 -> 마이페이지
-            parentFragmentManager.setFragmentResult("record_to_mypage",
-                bundleOf("curDate" to curDate)
+            // 레코드 -> 멤버
+            parentFragmentManager.setFragmentResult("record_to_member",
+                bundleOf("curDate" to curDate, "userIdx" to userIdx, "clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
             )
-            mainActivity?.mypageFragmentChange(0) // 마이페이지로 이동
+            mainActivity?.groupFragmentChange(5) // 멤버페이지로 이동
         }
     }
 
@@ -234,7 +241,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
                     1 -> { // 시간
                         for (i in res) {
                             date = i.date
-                            value = i.totalTime / 60 // 분 단위
+                            value = i.totalTime
 
                             if ((value > 0.0) && (value < 20.0)) {
                                 if (date == curDate) {

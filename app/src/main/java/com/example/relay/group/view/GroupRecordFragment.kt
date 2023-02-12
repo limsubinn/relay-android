@@ -1,4 +1,4 @@
-package com.example.relay.mypage.view
+package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.example.relay.ApplicationClass
 import com.example.relay.databinding.FragmentMyRecordBinding
+import com.example.relay.group.service.GetClubMonthInterface
+import com.example.relay.group.service.GetClubMonthService
 import com.example.relay.mypage.service.MyRecordInterface
 import com.example.relay.mypage.service.MyRecordService
 import com.example.relay.mypage.models.MonthRecordResponse
@@ -21,11 +23,11 @@ import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import java.text.SimpleDateFormat
 
 
-class MyRecordFragment: Fragment(), MyRecordInterface {
+class GroupRecordFragment: Fragment(), GetClubMonthInterface {
     private var _binding: FragmentMyRecordBinding? = null
     private val binding get() = _binding!!
 
-    private val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
+    private var clubIdx = 0L
     private var status = 0 // 거리, 시간, 속도 선택 상태
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
     private var curDate = ""
@@ -59,9 +61,10 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
         super.onViewCreated(view, savedInstanceState)
 
         // 마이페이지 -> 마이레코드
-        setFragmentResultListener("go_to_my_record") { requestKey, bundle ->
+        setFragmentResultListener("go_to_group_record") { requestKey, bundle ->
 
             curDate = bundle.getString("curDate", "")
+            clubIdx = bundle.getLong("clubIdx", 0L)
 
             if (curDate.isNotEmpty()) {
                 val selDate = simpleDateFormat.parse(curDate)
@@ -73,8 +76,8 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
                 binding.calendarView.addDecorator(activity?.let { SelectDecorator(selDate, it) })
                 binding.calendarView.setCurrentDate(selDate)
 
-            // 월별 기록 불러오기
-            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
+                // 월별 기록 불러오기
+                GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
             }
         }
 
@@ -87,7 +90,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             binding.barSpeed.visibility = View.INVISIBLE
 
             // 월별 기록 불러오기
-            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
+            GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
         }
 
         binding.btnTime.setOnClickListener {
@@ -98,7 +101,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             binding.barSpeed.visibility = View.INVISIBLE
 
             // 월별 기록 불러오기
-            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
+            GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
         }
 
         binding.btnSpeed.setOnClickListener {
@@ -109,7 +112,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             binding.barSpeed.visibility = View.VISIBLE
 
             // 월별 기록 불러오기
-            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
+            GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
         }
 
         // 날짜 선택
@@ -117,11 +120,11 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             val selDate = date.date
             curDate = simpleDateFormat.format(selDate)
 
-            // 마이레코드 -> 마이페이지
-            parentFragmentManager.setFragmentResult("record_to_mypage",
-                bundleOf("curDate" to curDate)
+            // 그룹레코드 -> 그룹페이지
+            parentFragmentManager.setFragmentResult("record_to_group",
+                bundleOf("clubIdx" to clubIdx, "curDate" to curDate)
             )
-            mainActivity?.mypageFragmentChange(0) // 마이페이지로 이동
+            mainActivity?.groupFragmentChange(0) // 그룹페이지로 이동
         }
     }
 
@@ -130,7 +133,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
         super.onDestroyView()
     }
 
-    override fun onGetMonthRecordSuccess(response: MonthRecordResponse) {
+    override fun onGetClubMonthSuccess(response: MonthRecordResponse) {
         if ((response.isSuccess) && (response.result.isNotEmpty())) {
             val res = response.result
 
@@ -430,7 +433,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
         }
     }
 
-    override fun onGetMonthRecordFailure(message: String) {
-        Toast.makeText(activity, "사용자의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    override fun onGetClubMonthFailure(message: String) {
+        Toast.makeText(activity, "그룹의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }

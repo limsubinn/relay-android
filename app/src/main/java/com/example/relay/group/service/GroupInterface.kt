@@ -1,9 +1,7 @@
 package com.example.relay.group.service
 
-import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.group.models.GroupInfoResponse
-import com.example.relay.group.models.GroupListResponse
-import com.example.relay.group.models.MemberResponse
+import com.example.relay.group.models.*
+import com.example.relay.mypage.models.MonthRecordResponse
 
 interface GetUserClubInterface {
     fun onGetUserClubSuccess(response: GroupAcceptedResponse)
@@ -23,4 +21,24 @@ interface GetClubDetailInterface {
 interface GetMemberListInterface {
     fun onGetMemberListSuccess(response: MemberResponse)
     fun onGetMemberListFailure(message: String)
+}
+
+interface GetClubDailyInterface {
+    fun onGetClubDailySuccess(response: GroupDailyRecordResponse)
+    fun onGetClubDailyFailure(message: String)
+}
+
+interface GetClubMonthInterface {
+    fun onGetClubMonthSuccess(response: MonthRecordResponse)
+    fun onGetClubMonthFailure(message: String)
+}
+
+interface PostNewClubInterface {
+    fun onPostNewClubSuccess()
+    fun onPostNewClubFailure(message: String)
+}
+
+interface PostClubJoinInInterface {
+    fun onPostClubJoinInSuccess()
+    fun onPostClubJoinInFailure(message: String)
 }

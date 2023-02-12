@@ -1,12 +1,9 @@
-package com.example.relay.running
+package com.example.relay.running.view
 
 import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
-import androidx.lifecycle.Observer
-import com.example.relay.TrackingUtility
 import com.example.relay.databinding.DialogRunningBinding
-import com.example.relay.service.TrackingService
 
 class CustomDialog (context: Context) : Dialog(context) {
 

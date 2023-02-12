@@ -2,6 +2,7 @@ package com.example.relay.group.view
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +26,6 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
 
     private var mainActivity: MainActivity? = null
 
-    private var userIdx = prefs.getLong("userIdx", 0L)
     private var hostIdx = 0L
     private var clubIdx = 0L
     private var recruitStatus = ""
@@ -64,8 +64,8 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
         var strD = date.toString().padStart(2, '0')
         var curDate = "${strY}-${strM}-${strD}"
 
-        // 메인 -> 멤버
-        setFragmentResultListener("main_to_member") { requestKey, bundle ->
+        // 메인, 멤버 -> 멤버리스트
+        setFragmentResultListener("go_to_member_list") { requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx")
             hostIdx = bundle.getLong("hostIdx")
             recruitStatus = bundle.getString("recruitStatus", "")
@@ -108,9 +108,11 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
         memberAdapter.setItemClickListener( object : GroupMemberRVAdapter.ItemClickListener {
             override fun onMemberClick(view: View, position: Int) {
 
+                val userIdx = memberList[position].profile.userIdx
+
                 // 멤버 리스트 -> 멤버 페이지
-//                parentFragmentManager.setFragmentResult("go_to_member_page",
-//                    bundleOf())
+                parentFragmentManager.setFragmentResult("go_to_member_page",
+                    bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus, "userIdx" to userIdx))
                 mainActivity?.groupFragmentChange(5) // 멤버 페이지로 이동
             }
         })
