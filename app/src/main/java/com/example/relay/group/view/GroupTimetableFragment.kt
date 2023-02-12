@@ -71,7 +71,7 @@ class GroupTimetableFragment : Fragment(), TimetableGetInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
-            binding.tvTitle.text = bundle.getString("clubName", "오류") + "팀"
+            binding.tvTitle.text = bundle.getString("clubName", "오류") + " 팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
     }
