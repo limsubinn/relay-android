@@ -15,10 +15,8 @@ import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentTimetableEditBinding
 import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.group.service.GetUserClubInterface
-import com.example.relay.group.service.GetUserClubService
-import com.example.relay.group.service.PostClubJoinInInterface
-import com.example.relay.group.service.PostClubJoinInService
+import com.example.relay.group.models.GroupNewRequest
+import com.example.relay.group.service.*
 import com.example.relay.timetable.adapter.ScheduleRvAdapter
 import com.example.relay.timetable.models.GroupTimetableRes
 import com.example.relay.timetable.models.MyTimetableRes
@@ -27,7 +25,8 @@ import com.example.relay.timetable.service.*
 import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 
-class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostInterface, GetUserClubInterface, PostClubJoinInInterface{
+class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostInterface, GetUserClubInterface,
+    PostClubJoinInInterface, PostNewClubInterface {
     private var viewBinding : FragmentTimetableEditBinding? = null
     private val binding get() = viewBinding!!
 
@@ -35,6 +34,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     private val userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
     private var serverClubIdx = 0L
+    private var newGroup:GroupNewRequest ?= null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -72,6 +72,10 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
                 dialogView.btn_check.setOnClickListener{
                     alertDialog?.dismiss()
                 }
+            } else if (clubIdx < 0){
+                Log.d("Timetable", "onViewCreated: 그룹 생성하기")
+                newGroup?.timeTable = scheduleList
+                PostNewClubService(this).tryPostNewClub(newGroup!!)
             } else if (serverClubIdx == 0L){
                 Log.d("Timetable", "onViewCreated: 그룹 신청하기")
                 PostClubJoinInService(this).tryPostClubJoinIn(userIdx, clubIdx, scheduleList)
@@ -114,6 +118,23 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     private fun clubIdxSetting(){
         setFragmentResultListener("forJoin") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
+            Log.d("Timetable", "clubIdxSetting: in edit 1")
+        }
+
+        setFragmentResultListener(("forNewGroup")) {requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx", -2L)
+            newGroup =  GroupNewRequest(
+                bundle.getString("content", "러너들!"),
+                bundle.getFloat("goal", 0F),
+                bundle.getString("goalType", "TIME"),
+                userIdx,
+                "임시 이미지 URL",
+                bundle.getInt("level", 0),
+                bundle.getInt("maxNum", 8),
+                bundle.getString("name", "디폴트"),
+                scheduleList
+            )
+            Log.d("Timetable", "clubIdxSetting: in edit 2")
         }
     }
 
@@ -165,6 +186,14 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onPostClubJoinInFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPostNewClubSuccess() {
+        backToClubMainFragment()
+    }
+
+    override fun onPostNewClubFailure(message: String) {
         TODO("Not yet implemented")
     }
 }

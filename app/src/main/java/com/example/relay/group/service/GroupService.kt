@@ -2,6 +2,7 @@ package com.example.relay.group.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
+import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.BaseResponse
 import com.example.relay.group.models.*
 import com.example.relay.mypage.models.MonthRecordResponse
@@ -181,9 +182,30 @@ class PostClubJoinInService(val clubJoinInInterface: PostClubJoinInInterface){
             }
 
             override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
-                Log.d("GroupDailyResponse", "failure")
+                Log.d("postClubJoinIn", "failure")
                 t.printStackTrace()
                 clubJoinInInterface.onPostClubJoinInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PostNewClubService(val newClubInterface: PostNewClubInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPostNewClub(clubInfo: GroupNewRequest){
+        val accessToken = prefs.getString("accessToken", "tokenError")
+        retrofit.postNewClubReq(accessToken!!, clubInfo).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.isSuccessful){
+                    newClubInterface.onPostNewClubSuccess()
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("postNewClubReq", "failure")
+                t.printStackTrace()
+                newClubInterface.onPostNewClubFailure(t.message ?: "통신 오류")
             }
         })
     }
