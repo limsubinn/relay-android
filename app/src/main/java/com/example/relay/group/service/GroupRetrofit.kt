@@ -14,6 +14,13 @@ interface GroupRetrofit {
         @Query("search") search: String
     ) : Call<GroupListResponse>
 
+    // 그룹 생성
+    @POST("/clubs")
+    fun postNewClubReq(
+        @Header("Bearer") accessToken: String,
+        @Body clubInfo: GroupNewRequest
+    ) : Call<BaseResponse>
+
     // 속한 그룹의 이름 가져오기
     @GET("/users/clubs/accepted")
     fun getUserProfileClubRes(

@@ -83,10 +83,21 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
             binding.tvTitle.text = bundle.getString("clubName", "오류") + " 팀"
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
-    }
 
-    fun getClubIdx():Long{
-        return clubIdx
+        setFragmentResultListener("go_to_edit_for_new_group") {requestKey, bundle ->
+            childFragmentManager.setFragmentResult("forNewGroup",
+                bundleOf(
+                    "clubIdx" to -2L,
+                    "content" to bundle.getString("content", "러너들!"),
+                    "goal" to bundle.getFloat("goal", 0F),
+                    "goalType" to bundle.getString("goalType", "TIME"),
+                    "level" to bundle.getInt("level", 0),
+                    "name" to bundle.getString("name", "디폴트"),
+                    "maxNum" to bundle.getInt("maxNum", 8)
+                )
+            )
+            Log.d("Timetable", "clubIdxSetting: for new group /")
+        }
     }
 
     override fun onGetGroupTimetableSuccess(response: GroupTimetableRes) {

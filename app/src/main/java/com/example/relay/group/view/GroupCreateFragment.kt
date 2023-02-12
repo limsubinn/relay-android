@@ -11,6 +11,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
@@ -25,12 +26,15 @@ import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_cancel
 import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_save
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
+import kotlinx.android.synthetic.main.fragment_group_main.view.*
 
 class GroupCreateFragment: Fragment(), GetUserClubInterface {
     private var _binding: FragmentGroupCreateBinding? = null
     private val binding get() = _binding!!
 
     private var mainActivity: MainActivity? = null
+
+    private var goal: Float = 0F
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -138,6 +142,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                         Toast.makeText(activity, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.tvGoalValue.text = "${hour} : ${min} : ${sec}"
+                        goal = dialogView.np_hour.value * 3600 + dialogView.np_min.value * 60 + dialogView.np_sec.value + 0F
                         alertDialog?.dismiss()
                     }
                 }
@@ -175,6 +180,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                         Toast.makeText(activity, "거리를 설정해주세요!", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.tvGoalValue.text = "${n1} : ${n2}"
+                        goal = (n1 + "." + n2).toFloat()
                         alertDialog?.dismiss()
                     }
                 }
@@ -274,13 +280,41 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                 // 가입한 그룹이 있으면 그룹 생성하기 거부
                 mainActivity?.groupFragmentChange(4)
             } else {
-                // 가입한 그룹 x (수정 예정)
-                Toast.makeText(activity, "!!!그룹 생성 가능!!!", Toast.LENGTH_SHORT).show()
+                // 가입한 그룹 x
+                parentFragmentManager.setFragmentResult("go_to_edit_for_new_group",
+                    bundleOf(
+                        "content" to binding.etInfo.text.toString(),
+                        "name" to binding.etName.text.toString(),
+                        "goalType" to goalTypeToEn(binding.tvGoalType.text.toString()),
+                        "goal" to goal,
+                        "level" to levelToInt(binding.tvRunnerLevel.text.toString()),
+                        "maxNum" to binding.tvPeopleCnt.text.toString().toInt()
+                    )
+                )
+                mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
             }
         }
     }
 
     override fun onGetUserClubFailure(message: String) {
         TODO("Not yet implemented")
+    }
+
+    private fun goalTypeToEn(goalType: String):String{
+        return when(goalType){
+            "목표 없음" -> "NOGOAL"
+            "시간" -> "TIME"
+            "거리" -> "DISTANCE"
+            else -> throw IllegalArgumentException("잘못된 값")
+        }
+    }
+
+    private fun levelToInt(level:String) :Int{
+        return when(level){
+            "초보 러너" -> 1
+            "중급 러너" -> 2
+            "상급 러너" -> 3
+            else -> 0
+        }
     }
 }

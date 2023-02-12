@@ -33,6 +33,11 @@ interface GetClubMonthInterface {
     fun onGetClubMonthFailure(message: String)
 }
 
+interface PostNewClubInterface {
+    fun onPostNewClubSuccess()
+    fun onPostNewClubFailure(message: String)
+}
+
 interface PostClubJoinInInterface {
     fun onPostClubJoinInSuccess()
     fun onPostClubJoinInFailure(message: String)
