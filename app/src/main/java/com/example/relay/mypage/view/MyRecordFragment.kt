@@ -27,8 +27,10 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
 
     private val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
     private var status = 0 // 거리, 시간, 속도 선택 상태
-    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
     private var curDate = ""
+    private var year = 0
+    private var month = 0
 
     private var mainActivity: MainActivity? = null
 
@@ -63,8 +65,8 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
 
             if (curDate.isNotEmpty()) {
                 val selDate = simpleDateFormat.parse(curDate)
-                val year = Integer.parseInt(curDate.substring(0, 4))
-                val month = Integer.parseInt(curDate.substring(5, 7))
+                year = Integer.parseInt(curDate.substring(0, 4))
+                month = Integer.parseInt(curDate.substring(5, 7))
 
                 // Log.d("month record", "$selDate, $year, $month")
 
@@ -79,23 +81,35 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
         // 탭
         binding.btnDistance.setOnClickListener {
             status = 0
+
             binding.barDistance.visibility = View.VISIBLE
             binding.barTime.visibility = View.INVISIBLE
             binding.barSpeed.visibility = View.INVISIBLE
+
+            // 월별 기록 불러오기
+            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
 
         binding.btnTime.setOnClickListener {
             status = 1
+
             binding.barDistance.visibility = View.INVISIBLE
             binding.barTime.visibility = View.VISIBLE
             binding.barSpeed.visibility = View.INVISIBLE
+
+            // 월별 기록 불러오기
+            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
 
         binding.btnSpeed.setOnClickListener {
             status = 2
+
             binding.barDistance.visibility = View.INVISIBLE
             binding.barTime.visibility = View.INVISIBLE
             binding.barSpeed.visibility = View.VISIBLE
+
+            // 월별 기록 불러오기
+            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
 
         // 날짜 선택
@@ -220,7 +234,7 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
                     1 -> { // 시간
                         for (i in res) {
                             date = i.date
-                            value = i.totalTime
+                            value = i.totalTime / 60 // 분 단위
 
                             if ((value > 0.0) && (value < 20.0)) {
                                 if (date == curDate) {

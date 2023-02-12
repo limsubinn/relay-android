@@ -3,9 +3,6 @@ package com.example.relay.group.view
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,13 +19,14 @@ import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupDailyRecordResponse
 import com.example.relay.group.models.GroupInfoResponse
 import com.example.relay.group.service.*
-import com.example.relay.mypage.service.MypageService
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import kotlinx.android.synthetic.main.fragment_group_main.view.*
+import kotlinx.android.synthetic.main.item_rv_group_list.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -43,12 +41,11 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     val today = GregorianCalendar()
     var year: Int = today.get(Calendar.YEAR)
-    var month: Int = today.get(Calendar.MONTH)
+    var month: Int = today.get(Calendar.MONTH) + 1
     var date: Int = today.get(Calendar.DATE)
 
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
-    private var clubName = ""
     private var recruitStatus = ""
 
     private var mainActivity: MainActivity? = null
@@ -76,11 +73,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        val today = GregorianCalendar()
-        var year: Int = today.get(Calendar.YEAR)
-        var month: Int = today.get(Calendar.MONTH)
-        var date: Int = today.get(Calendar.DATE)
 
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
@@ -164,7 +156,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // 그룹 시간표 버튼
         binding.btnTimetable.setOnClickListener{
             parentFragmentManager.setFragmentResult("go_to_timetable",
-                bundleOf("clubIdx" to clubIdx, "clubName" to clubName))
+                bundleOf("clubIdx" to clubIdx, "clubName" to binding.profileLayout.profile_team.text))
             mainActivity?.groupFragmentChange(7) // 그룹 시간표로 이동
         }
 
@@ -173,7 +165,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             when (binding.btnJoinTeam.text){
                 "가입하기" -> {
                     parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
-                        bundleOf("clubIdx" to clubIdx, "clubName" to clubName))
+                        bundleOf("clubIdx" to clubIdx, "clubName" to binding.profileLayout.profile_team.text))
                     mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
                 }
                 "탈퇴하기" -> {
@@ -213,7 +205,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 //            }
 //        }, 1)
 
-            GetUserClubService(this).tryGetUserClub(userIdx)
+        GetUserClubService(this).tryGetUserClub(userIdx)
     }
 
     override fun onDestroyView() {
@@ -251,15 +243,17 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         if (response.code != 2008) { // 가입한 그룹 존재 o
             val res = response.result
 
+            binding.btnJoinTeam.visibility = View.VISIBLE
             binding.btnJoinTeam.text = "탈퇴하기"
+
             clubIdx = res.clubIdx
-            clubName = res.name
 
             // 기록 -> 그룹페이지
             setFragmentResultListener("record_to_group") { requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx")
 
                 if (clubIdx != res.clubIdx) {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
                     binding.btnJoinTeam.text = "가입하기"
                 }
 
@@ -275,14 +269,19 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 recruitStatus = bundle.getString("recruitStatus", "")
 
                 if (clubIdx != res.clubIdx) {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
                     binding.btnJoinTeam.text = "가입하기"
+
+                    if (recruitStatus == "recruiting") {
+                        binding.btnJoinTeam.visibility = View.VISIBLE
+                    } else {
+                        binding.btnJoinTeam.visibility = View.GONE
+                    }
+                } else {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
+                    binding.btnJoinTeam.text = "탈퇴하기"
                 }
 
-                if (recruitStatus == "recruiting") {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                } else {
-                    binding.btnJoinTeam.visibility = View.GONE
-                }
             }
 
             binding.selCalendar.apply {
@@ -300,6 +299,50 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             binding.teamLayout.visibility = View.GONE
 
             binding.tvIntro.text = "가입된 그룹이 없습니다."
+
+            // 기록 -> 그룹페이지
+            setFragmentResultListener("record_to_group") { requestKey, bundle ->
+                clubIdx = bundle.getLong("clubIdx")
+
+                curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
+                year = Integer.parseInt(curDate.substring(0, 4))
+                month = Integer.parseInt(curDate.substring(5, 7))
+                date = Integer.parseInt(curDate.substring(8, 10))
+
+                binding.selCalendar.apply {
+                    setDates(getFutureDatesOfSelectMonth(month, year))
+                    initialPositionIndex = date - 3
+                    init()
+                    select(date - 1) // 날짜 선택
+                }
+
+                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+            }
+
+            setFragmentResultListener("go_to_main") {requestKey, bundle ->
+                clubIdx = bundle.getLong("clubIdx", 0L)
+                recruitStatus = bundle.getString("recruitStatus", "")
+
+                binding.profileImg.visibility = View.VISIBLE
+                binding.profileTeam.visibility = View.VISIBLE
+                binding.teamLayout.visibility = View.VISIBLE
+
+                if (recruitStatus == "recruiting") {
+                    binding.btnJoinTeam.visibility = View.VISIBLE
+                    binding.btnJoinTeam.text = "가입하기"
+                } else {
+                    binding.btnJoinTeam.visibility = View.GONE
+                }
+
+                binding.selCalendar.apply {
+                    setDates(getFutureDatesOfSelectMonth(month, year))
+                    initialPositionIndex = date - 3
+                    init()
+                    select(date - 1) // 날짜 선택
+                }
+
+                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+            }
         }
     }
 
@@ -331,7 +374,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
-            parentFragmentManager.setFragmentResult("main_to_member",
+            parentFragmentManager.setFragmentResult("go_to_member_list",
                 bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus, "hostIdx" to res.hostIdx))
             mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
         }
@@ -345,36 +388,45 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         if (response.isSuccess) {
             val res = response.result
 
-            // 목표값 수정 필요
+            var sec = res.totalTime
+            var min = sec / 60
+            val hour = min / 60
+            min %= 60
+            sec %= 60
+
+            val hh = hour.toInt().toString().padStart(2, '0')
+            val mm = min.toInt().toString().padStart(2, '0')
+            val ss = sec.toInt().toString().padStart(2, '0')
+
             if (res.goalType == "NOGOAL") {
                 binding.goalValue.visibility = View.GONE
                 binding.goalTarget.setTextColor(Color.BLACK)
-                binding.goalTarget.text = res.totalTime.toString()
+                binding.goalTarget.text = "${hh} : ${mm} : ${ss}"
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"
-                binding.otherValue.text = res.totalDist.toString()
+                binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "TIME") {
                 binding.goalValue.visibility = View.VISIBLE
-                binding.goalValue.text = res.totalTime.toString()
+                binding.goalValue.text = "${hh} : ${mm} : ${ss}"
                 binding.goalTarget.setTextColor(Color.RED)
                 binding.goalTarget.text = res.goalValue.toString()
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"
-                binding.otherValue.text = res.totalDist.toString()
+                binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "DISTANCE") {
                 binding.goalValue.visibility = View.VISIBLE
-                binding.goalValue.text = res.totalDist.toString()
+                binding.goalValue.text = res.totalDist.toString()  + "km"
                 binding.goalTarget.setTextColor(Color.RED)
                 binding.goalTarget.text = res.goalValue.toString()
                 binding.goalType.text = "거리"
 
                 binding.otherType.text = "시간"
-                binding.otherValue.text = res.totalTime.toString()
+                binding.otherValue.text = "${hh} : ${mm} : ${ss}"
             }
 
-            binding.runningPace.text = res.avgPace.toString()
+            binding.runningPace.text = res.avgPace.toString() + "km/h"
         }
     }
 

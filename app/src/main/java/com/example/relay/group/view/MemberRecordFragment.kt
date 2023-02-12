@@ -12,22 +12,23 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.example.relay.ApplicationClass
 import com.example.relay.databinding.FragmentMyRecordBinding
-import com.example.relay.group.service.GetClubMonthInterface
-import com.example.relay.group.service.GetClubMonthService
 import com.example.relay.mypage.service.MyRecordInterface
 import com.example.relay.mypage.service.MyRecordService
 import com.example.relay.mypage.models.MonthRecordResponse
 import com.example.relay.mypage.view.decorator.*
 import com.example.relay.ui.MainActivity
-import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import java.text.SimpleDateFormat
 
 
-class GroupRecordFragment: Fragment(), GetClubMonthInterface {
+class MemberRecordFragment: Fragment(), MyRecordInterface {
     private var _binding: FragmentMyRecordBinding? = null
     private val binding get() = _binding!!
 
+    private var userIdx = 0L
     private var clubIdx = 0L
+    private var hostIdx = 0L
+    private var recruitStatus = ""
+
     private var status = 0 // 거리, 시간, 속도 선택 상태
     private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
     private var curDate = ""
@@ -60,11 +61,14 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 마이페이지 -> 마이레코드
-        setFragmentResultListener("go_to_group_record") { requestKey, bundle ->
+        // 멤버 -> 레코드
+        setFragmentResultListener("go_to_member_record") { requestKey, bundle ->
 
             curDate = bundle.getString("curDate", "")
+            userIdx = bundle.getLong("userIdx", 0L)
             clubIdx = bundle.getLong("clubIdx", 0L)
+            hostIdx = bundle.getLong("hostIdx", 0L)
+            recruitStatus = bundle.getString("recruitStatus", "")
 
             if (curDate.isNotEmpty()) {
                 val selDate = simpleDateFormat.parse(curDate)
@@ -77,7 +81,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
                 binding.calendarView.setCurrentDate(selDate)
 
                 // 월별 기록 불러오기
-                GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
+                MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
             }
         }
 
@@ -90,7 +94,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
             binding.barSpeed.visibility = View.INVISIBLE
 
             // 월별 기록 불러오기
-            GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
+            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
 
         binding.btnTime.setOnClickListener {
@@ -101,7 +105,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
             binding.barSpeed.visibility = View.INVISIBLE
 
             // 월별 기록 불러오기
-            GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
+            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
 
         binding.btnSpeed.setOnClickListener {
@@ -112,7 +116,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
             binding.barSpeed.visibility = View.VISIBLE
 
             // 월별 기록 불러오기
-            GetClubMonthService(this).tryGetClubMonth(clubIdx, year, month)
+            MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
 
         // 날짜 선택
@@ -120,11 +124,11 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
             val selDate = date.date
             curDate = simpleDateFormat.format(selDate)
 
-            // 그룹레코드 -> 그룹페이지
-            parentFragmentManager.setFragmentResult("record_to_group",
-                bundleOf("clubIdx" to clubIdx, "curDate" to curDate)
+            // 레코드 -> 멤버
+            parentFragmentManager.setFragmentResult("record_to_member",
+                bundleOf("curDate" to curDate, "userIdx" to userIdx, "clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
             )
-            mainActivity?.groupFragmentChange(0) // 그룹페이지로 이동
+            mainActivity?.groupFragmentChange(5) // 멤버페이지로 이동
         }
     }
 
@@ -133,7 +137,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
         super.onDestroyView()
     }
 
-    override fun onGetClubMonthSuccess(response: MonthRecordResponse) {
+    override fun onGetMonthRecordSuccess(response: MonthRecordResponse) {
         if ((response.isSuccess) && (response.result.isNotEmpty())) {
             val res = response.result
 
@@ -237,7 +241,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
                     1 -> { // 시간
                         for (i in res) {
                             date = i.date
-                            value = i.totalTime / 60 // 분 단위
+                            value = i.totalTime
 
                             if ((value > 0.0) && (value < 20.0)) {
                                 if (date == curDate) {
@@ -433,7 +437,7 @@ class GroupRecordFragment: Fragment(), GetClubMonthInterface {
         }
     }
 
-    override fun onGetClubMonthFailure(message: String) {
-        Toast.makeText(activity, "그룹의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    override fun onGetMonthRecordFailure(message: String) {
+        Toast.makeText(activity, "사용자의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }
