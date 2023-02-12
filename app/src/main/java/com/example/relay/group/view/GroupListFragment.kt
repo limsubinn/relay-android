@@ -100,12 +100,10 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
             override fun onItemClick(view: View, position: Int) {
                 val clubIdx = clubList[position].clubIdx
-                // val recruitStatus = clubList[position].recruitStatus
 
                 // 리스트 -> 메인
                 parentFragmentManager.setFragmentResult("go_to_main",
                     bundleOf("clubIdx" to clubIdx))
-                        //, "recruitStatus" to recruitStatus))
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
         })
@@ -126,22 +124,27 @@ class GroupListFragment: Fragment(), GetClubListInterface {
         binding.spRecruitStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 clubList.clear()
-                if (p2 == 1) { // 모집중
-                    clubList.addAll(res)
-//                    res.forEach {
-//                        if (it.recruitStatus == "recruiting") {
-//                            clubList.add(it)
-//                        }
-//                    }
-                } else if (p2 == 2) { // 모집 완료
-//                    res.forEach {
-//                        if (it.recruitStatus != "recruiting") {
-//                            clubList.add(it)
-//                        }
-//                    }
-                } else { // 전체
-                    clubList.addAll(res)
+                when (p2) {
+                    1 -> { // 모집중
+                        clubList.addAll(res)
+                        res.forEach {
+                            if (it.recruitStatus == "recruiting") {
+                                clubList.add(it)
+                            }
+                        }
+                    }
+                    2 -> { // 모집 완료
+                        res.forEach {
+                            if (it.recruitStatus != "recruiting") {
+                                clubList.add(it)
+                            }
+                        }
+                    }
+                    else -> { // 전체
+                        clubList.addAll(res)
+                    }
                 }
+
                 listAdapter.notifyDataSetChanged()
 
                 if (listAdapter.itemCount == 0) {
@@ -154,19 +157,19 @@ class GroupListFragment: Fragment(), GetClubListInterface {
             }
         }
 
-        // 러너 레벨
-        val levelList = listOf("레벨전체", "초보러너", "중급러너", "프로러너")
-        val levelAdapter = activity?.let {
-            ArrayAdapter<String>(
-                it,
-                R.layout.spinner_item,
-                levelList
-            )
-        }
-        // 레벨 api 아직 x
+//        // 러너 레벨
+//        val levelList = listOf("레벨전체", "초보러너", "중급러너", "프로러너")
+//        val levelAdapter = activity?.let {
+//            ArrayAdapter<String>(
+//                it,
+//                R.layout.spinner_item,
+//                levelList
+//            )
+//        }
+//        // 레벨 api 아직 x
     }
 
     override fun onGetClubListFailure(message: String) {
-        // 에러 발생
+        Toast.makeText(activity, "그룹 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 }

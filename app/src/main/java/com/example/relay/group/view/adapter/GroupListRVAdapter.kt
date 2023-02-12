@@ -30,11 +30,18 @@ class GroupListRVAdapter(private val dataList: ArrayList<GroupInfoResult>): Recy
             binding.teamName.text = data.name
             binding.teamIntro.text = data.content
 
-//            if (data.recruitStatus == "recruiting") {
-//                binding.teamRecruitStatus.text = "모집중"
-//            } else {
-//                binding.teamRecruitStatus.text = "모집완료"
-//            }
+            if (data.recruitStatus == "recruiting") {
+                binding.teamRecruitStatus.text = "모집중"
+            } else {
+                binding.teamRecruitStatus.text = "모집완료"
+            }
+
+            when (data.level) {
+                0 -> binding.teamLevel.text = "모든러너"
+                1 -> binding.teamLevel.text = "초보"
+                2 -> binding.teamLevel.text = "중급"
+                3 -> binding.teamLevel.text = "프로"
+            }
 
             Glide.with(binding.teamImg.context)
                 .load(data.imgURL)

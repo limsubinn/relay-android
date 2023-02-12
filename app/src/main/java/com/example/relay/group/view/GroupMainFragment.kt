@@ -50,6 +50,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
+    private var userClubIdx = 0L
     private var recruitStatus = ""
 
     private var mainActivity: MainActivity? = null
@@ -119,7 +120,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
                 curDate = simpleDateFormat.format(date)
                 GetClubDetailService(this@GroupMainFragment).tryGetClubDetail(clubIdx, curDate)
-                // GetClubDailyService(this@GroupMainFragment).tryGetClubDaily(clubIdx, curDate)
                 return true
             }
         }
@@ -134,11 +134,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
-
-//            setDates(getFutureDatesOfCurrentMonth())
-//            initialPositionIndex = date - 3
-//            init()
-//            select(date - 1) // 오늘 날짜 선택
         }
 
 
@@ -178,36 +173,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             }
         }
 
-//        // 리스트, 멤버 -> 메인
-//        setFragmentResultListener("go_to_main") {requestKey, bundle ->
-//            clubIdx = bundle.getLong("clubIdx", 0L)
-//            recruitStatus = bundle.getString("recruitStatus", "")
-//
-//            Log.d("main", clubIdx.toString())
-//
-//            if (recruitStatus == "recruiting") {
-//                binding.btnJoinTeam.visibility = View.VISIBLE
-//            } else {
-//                binding.btnJoinTeam.visibility = View.GONE
-//            }
-
-//            binding.selCalendar.apply {
-//                setDates(getFutureDatesOfCurrentMonth())
-//                initialPositionIndex = date - 3
-//                init()
-//                select(date - 1) // 오늘 날짜 선택
-//            }
-//
-//            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
-//        }
-//
-//        // 사용자 그룹명 가져오기
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            if (clubIdx == 0L) {
-//                GetUserClubService(this).tryGetUserClub(userIdx)
-//            }
-//        }, 1)
-
         GetUserClubService(this).tryGetUserClub(userIdx)
     }
 
@@ -246,19 +211,12 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         if (response.code != 2008) { // 가입한 그룹 존재 o
             val res = response.result
 
-            binding.btnJoinTeam.visibility = View.VISIBLE
-            binding.btnJoinTeam.text = "탈퇴하기"
-
             clubIdx = res.clubIdx
+            userClubIdx = res.clubIdx
 
             // 기록 -> 그룹페이지
             setFragmentResultListener("record_to_group") { requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx")
-
-                if (clubIdx != res.clubIdx) {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "가입하기"
-                }
 
                 curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
                 year = Integer.parseInt(curDate.substring(0, 4))
@@ -269,22 +227,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             // 목록, 메인 -> 그룹페이지
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
-                recruitStatus = bundle.getString("recruitStatus", "")
-
-                if (clubIdx != res.clubIdx) {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "가입하기"
-
-                    if (recruitStatus == "recruiting") {
-                        binding.btnJoinTeam.visibility = View.VISIBLE
-                    } else {
-                        binding.btnJoinTeam.visibility = View.GONE
-                    }
-                } else {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "탈퇴하기"
-                }
-
             }
 
             binding.selCalendar.apply {
@@ -293,9 +235,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 init()
                 select(date - 1) // 날짜 선택
             }
-
-            // GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
-
         } else { // 가입한 그룹 존재 x
             binding.profileImg.visibility = View.GONE
             binding.profileTeam.visibility = View.GONE
@@ -311,52 +250,30 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 year = Integer.parseInt(curDate.substring(0, 4))
                 month = Integer.parseInt(curDate.substring(5, 7))
                 date = Integer.parseInt(curDate.substring(8, 10))
-
-                binding.selCalendar.apply {
-                    setDates(getFutureDatesOfSelectMonth(month, year))
-                    initialPositionIndex = date - 3
-                    init()
-                    select(date - 1) // 날짜 선택
-                }
-
-                // GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
             }
 
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
-                recruitStatus = bundle.getString("recruitStatus", "")
+            }
 
-                binding.profileImg.visibility = View.VISIBLE
-                binding.profileTeam.visibility = View.VISIBLE
-                binding.teamLayout.visibility = View.VISIBLE
-
-                if (recruitStatus == "recruiting") {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "가입하기"
-                } else {
-                    binding.btnJoinTeam.visibility = View.GONE
-                }
-
-                binding.selCalendar.apply {
-                    setDates(getFutureDatesOfSelectMonth(month, year))
-                    initialPositionIndex = date - 3
-                    init()
-                    select(date - 1) // 날짜 선택
-                }
-
-                // GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+            binding.selCalendar.apply {
+                setDates(getFutureDatesOfSelectMonth(month, year))
+                initialPositionIndex = date - 3
+                init()
+                select(date - 1) // 날짜 선택
             }
         }
     }
 
     override fun onGetUserClubFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, "유저의 그룹을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onGetClubDetailSuccess(response: GroupInfoResponse) {
         binding.profileImg.visibility = View.VISIBLE
         binding.profileTeam.visibility = View.VISIBLE
         binding.teamLayout.visibility = View.VISIBLE
+        binding.btnJoinTeam.visibility = View.VISIBLE
 
         val res = response.result
 
@@ -369,6 +286,21 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 .into(binding.profileImg)
         }
         binding.tvTeamCnt.text = res.member.size.toString()
+
+        // 가입하기 버튼
+        if (userClubIdx == clubIdx) {
+            if (userIdx == res.hostIdx) {
+                binding.btnJoinTeam.text = "수정하기"
+            } else {
+                binding.btnJoinTeam.text = "탈퇴하기"
+            }
+        } else {
+            if (res.recruitStatus == "recruiting") {
+                binding.btnJoinTeam.text = "가입하기"
+            } else {
+                binding.btnJoinTeam.visibility = View.GONE
+            }
+        }
 
         // 달리기 현황 설정
         val memList: ArrayList<MemberRunningStatus> = arrayListOf()

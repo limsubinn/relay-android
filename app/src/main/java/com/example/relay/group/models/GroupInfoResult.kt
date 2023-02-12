@@ -11,5 +11,7 @@ data class GroupInfoResult (
     @SerializedName("hostIdx") val hostIdx: Long,
     @SerializedName("imgURL") val imgURL: String,
     @SerializedName("level") val level: Int,
-    @SerializedName("name") val name: String
+    @SerializedName("maxNum") val maxNum: Int,
+    @SerializedName("name") val name: String,
+    @SerializedName("recruitStatus") val recruitStatus: String
 )
