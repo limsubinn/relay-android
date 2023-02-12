@@ -9,9 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivitySignupBinding
 import com.example.relay.login.service.LogInSNSInterface
-import com.example.relay.login.service.LogInService
 import com.example.relay.login.service.LogInSnsService
-import com.kakao.sdk.user.model.User
 
 class SignupActivity : AppCompatActivity(), LogInSNSInterface {
     private val viewBinding: ActivitySignupBinding by lazy {
@@ -37,11 +35,10 @@ class SignupActivity : AppCompatActivity(), LogInSNSInterface {
         viewBinding.btnNext.setOnClickListener{
             val name = viewBinding.etName.text.toString()
             val email = viewBinding.etEmail.text.toString()
-            val phone = viewBinding.etPhone.text.toString()
             val pw = viewBinding.etPw.text.toString()
             val emailPattern = android.util.Patterns.EMAIL_ADDRESS;
 
-            if (name.isBlank() || email.isBlank() || phone.isBlank() || pw.isBlank() || viewBinding.etCheckPw.text.toString().isBlank())
+            if (name.isBlank() || email.isBlank() || pw.isBlank() || viewBinding.etCheckPw.text.toString().isBlank())
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             else if (!emailPattern.matcher(email).matches())
                 Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
@@ -55,7 +52,6 @@ class SignupActivity : AppCompatActivity(), LogInSNSInterface {
 
                 editor.putString("name", name)
                 editor.putString("email", email)
-                editor.putString("phone", phone)
                 editor.putString("pw", pw)
                 editor.apply()
 
