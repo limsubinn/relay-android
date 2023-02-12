@@ -1,5 +1,6 @@
 package com.example.relay.running.service
 
+import com.example.relay.running.models.RunEndResponse
 import com.example.relay.running.models.RunStrResponse
 import com.example.relay.timetable.models.MyTimetableRes
 

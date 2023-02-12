@@ -1,7 +1,7 @@
 package com.example.relay.running.service
 
-import com.example.relay.BaseResponse
 import com.example.relay.running.models.RunEndRequest
+import com.example.relay.running.models.RunEndResponse
 import com.example.relay.running.models.RunStrRequest
 import com.example.relay.running.models.RunStrResponse
 import retrofit2.Call
