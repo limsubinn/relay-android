@@ -2,10 +2,14 @@ package com.example.relay.group.view
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -15,9 +19,7 @@ import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMainBinding
-import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.group.models.GroupDailyRecordResponse
-import com.example.relay.group.models.GroupInfoResponse
+import com.example.relay.group.models.*
 import com.example.relay.group.service.*
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
@@ -26,9 +28,9 @@ import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
-import kotlinx.android.synthetic.main.item_rv_group_list.view.*
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterface, GetClubDailyInterface {
     private var _binding: FragmentGroupMainBinding? = null
@@ -39,10 +41,12 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     private var currentYear = 0
     private var curDate = ""
 
-    val today = GregorianCalendar()
-    var year: Int = today.get(Calendar.YEAR)
-    var month: Int = today.get(Calendar.MONTH) + 1
-    var date: Int = today.get(Calendar.DATE)
+    private val today = GregorianCalendar()
+    private var year: Int = today.get(Calendar.YEAR)
+    private var month: Int = today.get(Calendar.MONTH) + 1
+    private var date: Int = today.get(Calendar.DATE)
+    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+    private val sdf = SimpleDateFormat("HH:mm:ss")
 
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
@@ -77,8 +81,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
         currentMonth = calendar[Calendar.MONTH]
-
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
         val myCalendarViewManager = object : CalendarViewManager {
             override fun setCalendarViewResourceId(
@@ -116,7 +118,8 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
                 curDate = simpleDateFormat.format(date)
-                GetClubDailyService(this@GroupMainFragment).tryGetClubDaily(clubIdx, curDate)
+                GetClubDetailService(this@GroupMainFragment).tryGetClubDetail(clubIdx, curDate)
+                // GetClubDailyService(this@GroupMainFragment).tryGetClubDaily(clubIdx, curDate)
                 return true
             }
         }
@@ -291,7 +294,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 select(date - 1) // 날짜 선택
             }
 
-            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+            // GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
 
         } else { // 가입한 그룹 존재 x
             binding.profileImg.visibility = View.GONE
@@ -316,7 +319,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                     select(date - 1) // 날짜 선택
                 }
 
-                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+                // GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
             }
 
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
@@ -341,7 +344,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                     select(date - 1) // 날짜 선택
                 }
 
-                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
+                // GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
             }
         }
     }
@@ -357,20 +360,120 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
         val res = response.result
 
+        // 프로필 설정
         binding.profileTeam.text = res.name
         binding.tvIntro.text = res.content
-
         if (res.imgURL != null) {
             Glide.with(binding.profileImg.context)
                 .load(res.imgURL)
                 .into(binding.profileImg)
         }
-
         binding.tvTeamCnt.text = res.member.size.toString()
+
+        // 달리기 현황 설정
+        val memList: ArrayList<MemberRunningStatus> = arrayListOf()
+        res.member.forEach {
+            var start = 0
+            var end = 0
+            if (it.timeTableRes != null) {
+                val startTime = it.timeTableRes.start
+                val endTime = it.timeTableRes.end
+
+                var h = Integer.parseInt(startTime.substring(0, 2))
+                var m = Integer.parseInt(startTime.substring(3, 5))
+                var s = Integer.parseInt(startTime.substring(6, 8))
+                start = h * 60 * 60 + m * 60 + s
+
+                h = Integer.parseInt(endTime.substring(0, 2))
+                m = Integer.parseInt(endTime.substring(3, 5))
+                s = Integer.parseInt(endTime.substring(6, 8))
+                end = h * 60 * 60 + m * 60 + s
+            }
+
+            var status = false
+            if ((it.record != null) && (it.record.isNotEmpty())) {
+                status = true // 달리기 기록 존재
+            }
+
+            memList.add(MemberRunningStatus(
+                it.profile.userIdx,
+                it.profile.nickname,
+                it.profile.imgUrl,
+                start,
+                end,
+                status
+            ))
+        }
+        val comparator: Comparator<MemberRunningStatus> = compareBy { it.startTime }
+        val memberList = memList.sortedWith(comparator) // 시작 시간 기준으로 정렬
+
+        val matrix = ColorMatrix()
+        matrix.setSaturation(0f)
+        val filter = ColorMatrixColorFilter(matrix) // 흑백 필터
+
+        val now = System.currentTimeMillis()
+        val nowDate = Date(now)
+        val getDate = simpleDateFormat.format(nowDate)
+
+        var h = 0
+        var m = 0
+        var s = 0
+        var cur = 0
+
+        if (getDate.equals(curDate)) {
+            val getTime = sdf.format(nowDate)
+            Log.d("getTime", getTime)
+            h = Integer.parseInt(getTime.substring(0, 2))
+            m = Integer.parseInt(getTime.substring(3, 5))
+            s = Integer.parseInt(getTime.substring(6, 8))
+            cur = h * 60 * 60 + m * 60 + s
+        }
+
+        for(i in 1 until 9) {
+            val imgId = resources.getIdentifier("member_img_" + i, "id", activity?.packageName)
+            val tvId = resources.getIdentifier("member_name_" + i, "id", activity?.packageName)
+            val runningId = resources.getIdentifier("member_running_" + i, "id", activity?.packageName)
+
+            view?.findViewById<ImageView>(imgId)?.colorFilter = filter
+            view?.findViewById<ImageView>(imgId)?.visibility = View.INVISIBLE
+            view?.findViewById<TextView>(tvId)?.visibility = View.INVISIBLE
+            view?.findViewById<ImageView>(runningId)?.visibility = View.INVISIBLE
+        }
+
+        var i = 0
+        memberList.forEach {
+            i += 1
+
+            val imgId = resources.getIdentifier("member_img_" + i, "id", activity?.packageName)
+            val tvId = resources.getIdentifier("member_name_" + i, "id", activity?.packageName)
+            val runningId = resources.getIdentifier("member_running_" + i, "id", activity?.packageName)
+
+            view?.findViewById<ImageView>(imgId)?.visibility = View.VISIBLE
+            view?.findViewById<ImageView>(imgId)?.let { it1 ->
+                Glide.with(this)
+                    .load(it.imgUrl)
+                    .into(it1)
+            }
+
+            view?.findViewById<TextView>(tvId)?.visibility = View.VISIBLE
+            view?.findViewById<TextView>(tvId)?.text = it.nickname
+
+            if (curDate == getDate) {
+                if ((it.startTime <= cur) && (it.endTime > cur)) { // 현재 달리는 중
+                    view?.findViewById<ImageView>(runningId)?.visibility = View.VISIBLE
+                }
+            }
+
+            if (it.runningStatus) {
+                view?.findViewById<ImageView>(imgId)?.colorFilter = null
+            }
+        }
 
         if (userIdx == res.hostIdx) {
             binding.btnJoinTeam.text = "수정하기"
         }
+
+        GetClubDailyService(this).tryGetClubDaily(clubIdx, curDate)
 
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
@@ -419,7 +522,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.goalValue.visibility = View.VISIBLE
                 binding.goalValue.text = res.totalDist.toString()  + "km"
                 binding.goalTarget.setTextColor(Color.RED)
-                binding.goalTarget.text = res.goalValue.toString()
+                binding.goalTarget.text = res.goalValue.toString() + "km"
                 binding.goalType.text = "거리"
 
                 binding.otherType.text = "시간"

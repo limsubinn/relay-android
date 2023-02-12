@@ -173,7 +173,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent">
 
-            <!-- 수정 예정 -->
             <LinearLayout
                 android:id="@+id/member_img_layout"
                 android:layout_width="match_parent"
