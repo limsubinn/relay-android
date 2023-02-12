@@ -73,8 +73,8 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
                     alertDialog?.dismiss()
                 }
             } else if (clubIdx < 0){
-                Log.d("Timetable", "onViewCreated: 그룹 생성하기, ${newGroup?.goalType}")
-                newGroup?.timetable = scheduleList
+                Log.d("Timetable", "onViewCreated: 그룹 생성하기")
+                newGroup?.timeTable = scheduleList
                 PostNewClubService(this).tryPostNewClub(newGroup!!)
             } else if (serverClubIdx == 0L){
                 Log.d("Timetable", "onViewCreated: 그룹 신청하기")
