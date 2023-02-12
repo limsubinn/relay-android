@@ -28,6 +28,7 @@ import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -410,7 +411,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
             parentFragmentManager.setFragmentResult("go_to_member_list",
-                bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus, "hostIdx" to res.hostIdx))
+                bundleOf("clubIdx" to clubIdx, "hostIdx" to res.hostIdx))
             mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
         }
     }
@@ -422,6 +423,9 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     override fun onGetClubDailySuccess(response: GroupDailyRecordResponse) {
         if (response.isSuccess) {
             val res = response.result
+
+            binding.tvNotRecord.visibility = View.GONE
+            binding.recordLayout.visibility = View.VISIBLE
 
             var sec = res.totalTime
             var min = sec / 60
@@ -460,8 +464,13 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.otherType.text = "시간"
                 binding.otherValue.text = "${hh} : ${mm} : ${ss}"
             }
+            val pace = DecimalFormat("#.##").format(res.avgPace).toString()
+            binding.runningPace.text = pace + "km/h"
+        } else {
+            binding.tvNotRecord.visibility = View.VISIBLE
+            binding.recordLayout.visibility = View.GONE
 
-            binding.runningPace.text = res.avgPace.toString() + "km/h"
+            binding.tvNotRecord.text = response.message
         }
     }
 

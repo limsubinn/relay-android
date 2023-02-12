@@ -68,7 +68,6 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
         setFragmentResultListener("go_to_member_list") { requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx")
             hostIdx = bundle.getLong("hostIdx")
-            recruitStatus = bundle.getString("recruitStatus", "")
 
             GetMemberListService(this).tryGetMemberList(clubIdx, curDate)
         }
@@ -77,7 +76,7 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
             binding.btnRight.setOnClickListener {
                 // 멤버 -> 메인
                 parentFragmentManager.setFragmentResult("go_to_main",
-                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
+                    bundleOf("clubIdx" to clubIdx))
                 mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
             }
     }
@@ -112,7 +111,7 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
 
                 // 멤버 리스트 -> 멤버 페이지
                 parentFragmentManager.setFragmentResult("go_to_member_page",
-                    bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus, "userIdx" to userIdx))
+                    bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "userIdx" to userIdx))
                 mainActivity?.groupFragmentChange(5) // 멤버 페이지로 이동
             }
         })

@@ -17,7 +17,6 @@ interface GroupRetrofit {
     // 그룹 생성
     @POST("/clubs")
     fun postNewClubReq(
-        @Header("Bearer") accessToken: String,
         @Body clubInfo: GroupNewRequest
     ) : Call<BaseResponse>
 
