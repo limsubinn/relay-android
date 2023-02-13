@@ -25,7 +25,9 @@ import kotlinx.android.synthetic.main.dialog_goal_time.view.*
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.dialog_timepicker.view.*
+import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 import kotlinx.android.synthetic.main.item_rv_edit_table.view.*
+import java.time.LocalTime
 import java.util.*
 
 
@@ -71,7 +73,6 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: DataViewHolder, position: Int) {
-        val cal = Calendar.getInstance()
         val inflater: LayoutInflater = LayoutInflater.from(context)
 
         holder.bind(dataList[position])
@@ -145,9 +146,30 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             dialogView.timePicker.minute = holder.itemView.btn_end.text.toString().substring(3).toInt()
 
             dialogView.btn_save.setOnClickListener{
-                val hour = dialogView.timePicker.hour.toString().padStart(2, '0')
-                val min = dialogView.timePicker.minute.toString().padStart(2, '0')
-                dataList[position].end = "$hour:$min:00"
+                val hour = dialogView.timePicker.hour.toString()
+                val min = dialogView.timePicker.minute.toString()
+
+                val cal1 = Calendar.getInstance()
+                val cal2 = Calendar.getInstance()
+
+                cal1.set(Calendar.HOUR_OF_DAY, hour.toInt())
+                cal1.set(Calendar.MINUTE, min.toInt())
+
+                val start = holder.itemView.btn_start.text.toString()
+                cal2.set(Calendar.HOUR_OF_DAY, start.substring(0,2).toInt())
+                cal2.set(Calendar.MINUTE, start.substring(3,5).toInt())
+
+                val timeInMillis = cal1.timeInMillis - cal2.timeInMillis
+
+                val timeInHours = timeInMillis / 3600000
+
+                if (cal1.before(cal2)){
+                    alertWrongInput("잘못된 시작-종료 시간 형식입니다.")
+                } else if (timeInHours > 3){
+                    alertWrongInput("1회 최대 3시간")
+                } else {
+                    dataList[position].end = "${hour.padStart(2, '0')}:${min.padStart(2, '0')}:00"
+                }
                 notifyDataSetChanged()
                 alertDialog.dismiss()
             }
@@ -314,6 +336,23 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
             6 -> "토"
             7 -> "일"
             else -> throw IllegalArgumentException("잘못된 값")
+        }
+    }
+
+    private fun alertWrongInput(message: String){
+        val inflater: LayoutInflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.dialog_timetable_alert, null)
+        val alertDialog = context.let { AlertDialog.Builder(it).create() }
+
+        alertDialog?.setView(dialogView)
+        alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog?.show()
+
+        dialogView.tv_no.text = message
+
+        dialogView.btn_check.setOnClickListener{
+            alertDialog?.dismiss()
         }
     }
 }
