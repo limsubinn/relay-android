@@ -344,11 +344,9 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // 프로필 설정
         binding.profileTeam.text = res.name
         binding.tvIntro.text = res.content
-        if (res.imgURL != null) {
-            Glide.with(binding.profileImg.context)
-                .load(res.imgURL)
-                .into(binding.profileImg)
-        }
+        Glide.with(binding.profileImg.context)
+            .load(res.imgUrl)
+            .into(binding.profileImg)
         binding.tvTeamCnt.text = res.member.size.toString()
 
         // 가입하기 버튼

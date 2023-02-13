@@ -147,7 +147,6 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
                         Toast.makeText(activity, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.tvGoalValue.text = "${hour} : ${min} : ${sec}"
-                        goal = dialogView.np_hour.value * 3600 + dialogView.np_min.value * 60 + dialogView.np_sec.value + 0F
                         alertDialog?.dismiss()
                     }
                 }
@@ -185,7 +184,6 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
                         Toast.makeText(activity, "거리를 설정해주세요!", Toast.LENGTH_SHORT).show()
                     } else {
                         binding.tvGoalValue.text = "${n1}.${n2}km"
-                        goal = ("$n1.$n2").toFloat()
                         alertDialog?.dismiss()
                     }
                 }
@@ -280,11 +278,23 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
                 val imgURL = binding.imgUser.context.toString()
                 val maxNum = Integer.parseInt(binding.tvPeopleCnt.text.toString())
 
+                val goalText = binding.tvGoalValue.text.toString()
                 var goalType = ""
-                goalType = when (binding.tvGoalType.text) {
-                    "시간" -> "TIME"
-                    "거리" -> "DISTANCE"
-                    else -> "NOGOAL"
+                when (binding.tvGoalType.text) {
+                    "시간" -> {
+                        goalType = "TIME"
+                        val h = goalText.substring(0, 2).toFloat()
+                        val m = goalText.substring(5, 7).toFloat()
+                        val s = goalText.substring(10, 12).toFloat()
+                        goal = h * 60 * 60 + m * 60 + s
+                    }
+                    "거리" -> {
+                        goalType = "DISTANCE"
+                        goal = goalText.substring(0, 5).toFloat()
+                    }
+                    else -> {
+                        goalType = "NOGOAL"
+                    }
                 }
 
                 var level = 0
@@ -309,10 +319,10 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
 
         // 취소 버튼
         binding.btnBack.setOnClickListener {
-            parentFragmentManager
-                .beginTransaction()
-                .remove(this)
-                .commitAllowingStateLoss()
+            parentFragmentManager.setFragmentResult(
+                "go_to_main",
+                bundleOf("clubIdx" to clubIdx))
+            mainActivity?.groupFragmentChange(0) // 그룹 페이지
         }
 
         setFragmentResultListener("go_to_edit") { requestKey, bundle ->
@@ -333,7 +343,7 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
             val res = response.result
 
             Glide.with(binding.imgUser.context)
-                .load(res.imgURL)
+                .load(res.imgUrl)
                 .into(binding.imgUser)
             binding.etName.setText(res.name)
             binding.etInfo.setText(res.content)
@@ -378,7 +388,7 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
     }
 
     override fun onPatchClubInSuccess() {
-        Toast.makeText(activity, "그룹 수정이 완료되었습니다!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(activity, "그룹 수정이 완료되었습니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onPatchClubInFailure(message: String) {

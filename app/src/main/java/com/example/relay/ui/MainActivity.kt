@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
         } else if (index == 9) {
             supportFragmentManager
                 .beginTransaction()
-                .add(binding.containerFragment.id, GroupEditFragment())
+                .replace(binding.containerFragment.id, GroupEditFragment())
                 .commitAllowingStateLoss()
         }
     }

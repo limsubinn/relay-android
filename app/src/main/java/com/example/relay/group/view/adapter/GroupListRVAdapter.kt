@@ -44,7 +44,7 @@ class GroupListRVAdapter(private val dataList: ArrayList<GroupInfoResult>): Recy
             }
 
             Glide.with(binding.teamImg.context)
-                .load(data.imgURL)
+                .load(data.imgUrl)
                 .into(binding.teamImg)
         }
     }
