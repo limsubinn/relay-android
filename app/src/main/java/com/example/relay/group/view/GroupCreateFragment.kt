@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupCreateBinding
@@ -35,6 +36,8 @@ class GroupCreateFragment: Fragment() {
     private var mainActivity: MainActivity? = null
 
     private var goal: Float = 0F
+
+    private val bucketURL = "https://team23-bucket.s3.ap-northeast-2.amazonaws.com/public/club"
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -63,10 +66,14 @@ class GroupCreateFragment: Fragment() {
         // 모집중 상태
         binding.swRecruitStatus.isChecked = true
 
-        // 그룹 삭제하기 화면에 안 보이게
+        // 그룹 삭제하기 & 프로필 변경 버튼 화면에 안 보이게
         binding.line3.visibility = View.GONE
         binding.btnDelete.visibility = View.GONE
 
+        // 이미지
+        Glide.with(binding.imgGroup.context)
+            .load(bucketURL + "/yellow.png")
+            .into(binding.imgGroup)
 
         // 목표치 설정 (type)
         binding.btnGoalType.setOnClickListener {

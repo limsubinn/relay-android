@@ -15,10 +15,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
-import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupCreateBinding
-import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupEditRequest
 import com.example.relay.group.models.GroupInfoResponse
 import com.example.relay.group.service.*
@@ -30,7 +28,6 @@ import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_save
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.dialog_question.view.*
-import kotlinx.android.synthetic.main.fragment_group_main.view.*
 import java.text.DecimalFormat
 
 class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface {
@@ -42,6 +39,8 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
     private var goal: Float = 0F
     private var clubIdx = 0L
     private var curDate = ""
+
+    private val bucketURL = "https://team23-bucket.s3.ap-northeast-2.amazonaws.com/public/club"
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -78,6 +77,7 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
 
         binding.line3.visibility = View.VISIBLE
         binding.btnDelete.visibility = View.VISIBLE
+
         binding.tvGroupCreate.text = "그룹 수정"
         binding.btnNext.text = "완료"
 
@@ -275,7 +275,7 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
                 alertDialog?.dismiss()
                 val content = binding.etInfo.text.toString()
                 val name = binding.etName.text.toString()
-                val imgURL = binding.imgUser.context.toString()
+                val imgURL = bucketURL + "/yellow.png"
                 val maxNum = Integer.parseInt(binding.tvPeopleCnt.text.toString())
 
                 val goalText = binding.tvGoalValue.text.toString()
@@ -342,13 +342,14 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
         if (response.isSuccess) {
             val res = response.result
 
-            Glide.with(binding.imgUser.context)
-                .load(res.imgUrl)
-                .into(binding.imgUser)
             binding.etName.setText(res.name)
             binding.etInfo.setText(res.content)
             binding.swRecruitStatus.isChecked = res.recruitStatus == "recruiting"
             binding.tvPeopleCnt.text = res.maxNum.toString()
+
+            Glide.with(binding.imgGroup.context)
+                .load(res.imgUrl)
+                .into(binding.imgGroup)
 
             when (res.goalType) {
                 "TIME" -> {
@@ -379,12 +380,13 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
                 3 -> binding.tvRunnerLevel.text = "프로 러너"
                 else -> binding.tvRunnerLevel.text = "모든 러너"
             }
-
+        } else {
+            Toast.makeText(activity, "그룹 정보를 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
     override fun onGetClubDetailFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onPatchClubInSuccess() {
