@@ -6,7 +6,9 @@ import com.example.relay.running.models.*
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.service.TimetableRetrofit
 import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.create
 
 class RunningService(val runningInterface: RunningInterface) {
 
@@ -51,20 +53,41 @@ class RunningService(val runningInterface: RunningInterface) {
         }))
     }
 
-    fun tryGetMySchedules(profileIdx: Long){
-        retrofit2.getMyTimetableReq(profileIdx).enqueue((object : retrofit2.Callback<MyTimetableRes>{
-            override fun onResponse(call: Call<MyTimetableRes>, response: Response<MyTimetableRes>) {
-                if (response.isSuccessful)  // response.code == 200
-                    runningInterface.onGetMyTimetableSuccess(response.body() as MyTimetableRes)
-                else
-                    Log.d("Timetable", "tryGetMySchedules failure")
-            }
+//    fun tryGetMySchedules(profileIdx: Long){
+//        retrofit2.getMyTimetableReq(profileIdx).enqueue((object : retrofit2.Callback<MyTimetableRes>{
+//            override fun onResponse(call: Call<MyTimetableRes>, response: Response<MyTimetableRes>) {
+//                if (response.isSuccessful)  // response.code == 200
+//                    runningInterface.onGetMyTimetableSuccess(response.body() as MyTimetableRes)
+//                else
+//                    Log.d("Timetable", "tryGetMySchedules failure")
+//            }
+//
+//            override fun onFailure(call: Call<MyTimetableRes>, t: Throwable) {
+//                Log.d("Timetable", t.message!!)
+//                t.printStackTrace()
+//                runningInterface.onGetMyTimetableFailure(t.message ?: "통신 오류")
+//            }
+//        }))
+//    }
+}
 
-            override fun onFailure(call: Call<MyTimetableRes>, t: Throwable) {
-                Log.d("Timetable", t.message!!)
+class GetMainService(val mainInterface: MainInterface) {
+    private val retrofit = ApplicationClass.sRetrofit.create(RunningRetrofit::class.java)
+
+    fun tryGetMain(profileIdx: Long) {
+        retrofit.getRunMainRes(profileIdx).enqueue(object : Callback<MainRunningResponse>{
+            override fun onResponse(call: Call<MainRunningResponse>, response: Response<MainRunningResponse>) {
+                Log.d("RunMain", "success")
+                if (response.isSuccessful) { // response.code == 200
+                    mainInterface.onGetRunMainSuccess(response.body() as MainRunningResponse)
+                }else {
+                    Log.d("RunMain", "failure")
+                }            }
+
+            override fun onFailure(call: Call<MainRunningResponse>, t: Throwable) {
+                Log.d("RunMain", t.message!!)
                 t.printStackTrace()
-                runningInterface.onGetMyTimetableFailure(t.message ?: "통신 오류")
-            }
-        }))
+                mainInterface.onGetRunEndFailure(t.message ?: "통신 오류")            }
+        })
     }
 }
