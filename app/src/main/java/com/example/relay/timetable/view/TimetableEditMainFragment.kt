@@ -55,10 +55,6 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.btnBack.setOnClickListener{
-            (activity as MainActivity).timetableFragmentChange(0)
-        }
-
         binding.btnMyTimetable.setOnClickListener{
             if (binding.tvTitle.text != "개인 시간표")
                 TimetableGetService(this).tryGetMySchedules(userIdx)

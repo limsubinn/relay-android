@@ -13,16 +13,20 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.relay.ApplicationClass
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
+import com.example.relay.group.models.GroupAcceptedResponse
+import com.example.relay.group.models.GroupInfoResult
 import com.example.relay.group.service.GetClubListInterface
 import com.example.relay.group.service.GetClubListService
 import com.example.relay.group.view.adapter.GroupListRVAdapter
 import com.example.relay.group.models.GroupListResponse
-import com.example.relay.group.models.GroupListResult
+import com.example.relay.group.service.GetUserClubInterface
+import com.example.relay.group.service.GetUserClubService
 import com.example.relay.ui.MainActivity
 
-class GroupListFragment: Fragment(), GetClubListInterface {
+class GroupListFragment: Fragment(), GetClubListInterface, GetUserClubInterface {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
 
@@ -76,7 +80,14 @@ class GroupListFragment: Fragment(), GetClubListInterface {
 
         // 그룹 생성 버튼
         binding.btnCreate.setOnClickListener {
-            mainActivity?.groupFragmentChange(3)
+            // 유저가 속한 그룹의 이름 가져오기
+            val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
+            if (userIdx != 0L) {
+                GetUserClubService(this).tryGetUserClub(userIdx)
+            } else {
+                Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            // mainActivity?.groupFragmentChange(3)
         }
 
     }
@@ -87,83 +98,110 @@ class GroupListFragment: Fragment(), GetClubListInterface {
     }
 
     override fun onGetClubListSuccess(response: GroupListResponse) {
-        val res = response.result
+        if (response.isSuccess) {
+            val res = response.result
 
-        // 리사이클러뷰
-        val clubList: ArrayList<GroupListResult> = arrayListOf()
-        val listAdapter = GroupListRVAdapter(clubList)
+            // 리사이클러뷰
+            val clubList: ArrayList<GroupInfoResult> = arrayListOf()
+            val listAdapter = GroupListRVAdapter(clubList)
 
-        binding.rvGroupAll.adapter = listAdapter
-        binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)
+            binding.rvGroupAll.adapter = listAdapter
+            binding.rvGroupAll.layoutManager = LinearLayoutManager(activity)
 
-        // 리사이클러뷰 아이템 클릭 이벤트
-        listAdapter.setItemClickListener( object : GroupListRVAdapter.ItemClickListener {
-            override fun onItemClick(view: View, position: Int) {
-                val clubIdx = clubList[position].clubIdx
-                val recruitStatus = clubList[position].recruitStatus
+            // 리사이클러뷰 아이템 클릭 이벤트
+            listAdapter.setItemClickListener(object : GroupListRVAdapter.ItemClickListener {
+                override fun onItemClick(view: View, position: Int) {
+                    val clubIdx = clubList[position].clubIdx
 
-                // 리스트 -> 메인
-                parentFragmentManager.setFragmentResult("go_to_main",
-                    bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus))
-                mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
+                    // 리스트 -> 메인
+                    parentFragmentManager.setFragmentResult(
+                        "go_to_main",
+                        bundleOf("clubIdx" to clubIdx)
+                    )
+                    mainActivity?.groupFragmentChange(0) // 그룹 메인으로 이동
+                }
+            })
+
+            // 모집 상태
+            val recruitList = listOf("모집전체", "모집중", "모집완료")
+            val recruitAdapter = activity?.let {
+                ArrayAdapter<String>(
+                    it,
+                    R.layout.spinner_item,
+                    recruitList
+                )
             }
-        })
 
-        // 모집 상태
-        val recruitList = listOf("모집전체", "모집중", "모집완료")
-        val recruitAdapter = activity?.let {
-            ArrayAdapter<String>(
-                it,
-                R.layout.spinner_item,
-                recruitList
-            )
-        }
+            binding.spRecruitStatus.adapter = recruitAdapter
+            binding.spRecruitStatus.setSelection(0)
 
-        binding.spRecruitStatus.adapter = recruitAdapter
-        binding.spRecruitStatus.setSelection(0)
-        binding.spRecruitStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                clubList.clear()
-                if (p2 == 1) { // 모집중
-                    res.forEach {
-                        if (it.recruitStatus == "recruiting") {
-                            clubList.add(it)
+            binding.spRecruitStatus.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                        clubList.clear()
+                        when (p2) {
+                            1 -> { // 모집중
+                                clubList.addAll(res)
+                                res.forEach {
+                                    if (it.recruitStatus == "recruiting") {
+                                        clubList.add(it)
+                                    }
+                                }
+                            }
+                            2 -> { // 모집 완료
+                                res.forEach {
+                                    if (it.recruitStatus != "recruiting") {
+                                        clubList.add(it)
+                                    }
+                                }
+                            }
+                            else -> { // 전체
+                                clubList.addAll(res)
+                            }
+                        }
+
+                        listAdapter.notifyDataSetChanged()
+
+                        if (listAdapter.itemCount == 0) {
+                            Toast.makeText(activity, "검색된 결과가 없습니다.", Toast.LENGTH_SHORT).show()
                         }
                     }
-                } else if (p2 == 2) { // 모집 완료
-                    res.forEach {
-                        if (it.recruitStatus != "recruiting") {
-                            clubList.add(it)
-                        }
+
+                    override fun onNothingSelected(p0: AdapterView<*>?) {
+                        TODO("Not yet implemented")
                     }
-                } else { // 전체
-                    clubList.addAll(res)
                 }
-                listAdapter.notifyDataSetChanged()
 
-                if (listAdapter.itemCount == 0) {
-                    Toast.makeText(activity, "검색된 결과가 없습니다.", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
+//        // 러너 레벨
+//        val levelList = listOf("레벨전체", "초보러너", "중급러너", "프로러너")
+//        val levelAdapter = activity?.let {
+//            ArrayAdapter<String>(
+//                it,
+//                R.layout.spinner_item,
+//                levelList
+//            )
+//        }
+//        // 레벨 api 아직 x
+        } else {
+            Toast.makeText(activity, response.message, Toast.LENGTH_SHORT).show()
         }
-
-        // 러너 레벨
-        val levelList = listOf("레벨전체", "초보러너", "중급러너", "프로러너")
-        val levelAdapter = activity?.let {
-            ArrayAdapter<String>(
-                it,
-                R.layout.spinner_item,
-                levelList
-            )
-        }
-        // 레벨 api 아직 x
     }
 
     override fun onGetClubListFailure(message: String) {
-        // 에러 발생
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
+        if (response.code != 4900) {
+            // 가입한 그룹이 있으면 그룹 생성하기 거부
+            mainActivity?.groupFragmentChange(4)
+        } else {
+            // 그룹 생성 페이지로 이동
+            mainActivity?.groupFragmentChange(3)
+        }
+    }
+
+    override fun onGetUserClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }

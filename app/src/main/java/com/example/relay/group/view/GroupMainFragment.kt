@@ -2,12 +2,18 @@ package com.example.relay.group.view
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -15,9 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMainBinding
-import com.example.relay.group.models.GroupAcceptedResponse
-import com.example.relay.group.models.GroupDailyRecordResponse
-import com.example.relay.group.models.GroupInfoResponse
+import com.example.relay.group.models.*
 import com.example.relay.group.service.*
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
@@ -25,10 +29,14 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import kotlinx.android.synthetic.main.dialog_question.view.*
+import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
+import kotlinx.android.synthetic.main.dialog_timetable_alert.view.btn_check
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
-import kotlinx.android.synthetic.main.item_rv_group_list.view.*
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterface, GetClubDailyInterface {
     private var _binding: FragmentGroupMainBinding? = null
@@ -39,14 +47,16 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     private var currentYear = 0
     private var curDate = ""
 
-    val today = GregorianCalendar()
-    var year: Int = today.get(Calendar.YEAR)
-    var month: Int = today.get(Calendar.MONTH) + 1
-    var date: Int = today.get(Calendar.DATE)
+    private val today = GregorianCalendar()
+    private var year: Int = today.get(Calendar.YEAR)
+    private var month: Int = today.get(Calendar.MONTH) + 1
+    private var date: Int = today.get(Calendar.DATE)
+    private val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
+    private val sdf = SimpleDateFormat("HH:mm:ss")
 
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
-    private var recruitStatus = ""
+    private var userClubIdx = 0L
 
     private var mainActivity: MainActivity? = null
 
@@ -77,8 +87,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         // set current date to calendar and current month to currentMonth variable
         calendar.time = Date()
         currentMonth = calendar[Calendar.MONTH]
-
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd")
 
         val myCalendarViewManager = object : CalendarViewManager {
             override fun setCalendarViewResourceId(
@@ -116,7 +124,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         val mySelectionManager = object : CalendarSelectionManager {
             override fun canBeItemSelected(position: Int, date: Date): Boolean {
                 curDate = simpleDateFormat.format(date)
-                GetClubDailyService(this@GroupMainFragment).tryGetClubDaily(clubIdx, curDate)
+                GetClubDetailService(this@GroupMainFragment).tryGetClubDetail(clubIdx, curDate)
                 return true
             }
         }
@@ -131,11 +139,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
             calendarViewManager = myCalendarViewManager
             calendarChangesObserver = myCalendarChangesObserver
             calendarSelectionManager = mySelectionManager
-
-//            setDates(getFutureDatesOfCurrentMonth())
-//            initialPositionIndex = date - 3
-//            init()
-//            select(date - 1) // 오늘 날짜 선택
         }
 
 
@@ -164,46 +167,68 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         binding.btnJoinTeam.setOnClickListener{
             when (binding.btnJoinTeam.text){
                 "가입하기" -> {
-                    parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
-                        bundleOf("clubIdx" to clubIdx, "clubName" to binding.profileLayout.profile_team.text))
-                    mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
+                    if (userClubIdx != 0L) {
+                        val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                        val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+                        dialogView.tv_no.text = "다른 그룹에 참여중입니다."
+                        alertDialog?.setView(dialogView)
+                        alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        alertDialog?.show()
+
+                        dialogView.btn_check.setOnClickListener{
+                            alertDialog?.dismiss()
+                        }
+                    } else {
+                        parentFragmentManager.setFragmentResult(
+                            "go_to_edit_main_timetable",
+                            bundleOf(
+                                "clubIdx" to clubIdx,
+                                "clubName" to binding.profileLayout.profile_team.text
+                            )
+                        )
+                        mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
+                    }
                 }
                 "탈퇴하기" -> {
+                    val dialogView = layoutInflater.inflate(R.layout.dialog_question, null)
+                    val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
+                    dialogView.tv_question.text = "정말 그룹을 탈퇴하시겠습니까?"
+                    alertDialog?.setView(dialogView)
+                    alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    alertDialog?.show()
+
+                    dialogView.btn_q_cancel.setOnClickListener {
+                        alertDialog?.dismiss()
+                    }
+
+                    val dv = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                    val ad = activity?.let { AlertDialog.Builder(it).create() }
+
+                    dv.tv_no.text = "그룹에서 탈퇴하였습니다."
+                    ad?.setView(dv)
+                    ad?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                    dialogView.btn_q_ok.setOnClickListener {
+                        alertDialog?.dismiss()
+                        ad?.show()
+                    }
+
+                    dv.btn_check.setOnClickListener {
+                        ad?.dismiss()
+                    }
+                }
+                "수정하기" -> {
+                    parentFragmentManager.setFragmentResult(
+                        "go_to_edit",
+                        bundleOf(
+                            "clubIdx" to clubIdx, "curDate" to curDate))
+                    mainActivity?.groupFragmentChange(9) // 시간표 편집 페이지 이동
                 }
                 else -> throw IllegalArgumentException("잘못된 값")
             }
         }
-
-//        // 리스트, 멤버 -> 메인
-//        setFragmentResultListener("go_to_main") {requestKey, bundle ->
-//            clubIdx = bundle.getLong("clubIdx", 0L)
-//            recruitStatus = bundle.getString("recruitStatus", "")
-//
-//            Log.d("main", clubIdx.toString())
-//
-//            if (recruitStatus == "recruiting") {
-//                binding.btnJoinTeam.visibility = View.VISIBLE
-//            } else {
-//                binding.btnJoinTeam.visibility = View.GONE
-//            }
-
-//            binding.selCalendar.apply {
-//                setDates(getFutureDatesOfCurrentMonth())
-//                initialPositionIndex = date - 3
-//                init()
-//                select(date - 1) // 오늘 날짜 선택
-//            }
-//
-//            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
-//        }
-//
-//        // 사용자 그룹명 가져오기
-//        Handler(Looper.getMainLooper()).postDelayed({
-//            if (clubIdx == 0L) {
-//                GetUserClubService(this).tryGetUserClub(userIdx)
-//            }
-//        }, 1)
 
         GetUserClubService(this).tryGetUserClub(userIdx)
     }
@@ -240,22 +265,15 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 2008) { // 가입한 그룹 존재 o
+        if (response.code != 4900) { // 가입한 그룹 존재 o
             val res = response.result
 
-            binding.btnJoinTeam.visibility = View.VISIBLE
-            binding.btnJoinTeam.text = "탈퇴하기"
-
             clubIdx = res.clubIdx
+            userClubIdx = res.clubIdx
 
             // 기록 -> 그룹페이지
             setFragmentResultListener("record_to_group") { requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx")
-
-                if (clubIdx != res.clubIdx) {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "가입하기"
-                }
 
                 curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
                 year = Integer.parseInt(curDate.substring(0, 4))
@@ -263,25 +281,8 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 date = Integer.parseInt(curDate.substring(8, 10))
             }
 
-            // 목록, 메인 -> 그룹페이지
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
-                recruitStatus = bundle.getString("recruitStatus", "")
-
-                if (clubIdx != res.clubIdx) {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "가입하기"
-
-                    if (recruitStatus == "recruiting") {
-                        binding.btnJoinTeam.visibility = View.VISIBLE
-                    } else {
-                        binding.btnJoinTeam.visibility = View.GONE
-                    }
-                } else {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "탈퇴하기"
-                }
-
             }
 
             binding.selCalendar.apply {
@@ -290,9 +291,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 init()
                 select(date - 1) // 날짜 선택
             }
-
-            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
-
         } else { // 가입한 그룹 존재 x
             binding.profileImg.visibility = View.GONE
             binding.profileTeam.visibility = View.GONE
@@ -315,24 +313,10 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                     init()
                     select(date - 1) // 날짜 선택
                 }
-
-                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
             }
 
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
-                recruitStatus = bundle.getString("recruitStatus", "")
-
-                binding.profileImg.visibility = View.VISIBLE
-                binding.profileTeam.visibility = View.VISIBLE
-                binding.teamLayout.visibility = View.VISIBLE
-
-                if (recruitStatus == "recruiting") {
-                    binding.btnJoinTeam.visibility = View.VISIBLE
-                    binding.btnJoinTeam.text = "가입하기"
-                } else {
-                    binding.btnJoinTeam.visibility = View.GONE
-                }
 
                 binding.selCalendar.apply {
                     setDates(getFutureDatesOfSelectMonth(month, year))
@@ -340,42 +324,154 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                     init()
                     select(date - 1) // 날짜 선택
                 }
-
-                GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
             }
         }
     }
 
     override fun onGetUserClubFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, "유저의 그룹을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
     }
 
     override fun onGetClubDetailSuccess(response: GroupInfoResponse) {
         binding.profileImg.visibility = View.VISIBLE
         binding.profileTeam.visibility = View.VISIBLE
         binding.teamLayout.visibility = View.VISIBLE
+        binding.btnJoinTeam.visibility = View.VISIBLE
 
         val res = response.result
 
+        // 프로필 설정
         binding.profileTeam.text = res.name
         binding.tvIntro.text = res.content
+        Glide.with(binding.profileImg.context)
+            .load(res.imgUrl)
+            .into(binding.profileImg)
+        binding.tvTeamCnt.text = res.member.size.toString()
 
-        if (res.imgURL != null) {
-            Glide.with(binding.profileImg.context)
-                .load(res.imgURL)
-                .into(binding.profileImg)
+        // 가입하기 버튼
+        if (userClubIdx == clubIdx) {
+            if (userIdx == res.hostIdx) {
+                binding.btnJoinTeam.text = "수정하기"
+            } else {
+                binding.btnJoinTeam.text = "탈퇴하기"
+            }
+        } else {
+            if (res.recruitStatus == "recruiting") {
+                binding.btnJoinTeam.text = "가입하기"
+            } else {
+                binding.btnJoinTeam.visibility = View.GONE
+            }
         }
 
-        binding.tvTeamCnt.text = res.member.size.toString()
+        // 달리기 현황 설정
+        val memList: ArrayList<MemberRunningStatus> = arrayListOf()
+        res.member.forEach {
+            var start = 0
+            var end = 0
+            if (it.timeTableRes != null) {
+                val startTime = it.timeTableRes.start
+                val endTime = it.timeTableRes.end
+
+                var h = Integer.parseInt(startTime.substring(0, 2))
+                var m = Integer.parseInt(startTime.substring(3, 5))
+                var s = Integer.parseInt(startTime.substring(6, 8))
+                start = h * 60 * 60 + m * 60 + s
+
+                h = Integer.parseInt(endTime.substring(0, 2))
+                m = Integer.parseInt(endTime.substring(3, 5))
+                s = Integer.parseInt(endTime.substring(6, 8))
+                end = h * 60 * 60 + m * 60 + s
+            }
+
+            var status = false
+            if ((it.record != null) && (it.record.isNotEmpty())) {
+                status = true // 달리기 기록 존재
+            }
+
+            memList.add(MemberRunningStatus(
+                it.profile.userIdx,
+                it.profile.nickname,
+                it.profile.imgUrl,
+                start,
+                end,
+                status
+            ))
+        }
+        val comparator: Comparator<MemberRunningStatus> = compareBy { it.startTime }
+        val memberList = memList.sortedWith(comparator) // 시작 시간 기준으로 정렬
+
+        val matrix = ColorMatrix()
+        matrix.setSaturation(0f)
+        val filter = ColorMatrixColorFilter(matrix) // 흑백 필터
+
+        val now = System.currentTimeMillis()
+        val nowDate = Date(now)
+        val getDate = simpleDateFormat.format(nowDate)
+
+        var h = 0
+        var m = 0
+        var s = 0
+        var cur = 0
+
+        if (getDate.equals(curDate)) {
+            val getTime = sdf.format(nowDate)
+            Log.d("getTime", getTime)
+            h = Integer.parseInt(getTime.substring(0, 2))
+            m = Integer.parseInt(getTime.substring(3, 5))
+            s = Integer.parseInt(getTime.substring(6, 8))
+            cur = h * 60 * 60 + m * 60 + s
+        }
+
+        for(i in 1 until 9) {
+            val imgId = resources.getIdentifier("member_img_" + i, "id", activity?.packageName)
+            val tvId = resources.getIdentifier("member_name_" + i, "id", activity?.packageName)
+            val runningId = resources.getIdentifier("member_running_" + i, "id", activity?.packageName)
+
+            view?.findViewById<ImageView>(imgId)?.colorFilter = filter
+            view?.findViewById<ImageView>(imgId)?.visibility = View.INVISIBLE
+            view?.findViewById<TextView>(tvId)?.visibility = View.INVISIBLE
+            view?.findViewById<ImageView>(runningId)?.visibility = View.INVISIBLE
+        }
+
+        var i = 0
+        memberList.forEach {
+            i += 1
+
+            val imgId = resources.getIdentifier("member_img_" + i, "id", activity?.packageName)
+            val tvId = resources.getIdentifier("member_name_" + i, "id", activity?.packageName)
+            val runningId = resources.getIdentifier("member_running_" + i, "id", activity?.packageName)
+
+            view?.findViewById<ImageView>(imgId)?.visibility = View.VISIBLE
+            view?.findViewById<ImageView>(imgId)?.let { it1 ->
+                Glide.with(this)
+                    .load(it.imgUrl)
+                    .into(it1)
+            }
+
+            view?.findViewById<TextView>(tvId)?.visibility = View.VISIBLE
+            view?.findViewById<TextView>(tvId)?.text = it.nickname
+
+            if (curDate == getDate) {
+                if ((it.startTime <= cur) && (it.endTime > cur)) { // 현재 달리는 중
+                    view?.findViewById<ImageView>(runningId)?.visibility = View.VISIBLE
+                }
+            }
+
+            if (it.runningStatus) {
+                view?.findViewById<ImageView>(imgId)?.colorFilter = null
+            }
+        }
 
         if (userIdx == res.hostIdx) {
             binding.btnJoinTeam.text = "수정하기"
         }
 
+        GetClubDailyService(this).tryGetClubDaily(clubIdx, curDate)
+
         // 모두 보기 버튼
         binding.btnTeamAll.setOnClickListener {
             parentFragmentManager.setFragmentResult("go_to_member_list",
-                bundleOf("clubIdx" to clubIdx, "recruitStatus" to recruitStatus, "hostIdx" to res.hostIdx))
+                bundleOf("clubIdx" to clubIdx, "hostIdx" to res.hostIdx))
             mainActivity?.groupFragmentChange(2) // 팀원 보기로 이동
         }
     }
@@ -387,6 +483,9 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     override fun onGetClubDailySuccess(response: GroupDailyRecordResponse) {
         if (response.isSuccess) {
             val res = response.result
+
+            binding.tvNotRecord.visibility = View.GONE
+            binding.recordLayout.visibility = View.VISIBLE
 
             var sec = res.totalTime
             var min = sec / 60
@@ -419,14 +518,19 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.goalValue.visibility = View.VISIBLE
                 binding.goalValue.text = res.totalDist.toString()  + "km"
                 binding.goalTarget.setTextColor(Color.RED)
-                binding.goalTarget.text = res.goalValue.toString()
+                binding.goalTarget.text = res.goalValue.toString() + "km"
                 binding.goalType.text = "거리"
 
                 binding.otherType.text = "시간"
                 binding.otherValue.text = "${hh} : ${mm} : ${ss}"
             }
+            val pace = DecimalFormat("#.##").format(res.avgPace).toString()
+            binding.runningPace.text = pace + "km/h"
+        } else {
+            binding.tvNotRecord.visibility = View.VISIBLE
+            binding.recordLayout.visibility = View.GONE
 
-            binding.runningPace.text = res.avgPace.toString() + "km/h"
+            binding.tvNotRecord.text = response.message
         }
     }
 

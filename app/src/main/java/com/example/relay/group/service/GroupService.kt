@@ -23,8 +23,8 @@ class GetUserClubService(val mainInterface: GetUserClubInterface) {
                 if (response.code() == 200) {
                     mainInterface.onGetUserClubSuccess(response.body() as GroupAcceptedResponse)
                 } else {
+                    mainInterface.onGetUserClubFailure(response.errorBody().toString())
                     Log.d("GroupAcceptedResponse", response.message())
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
 
@@ -49,8 +49,8 @@ class GetClubListService(val listInterface: GetClubListInterface) {
                 if (response.code() == 200) {
                     listInterface.onGetClubListSuccess(response.body() as GroupListResponse)
                 } else {
+                    listInterface.onGetClubListFailure(response.errorBody().toString())
                     Log.d("GroupListResponse", response.message())
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
 
@@ -75,8 +75,8 @@ class GetClubDetailService(val detailInterface: GetClubDetailInterface) {
                 if (response.code() == 200) {
                     detailInterface.onGetClubDetailSuccess(response.body() as GroupInfoResponse)
                 } else {
+                    detailInterface.onGetClubDetailFailure(response.errorBody().toString())
                     Log.d("GroupInfoResponse", "4xx error")
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
 
@@ -101,8 +101,8 @@ class GetMemberListService(val memberInterface: GetMemberListInterface) {
                 if (response.code() == 200) {
                     memberInterface.onGetMemberListSuccess(response.body() as MemberResponse)
                 } else {
+                    memberInterface.onGetMemberListFailure(response.errorBody().toString())
                     Log.d("MemberResponse", "4xx error")
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
 
@@ -127,8 +127,8 @@ class GetClubDailyService(val dailyInterface: GetClubDailyInterface) {
                 if (response.code() == 200) {
                     dailyInterface.onGetClubDailySuccess(response.body() as GroupDailyRecordResponse)
                 } else {
+                    dailyInterface.onGetClubDailyFailure(response.errorBody().toString())
                     Log.d("GroupDailyResponse", "4xx error")
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
 
@@ -156,8 +156,8 @@ class GetClubMonthService(val monthInterface: GetClubMonthInterface) {
                 if (response.code() == 200) {
                     monthInterface.onGetClubMonthSuccess(response.body() as MonthRecordResponse)
                 } else {
+                    monthInterface.onGetClubMonthFailure(response.errorBody().toString())
                     Log.d("GroupMonthResponse", "4xx error")
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
                 }
             }
 
@@ -194,8 +194,7 @@ class PostNewClubService(val newClubInterface: PostNewClubInterface){
     private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
 
     fun tryPostNewClub(clubInfo: GroupNewRequest){
-        val accessToken = prefs.getString("accessToken", "tokenError")
-        retrofit.postNewClubReq(accessToken!!, clubInfo).enqueue(object : Callback<BaseResponse>{
+        retrofit.postNewClubReq(clubInfo).enqueue(object : Callback<BaseResponse>{
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if(response.isSuccessful){
                     newClubInterface.onPostNewClubSuccess()
@@ -206,6 +205,94 @@ class PostNewClubService(val newClubInterface: PostNewClubInterface){
                 Log.d("postNewClubReq", "failure")
                 t.printStackTrace()
                 newClubInterface.onPostNewClubFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PatchClubService(val patchClubInterface: PatchClubInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchClub(clubIdx: Long, clubInfo: GroupEditRequest){
+        retrofit.patchClub(clubIdx, clubInfo).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchClubInterface.onPatchClubInSuccess()
+                } else {
+                    patchClubInterface.onPatchClubInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchClub", "failure")
+                t.printStackTrace()
+                patchClubInterface.onPatchClubInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PatchClubDeleteService(val deleteClubInterface: PatchClubDeleteInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchClubDelete(clubIdx: Long){
+        retrofit.patchClubDelete(clubIdx).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    deleteClubInterface.onPatchClubDeleteInSuccess()
+                } else {
+                    deleteClubInterface.onPatchClubDeleteInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchClubDelete", "failure")
+                t.printStackTrace()
+                deleteClubInterface.onPatchClubDeleteInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PatchHostService(val patchHostInterface: PatchHostInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchHost(clubIdx: Long, nextIdx: Long){
+        retrofit.patchHost(clubIdx, HostChangeRequest(nextIdx)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchHostInterface.onPatchHostInSuccess()
+                } else {
+                    patchHostInterface.onPatchHostInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchHost", "failure")
+                t.printStackTrace()
+                patchHostInterface.onPatchHostInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PatchMemberService(val patchMemberInterface: PatchMemberInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchMember(clubIdx: Long, userIdx: Long){
+        retrofit.patchMember(clubIdx, MemberDeleteRequest(userIdx)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchMemberInterface.onPatchMemberInSuccess()
+                } else {
+                    patchMemberInterface.onPatchMemberInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchMember", "failure")
+                t.printStackTrace()
+                patchMemberInterface.onPatchMemberInFailure(t.message ?: "통신 오류")
             }
         })
     }
