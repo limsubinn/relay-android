@@ -231,3 +231,47 @@ class PatchClubService(val patchClubInterface: PatchClubInterface){
         })
     }
 }
+
+class PatchHostService(val patchHostInterface: PatchHostInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchHost(clubIdx: Long, nextIdx: Long){
+        retrofit.patchHost(clubIdx, HostChangeRequest(nextIdx)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchHostInterface.onPatchHostInSuccess()
+                } else {
+                    patchHostInterface.onPatchHostInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchHost", "failure")
+                t.printStackTrace()
+                patchHostInterface.onPatchHostInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PatchMemberService(val patchMemberInterface: PatchMemberInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchMember(clubIdx: Long, userIdx: Long){
+        retrofit.patchMember(clubIdx, MemberDeleteRequest(userIdx)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchMemberInterface.onPatchMemberInSuccess()
+                } else {
+                    patchMemberInterface.onPatchMemberInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchMember", "failure")
+                t.printStackTrace()
+                patchMemberInterface.onPatchMemberInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}

@@ -68,4 +68,18 @@ interface GroupRetrofit {
         @Path("clubIdx") clubIdx: Long,
         @Body clubInfoReq: GroupEditRequest
     ) : Call<BaseResponse>
+
+    // 그룹 방장 위임
+    @PATCH("/clubs/{clubIdx}/host-change")
+    fun patchHost(
+        @Path("clubIdx") clubIdx: Long,
+        @Body hostReq: HostChangeRequest
+    ) : Call<BaseResponse>
+
+    // 그룹 멤버 강퇴
+    @PATCH("/clubs/member-status/{clubIdx}/members/deletion")
+    fun patchMember(
+        @Path("clubIdx") clubIdx: Long,
+        @Body patchDeleteMemberReq: MemberDeleteRequest
+    ) : Call<BaseResponse>
 }

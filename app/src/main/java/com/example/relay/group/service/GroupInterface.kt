@@ -47,3 +47,13 @@ interface PatchClubInterface {
     fun onPatchClubInSuccess()
     fun onPatchClubInFailure(message: String)
 }
+
+interface PatchHostInterface {
+    fun onPatchHostInSuccess()
+    fun onPatchHostInFailure(message: String)
+}
+
+interface PatchMemberInterface {
+    fun onPatchMemberInSuccess()
+    fun onPatchMemberInFailure(message: String)
+}

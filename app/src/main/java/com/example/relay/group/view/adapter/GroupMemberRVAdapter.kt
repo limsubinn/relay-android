@@ -42,7 +42,11 @@ class GroupMemberRVAdapter(private val dataList: ArrayList<Member>, private val 
             }
 
             if (userIdx == hostIdx) {
-                binding.btnSetting.visibility = View.VISIBLE
+                if (userIdx == data.profile.userIdx) {
+                    binding.btnSetting.visibility = View.INVISIBLE
+                } else {
+                    binding.btnSetting.visibility = View.VISIBLE
+                }
             } else {
                 binding.btnSetting.visibility = View.INVISIBLE
             }

@@ -17,17 +17,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMemberBinding
-import com.example.relay.group.service.GetMemberListInterface
-import com.example.relay.group.service.GetMemberListService
 import com.example.relay.group.view.adapter.GroupMemberRVAdapter
 import com.example.relay.group.models.Member
 import com.example.relay.group.models.MemberResponse
+import com.example.relay.group.service.*
 import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_member_setting.view.*
 import kotlinx.android.synthetic.main.dialog_question.view.*
 import java.util.*
 
-class MemberListFragment: Fragment(), GetMemberListInterface {
+class MemberListFragment: Fragment(), GetMemberListInterface, PatchHostInterface, PatchMemberInterface {
     private var _binding: FragmentGroupMemberBinding? = null
     private val binding get() = _binding!!
 
@@ -36,6 +35,11 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var hostIdx = 0L
     private var clubIdx = 0L
+
+    private var name = ""
+    private var idx = 0L
+
+    private var curDate = ""
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -69,7 +73,7 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
         var strY = year.toString()
         var strM = (month+1).toString().padStart(2, '0')
         var strD = date.toString().padStart(2, '0')
-        var curDate = "${strY}-${strM}-${strD}"
+        curDate = "${strY}-${strM}-${strD}"
 
         // 메인, 멤버 -> 멤버리스트
         setFragmentResultListener("go_to_member_list") { requestKey, bundle ->
@@ -100,6 +104,8 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
         val memberList: ArrayList<Member> = arrayListOf()
         val memberAdapter = GroupMemberRVAdapter(memberList, hostIdx, userIdx)
 
+        memberList.clear()
+
         binding.rvGroupMember.adapter = memberAdapter
         binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
 
@@ -123,7 +129,8 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
             }
 
             override fun onSettingClick(view: View, position: Int) {
-                val name = memberList[position].profile.nickname
+                name = memberList[position].profile.nickname
+                idx = memberList[position].profile.userIdx
 
                 val dialogView = layoutInflater.inflate(R.layout.dialog_member_setting, null)
                 val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
@@ -162,7 +169,7 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
 
                 dv1.btn_q_ok.setOnClickListener {
                     dialog1?.dismiss()
-                    Toast.makeText(activity, "${name}님이 방장이 되었습니다!", Toast.LENGTH_SHORT).show()
+                    PatchHostService(this@MemberListFragment).tryPatchHost(clubIdx, idx)
                 }
 
                 // 멤버 강퇴
@@ -177,13 +184,31 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
 
                 dv2.btn_q_ok.setOnClickListener {
                     dialog2?.dismiss()
-                    Toast.makeText(activity, "${name}님이 강퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+                    PatchMemberService(this@MemberListFragment).tryPatchMember(clubIdx, idx)
                 }
             }
         })
     }
 
     override fun onGetMemberListFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, "멤버 목록을 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchHostInSuccess() {
+        Toast.makeText(activity, "${name}님이 방장이 되었습니다!", Toast.LENGTH_SHORT).show()
+        GetMemberListService(this).tryGetMemberList(clubIdx, curDate)
+    }
+
+    override fun onPatchHostInFailure(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchMemberInSuccess() {
+        Toast.makeText(activity, "${name}님이 강퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+        GetMemberListService(this).tryGetMemberList(clubIdx, curDate)
+    }
+
+    override fun onPatchMemberInFailure(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }
