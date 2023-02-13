@@ -1,7 +1,6 @@
 package com.example.relay.running.models
 
 import com.example.relay.BaseResponse
-import com.example.relay.running.models.RunEndResult
 import com.google.gson.annotations.SerializedName
 
 data class RunEndResponse(
