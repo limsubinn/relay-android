@@ -17,7 +17,6 @@ interface GroupRetrofit {
     // 그룹 생성
     @POST("/clubs")
     fun postNewClubReq(
-        @Header("Bearer") accessToken: String,
         @Body clubInfo: GroupNewRequest
     ) : Call<BaseResponse>
 
@@ -61,5 +60,32 @@ interface GroupRetrofit {
     fun postClubJoinIn(
         @Path("clubIdx") clubIdx: Long,
         @Body userInfo: GroupJoinInRequest
+    ) : Call<BaseResponse>
+
+    // 그룹 수정
+    @PATCH("/clubs/{clubIdx}")
+    fun patchClub(
+        @Path("clubIdx") clubIdx: Long,
+        @Body clubInfoReq: GroupEditRequest
+    ) : Call<BaseResponse>
+
+    // 그룹 삭제
+    @PATCH("/clubs/{clubIdx}/deletion")
+    fun patchClubDelete(
+        @Path("clubIdx") clubIdx: Long
+    ) : Call<BaseResponse>
+
+    // 그룹 방장 위임
+    @PATCH("/clubs/{clubIdx}/host-change")
+    fun patchHost(
+        @Path("clubIdx") clubIdx: Long,
+        @Body hostReq: HostChangeRequest
+    ) : Call<BaseResponse>
+
+    // 그룹 멤버 강퇴
+    @PATCH("/clubs/member-status/{clubIdx}/members/deletion")
+    fun patchMember(
+        @Path("clubIdx") clubIdx: Long,
+        @Body patchDeleteMemberReq: MemberDeleteRequest
     ) : Call<BaseResponse>
 }

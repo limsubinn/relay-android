@@ -9,7 +9,9 @@ data class GroupInfoResult (
     @SerializedName("goal") val goal: Float,
     @SerializedName("goalType") val goalType: String,
     @SerializedName("hostIdx") val hostIdx: Long,
-    @SerializedName("imgURL") val imgURL: String,
+    @SerializedName("imgURL") val imgUrl: String,
     @SerializedName("level") val level: Int,
-    @SerializedName("name") val name: String
+    @SerializedName("maxNum") val maxNum: Int,
+    @SerializedName("name") val name: String,
+    @SerializedName("recruitStatus") val recruitStatus: String
 )
