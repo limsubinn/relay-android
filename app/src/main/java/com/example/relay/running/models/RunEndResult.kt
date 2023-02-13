@@ -1,4 +1,4 @@
-package com.example.relay.running.service
+package com.example.relay.running.models
 
 import com.google.gson.annotations.SerializedName
 

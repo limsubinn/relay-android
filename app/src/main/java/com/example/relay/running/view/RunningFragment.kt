@@ -9,8 +9,6 @@ import android.graphics.drawable.ColorDrawable
 import android.icu.util.Calendar
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,6 +18,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.relay.ApplicationClass
 import com.example.relay.Constants
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
@@ -31,12 +30,10 @@ import com.example.relay.databinding.FragmentRunningBinding
 import com.example.relay.db.Run
 import com.example.relay.running.OnBottomSheetCallbacks
 import com.example.relay.running.TrackingUtility
-import com.example.relay.running.models.PathPoints
-import com.example.relay.running.models.RunStrResponse
+import com.example.relay.running.models.*
 import com.example.relay.running.service.*
 import com.example.relay.running.service.Polyline
 import com.example.relay.timetable.models.MemSchedule
-import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.ui.viewmodels.RunningViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -45,8 +42,6 @@ import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.gun0912.tedpermission.provider.TedPermissionProvider
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
 import java.lang.Math.round
@@ -56,7 +51,7 @@ import java.util.*
 
 
 @AndroidEntryPoint
-class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningInterface {
+class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningInterface, MainInterface {
 
     private val viewModel: RunningViewModel by viewModels()
     private lateinit var binding: FragmentRunningBinding
@@ -73,14 +68,16 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
     var nFormat: SimpleDateFormat = SimpleDateFormat("HH:mm:ss")
 
     private var curTimeInMillis = 0L
-
     private var curDistance = 0L
 
     private var listener: OnBottomSheetCallbacks? = null
 
     var runningRecordIdx: Long = 0
-
+    private val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
     private var scheduleList = mutableListOf<MemSchedule>()
+    private var userProfile = mutableListOf<MainRunningResult>()
+    private var timeTable = mutableListOf<TimeTable>()
+
 
     var currentMarker: Marker? = null
     var markerView: View? = null
@@ -121,12 +118,13 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             addAllPolylines()
         }
 
-        RunningService(this).tryGetMySchedules(66)
+//        RunningService(this).tryGetMySchedules(userIdx)
+        GetMainService(this).tryGetMain(userIdx)
 
 //        setCustomMarkerView()
 
         binding.btnStart1.setOnClickListener {
-            RunningService(this).tryPostRunStart(66) //달리기 시작 API
+            RunningService(this).tryPostRunStart(userIdx) //달리기 시작 API
             startActivity(Intent(context, RunSplashActivity::class.java))
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE
@@ -196,14 +194,16 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
-            val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
-            val formattedAvgDistance =
-                TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
-            val formattedNowDistance =
-                TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
-            binding.tvDistance.text = formattedDistance.toString()
-            binding.tvPace2.text = formattedAvgDistance
-            binding.tvPace1.text = formattedNowDistance
+            if(pathPoints.size != 0){
+                val formattedDistance = TrackingUtility.calculatePolylineLength(pathPoints.last())
+                val formattedAvgDistance =
+                    TrackingUtility.calculateAvgPace(pathPoints.last(), curTimeInMillis, true)
+                val formattedNowDistance =
+                    TrackingUtility.calculateNowPace(pathPoints.last(), curTimeInMillis, true)
+                binding.tvDistance.text = formattedDistance.toString()
+                binding.tvPace2.text = formattedAvgDistance
+                binding.tvPace1.text = formattedNowDistance
+            }
         })
 
         TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
@@ -296,7 +296,8 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             val caloriesBurned = ((distanceInMeters / 1000f) * 60).toInt()
             val run = Run(bmp, dateTimestamp, avgSpeed, distanceInMeters, curTimeInMillis, caloriesBurned)
             viewModel.insertRun(run)
-            RunningService(this).tryPostRunEnd((distanceInMeters / 1000f).toInt(),locationList,avgSpeed.toLong(),runningRecordIdx,formattedTime)
+            Log.d("tryPostRunEnd", "${distanceInMeters / 1000f} ${locationList} ${avgSpeed} ${runningRecordIdx} ${formattedTime}")
+            RunningService(this).tryPostRunEnd((distanceInMeters / 1000f),locationList,avgSpeed,runningRecordIdx,formattedTime)
             locationList.clear()
 
             // 종료 시 오늘의 달리기 기록 표출
@@ -615,36 +616,36 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         Log.d("RunEnd", "onPostRunEndFailure")
     }
 
-    override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
-        Log.d("timetable", "onGetMyTimetableSuccess")
+    override fun onGetRunMainSuccess(response: MainRunningResponse) {
+        Log.d("RunMain", "onGetMainSuccess")
 
         val res = response.result
-        val today: Int? = doDayOfWeek()
+
         mNow = System.currentTimeMillis()
         mDate = Date(mNow)
         val time = nFormat.format(mDate)
-        scheduleList = res.clone() as MutableList<MemSchedule>
-        Log.d("scheduleList", "${milliseconds(time)}")
-        Log.d("scheduleList", "${scheduleList}")
 
-
-
-        for(i in 0 until scheduleList.size){
-            if (today == scheduleList[i].day){
-                Log.d("scheduleList", "${milliseconds(scheduleList[i].start)}")
-                if (milliseconds(time) >= milliseconds(scheduleList[i].start) && milliseconds(scheduleList[i].end) >= milliseconds(time)){
-                    binding.btnStart1.visibility = View.VISIBLE
-                    break
-                }
-            } else binding.btnStart1.visibility = View.GONE
-
+        if (res != null){
+            userProfile = res.clone() as MutableList<MainRunningResult>
         }
-        Log.d("scheduleList", "${today}")
-        Log.d("scheduleList", "${time}")
-        Log.d("scheduleList", "${scheduleList}")
+
+        Log.d("userProfile", "${userProfile}")
+
+        if(userProfile.size != 0 ){
+            for (i in 0 until userProfile.size){
+                if (userIdx == userProfile[i].userProfile.userProfileIdx){
+                    if(userProfile[i].timeTableRes != null){
+                        if (milliseconds(time) >= milliseconds(userProfile[i].timeTableRes.start) && milliseconds(userProfile[i].timeTableRes.end) >= milliseconds(time)){
+                            binding.btnStart1.visibility = View.VISIBLE
+                            break
+                        } else binding.btnStart1.visibility = View.GONE
+                    } else binding.btnStart1.visibility = View.GONE
+                }
+            }
+        }
     }
 
-    override fun onGetMyTimetableFailure(message: String) {
-        Log.d("timetable", "onGetMyTimetableFailure")
+    override fun onGetRunEndFailure(message: String) {
+        Log.d("RunMain", "onGetMainFailure")
     }
 }
