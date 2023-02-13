@@ -29,7 +29,9 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import kotlinx.android.synthetic.main.dialog_question.view.*
 import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
+import kotlinx.android.synthetic.main.dialog_timetable_alert.view.btn_check
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -190,7 +192,33 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                     }
                 }
                 "탈퇴하기" -> {
+                    val dialogView = layoutInflater.inflate(R.layout.dialog_question, null)
+                    val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
 
+                    dialogView.tv_question.text = "정말 그룹을 탈퇴하시겠습니까?"
+                    alertDialog?.setView(dialogView)
+                    alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    alertDialog?.show()
+
+                    dialogView.btn_q_cancel.setOnClickListener {
+                        alertDialog?.dismiss()
+                    }
+
+                    val dv = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                    val ad = activity?.let { AlertDialog.Builder(it).create() }
+
+                    dv.tv_no.text = "그룹에서 탈퇴하였습니다."
+                    ad?.setView(dv)
+                    ad?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                    dialogView.btn_q_ok.setOnClickListener {
+                        alertDialog?.dismiss()
+                        ad?.show()
+                    }
+
+                    dv.btn_check.setOnClickListener {
+                        ad?.dismiss()
+                    }
                 }
                 else -> throw IllegalArgumentException("잘못된 값")
             }
