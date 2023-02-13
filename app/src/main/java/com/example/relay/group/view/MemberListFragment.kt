@@ -1,16 +1,21 @@
 package com.example.relay.group.view
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.relay.ApplicationClass.Companion.prefs
+import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupMemberBinding
 import com.example.relay.group.service.GetMemberListInterface
 import com.example.relay.group.service.GetMemberListService
@@ -18,6 +23,8 @@ import com.example.relay.group.view.adapter.GroupMemberRVAdapter
 import com.example.relay.group.models.Member
 import com.example.relay.group.models.MemberResponse
 import com.example.relay.ui.MainActivity
+import kotlinx.android.synthetic.main.dialog_member_setting.view.*
+import kotlinx.android.synthetic.main.dialog_question.view.*
 import java.util.*
 
 class MemberListFragment: Fragment(), GetMemberListInterface {
@@ -26,9 +33,9 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
 
     private var mainActivity: MainActivity? = null
 
+    private var userIdx = prefs.getLong("userIdx", 0L)
     private var hostIdx = 0L
     private var clubIdx = 0L
-    private var recruitStatus = ""
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -91,7 +98,7 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
 
         // 리사이클러뷰
         val memberList: ArrayList<Member> = arrayListOf()
-        val memberAdapter = GroupMemberRVAdapter(memberList, hostIdx)
+        val memberAdapter = GroupMemberRVAdapter(memberList, hostIdx, userIdx)
 
         binding.rvGroupMember.adapter = memberAdapter
         binding.rvGroupMember.layoutManager = LinearLayoutManager(activity)
@@ -113,6 +120,65 @@ class MemberListFragment: Fragment(), GetMemberListInterface {
                 parentFragmentManager.setFragmentResult("go_to_member_page",
                     bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "userIdx" to userIdx))
                 mainActivity?.groupFragmentChange(5) // 멤버 페이지로 이동
+            }
+
+            override fun onSettingClick(view: View, position: Int) {
+                val name = memberList[position].profile.nickname
+
+                val dialogView = layoutInflater.inflate(R.layout.dialog_member_setting, null)
+                val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+                alertDialog?.setView(dialogView)
+                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                alertDialog?.show()
+
+                dialogView.btn_m_cancel.setOnClickListener {
+                    alertDialog?.dismiss()
+                }
+
+                val dv1 = layoutInflater.inflate(R.layout.dialog_question, null)
+                val dialog1 = activity?.let { AlertDialog.Builder(it).create() }
+
+                dv1.tv_question.text = "${name}님에게 방장을 위임하시겠어요?"
+                dialog1?.setView(dv1)
+                dialog1?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                val dv2 = layoutInflater.inflate(R.layout.dialog_question, null)
+                val dialog2 = activity?.let { AlertDialog.Builder(it).create() }
+
+                dv2.tv_question.text = "${name}님을 강퇴하시겠어요?"
+                dialog2?.setView(dv2)
+                dialog2?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+
+                // 방장 위임
+                dialogView.tv_change_host.setOnClickListener {
+                    alertDialog?.dismiss()
+                    dialog1?.show()
+                }
+
+                dv1.btn_q_cancel.setOnClickListener {
+                    dialog1?.dismiss()
+                }
+
+                dv1.btn_q_ok.setOnClickListener {
+                    dialog1?.dismiss()
+                    Toast.makeText(activity, "${name}님이 방장이 되었습니다!", Toast.LENGTH_SHORT).show()
+                }
+
+                // 멤버 강퇴
+                dialogView.tv_rm_member.setOnClickListener {
+                    alertDialog?.dismiss()
+                    dialog2?.show()
+                }
+
+                dv2.btn_q_cancel.setOnClickListener {
+                    dialog2?.dismiss()
+                }
+
+                dv2.btn_q_ok.setOnClickListener {
+                    dialog2?.dismiss()
+                    Toast.makeText(activity, "${name}님이 강퇴 되었습니다.", Toast.LENGTH_SHORT).show()
+                }
             }
         })
     }
