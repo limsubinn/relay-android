@@ -69,6 +69,12 @@ interface GroupRetrofit {
         @Body clubInfoReq: GroupEditRequest
     ) : Call<BaseResponse>
 
+    // 그룹 삭제
+    @PATCH("/clubs/{clubIdx}/deletion")
+    fun patchClubDelete(
+        @Path("clubIdx") clubIdx: Long
+    ) : Call<BaseResponse>
+
     // 그룹 방장 위임
     @PATCH("/clubs/{clubIdx}/host-change")
     fun patchHost(

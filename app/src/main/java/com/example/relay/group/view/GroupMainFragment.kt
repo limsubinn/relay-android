@@ -57,7 +57,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     private var userIdx = prefs.getLong("userIdx", 0L)
     private var clubIdx = 0L
     private var userClubIdx = 0L
-    private var recruitStatus = ""
 
     private var mainActivity: MainActivity? = null
 

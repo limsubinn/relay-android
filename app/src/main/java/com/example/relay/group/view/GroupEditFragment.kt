@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.dialog_question.view.*
 import java.text.DecimalFormat
 
-class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface {
+class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface, PatchClubDeleteInterface {
     private var _binding: FragmentGroupCreateBinding? = null
     private val binding get() = _binding!!
 
@@ -331,6 +331,26 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
 
             GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
         }
+
+        // 그룹 삭제하기
+        binding.btnDelete.setOnClickListener {
+            val dialogView = layoutInflater.inflate(R.layout.dialog_question, null)
+            val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+            dialogView.tv_question.text = "그룹을 삭제하시겠습니까?"
+            alertDialog?.setView(dialogView)
+            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog?.show()
+
+            dialogView.btn_q_cancel.setOnClickListener {
+                alertDialog?.dismiss()
+            }
+
+            dialogView.btn_q_ok.setOnClickListener {
+                alertDialog?.dismiss()
+                PatchClubDeleteService(this).tryPatchClubDelete(clubIdx)
+            }
+        }
     }
 
     override fun onDestroyView() {
@@ -394,6 +414,15 @@ class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface 
     }
 
     override fun onPatchClubInFailure(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchClubDeleteInSuccess() {
+        Toast.makeText(activity, "그룹 삭제가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+        mainActivity?.groupFragmentChange(1) // 그룹 목록
+    }
+
+    override fun onPatchClubDeleteInFailure(message: String) {
         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }

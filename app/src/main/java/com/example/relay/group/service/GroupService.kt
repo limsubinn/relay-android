@@ -232,6 +232,28 @@ class PatchClubService(val patchClubInterface: PatchClubInterface){
     }
 }
 
+class PatchClubDeleteService(val deleteClubInterface: PatchClubDeleteInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchClubDelete(clubIdx: Long){
+        retrofit.patchClubDelete(clubIdx).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    deleteClubInterface.onPatchClubDeleteInSuccess()
+                } else {
+                    deleteClubInterface.onPatchClubDeleteInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchClubDelete", "failure")
+                t.printStackTrace()
+                deleteClubInterface.onPatchClubDeleteInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
 class PatchHostService(val patchHostInterface: PatchHostInterface){
     private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
 
