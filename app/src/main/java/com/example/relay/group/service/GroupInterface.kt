@@ -42,3 +42,8 @@ interface PostClubJoinInInterface {
     fun onPostClubJoinInSuccess()
     fun onPostClubJoinInFailure(message: String)
 }
+
+interface PatchClubInterface {
+    fun onPatchClubInSuccess()
+    fun onPatchClubInFailure(message: String)
+}

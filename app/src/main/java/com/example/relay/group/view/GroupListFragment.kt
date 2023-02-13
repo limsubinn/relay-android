@@ -57,7 +57,7 @@ class GroupListFragment: Fragment(), GetClubListInterface, GetUserClubInterface 
         super.onViewCreated(view, savedInstanceState)
 
         // 클럽 리스트 받아오기 (전체)
-        GetClubListService(this).tryGetClubList("라나")
+        GetClubListService(this).tryGetClubList("")
 
         // EditText에서 엔터 키를 누르면 검색한 클럽의 리스트를 가져온다.
         binding.etGroupSearch.setOnKeyListener(View.OnKeyListener { v, keyCode, event ->
@@ -185,7 +185,7 @@ class GroupListFragment: Fragment(), GetClubListInterface, GetUserClubInterface 
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 2008) {
+        if (response.code != 4900) {
             // 가입한 그룹이 있으면 그룹 생성하기 거부
             mainActivity?.groupFragmentChange(4)
         } else {

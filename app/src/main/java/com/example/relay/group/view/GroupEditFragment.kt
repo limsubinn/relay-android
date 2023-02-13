@@ -13,12 +13,15 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupCreateBinding
-import com.example.relay.group.service.GetUserClubInterface
-import com.example.relay.group.service.GetUserClubService
 import com.example.relay.group.models.GroupAcceptedResponse
+import com.example.relay.group.models.GroupEditRequest
+import com.example.relay.group.models.GroupInfoResponse
+import com.example.relay.group.service.*
 import com.example.relay.ui.MainActivity
 import kotlinx.android.synthetic.main.dialog_goal_km.view.*
 import kotlinx.android.synthetic.main.dialog_goal_time.view.*
@@ -26,15 +29,19 @@ import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_cancel
 import kotlinx.android.synthetic.main.dialog_goal_time.view.btn_save
 import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
+import kotlinx.android.synthetic.main.dialog_question.view.*
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
+import java.text.DecimalFormat
 
-class GroupCreateFragment: Fragment() {
+class GroupEditFragment: Fragment(), GetClubDetailInterface, PatchClubInterface {
     private var _binding: FragmentGroupCreateBinding? = null
     private val binding get() = _binding!!
 
     private var mainActivity: MainActivity? = null
 
     private var goal: Float = 0F
+    private var clubIdx = 0L
+    private var curDate = ""
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -60,12 +67,19 @@ class GroupCreateFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // 모집중 상태
-        binding.swRecruitStatus.isChecked = true
+        // 스위치 체크
+        binding.swRecruitStatus.setOnCheckedChangeListener { p0, isChecked ->
+            if (isChecked) {
+                binding.tvRecruitStatus.text = "모집중"
+            } else {
+                binding.tvRecruitStatus.text = "모집완료"
+            }
+        }
 
-        // 그룹 삭제하기 화면에 안 보이게
-        binding.line3.visibility = View.GONE
-        binding.btnDelete.visibility = View.GONE
+        binding.line3.visibility = View.VISIBLE
+        binding.btnDelete.visibility = View.VISIBLE
+        binding.tvGroupCreate.text = "그룹 수정"
+        binding.btnNext.text = "완료"
 
 
         // 목표치 설정 (type)
@@ -81,7 +95,7 @@ class GroupCreateFragment: Fragment() {
             val goalType = arrayOf("목표 없음", "시간", "거리")
 
             itemView.adapter =
-               activity?.let { it1 -> ArrayAdapter(it1, android.R.layout.simple_list_item_1, goalType) }
+                activity?.let { it1 -> ArrayAdapter(it1, android.R.layout.simple_list_item_1, goalType) }
 
             itemView.onItemClickListener = AdapterView.OnItemClickListener {
                     parent,
@@ -245,24 +259,67 @@ class GroupCreateFragment: Fragment() {
             }
         }
 
-        // 다음 버튼
+        // 완료 버튼
         binding.btnNext.setOnClickListener {
-            parentFragmentManager.setFragmentResult("go_to_edit_for_new_group",
-                bundleOf(
-                    "content" to binding.etInfo.text.toString(),
-                    "name" to binding.etName.text.toString(),
-                    "goalType" to goalTypeToEn(binding.tvGoalType.text.toString()),
-                    "goal" to goal,
-                    "level" to levelToInt(binding.tvRunnerLevel.text.toString()),
-                    "maxNum" to binding.tvPeopleCnt.text.toString().toInt()
-                )
-            )
-            mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
+            val dialogView = layoutInflater.inflate(R.layout.dialog_question, null)
+            val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+            dialogView.tv_question.text = "그룹 수정을 완료하시겠습니까?"
+            alertDialog?.setView(dialogView)
+            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog?.show()
+
+            dialogView.btn_q_cancel.setOnClickListener {
+                alertDialog?.dismiss()
+            }
+
+            dialogView.btn_q_ok.setOnClickListener {
+                alertDialog?.dismiss()
+                val content = binding.etInfo.text.toString()
+                val name = binding.etName.text.toString()
+                val imgURL = binding.imgUser.context.toString()
+                val maxNum = Integer.parseInt(binding.tvPeopleCnt.text.toString())
+
+                var goalType = ""
+                goalType = when (binding.tvGoalType.text) {
+                    "시간" -> "TIME"
+                    "거리" -> "DISTANCE"
+                    else -> "NOGOAL"
+                }
+
+                var level = 0
+                level = when (binding.tvRunnerLevel.text) {
+                    "초보 러너" -> 1
+                    "중급 러너" -> 2
+                    "프로 러너" -> 3
+                    else -> 0
+                }
+
+                var recruitingStatus = ""
+                recruitingStatus = if (binding.tvRecruitStatus.text == "모집중") {
+                    "recruiting"
+                } else {
+                    "finished"
+                }
+
+                val req = GroupEditRequest(content, goal, goalType, imgURL, level, maxNum, name, recruitingStatus)
+                PatchClubService(this).tryPatchClub(clubIdx, req)
+            }
         }
 
         // 취소 버튼
         binding.btnBack.setOnClickListener {
-            mainActivity?.groupFragmentChange(1) // 그룹 리스트로 이동
+            parentFragmentManager
+                .beginTransaction()
+                .remove(this)
+                .commitAllowingStateLoss()
+        }
+
+        setFragmentResultListener("go_to_edit") { requestKey, bundle ->
+            clubIdx = bundle.getLong("clubIdx")
+            curDate = bundle.getString("curDate", "") // "yyyy-mm-dd"
+
+            GetClubDetailService(this).tryGetClubDetail(clubIdx, curDate)
         }
     }
 
@@ -271,21 +328,60 @@ class GroupCreateFragment: Fragment() {
         super.onDestroyView()
     }
 
-    private fun goalTypeToEn(goalType: String):String{
-        return when(goalType){
-            "목표 없음" -> "NOGOAL"
-            "시간" -> "TIME"
-            "거리" -> "DISTANCE"
-            else -> throw IllegalArgumentException("잘못된 값")
+    override fun onGetClubDetailSuccess(response: GroupInfoResponse) {
+        if (response.isSuccess) {
+            val res = response.result
+
+            Glide.with(binding.imgUser.context)
+                .load(res.imgURL)
+                .into(binding.imgUser)
+            binding.etName.setText(res.name)
+            binding.etInfo.setText(res.content)
+            binding.swRecruitStatus.isChecked = res.recruitStatus == "recruiting"
+            binding.tvPeopleCnt.text = res.maxNum.toString()
+
+            when (res.goalType) {
+                "TIME" -> {
+                    var sec = res.goal
+                    var min = sec / 60
+                    val hour = min / 60
+                    min %= 60
+                    sec %= 60
+
+                    val hh = hour.toInt().toString().padStart(2, '0')
+                    val mm = min.toInt().toString().padStart(2, '0')
+                    val ss = sec.toInt().toString().padStart(2, '0')
+
+                    binding.tvGoalType.text = "시간"
+                    binding.tvGoalValue.text = "$hh : $mm : $ss"
+                }
+                "DISTANCE" -> {
+                    val dis = DecimalFormat("00.00").format(res.goal).toString()
+
+                    binding.tvGoalType.text = "거리"
+                    binding.tvGoalValue.text = "${dis}km"
+                }
+            }
+
+            when (res.level) {
+                1 -> binding.tvRunnerLevel.text = "초보 러너"
+                2 -> binding.tvRunnerLevel.text = "중급 러너"
+                3 -> binding.tvRunnerLevel.text = "프로 러너"
+                else -> binding.tvRunnerLevel.text = "모든 러너"
+            }
+
         }
     }
 
-    private fun levelToInt(level:String) :Int{
-        return when(level){
-            "초보 러너" -> 1
-            "중급 러너" -> 2
-            "프로 러너" -> 3
-            else -> 0
-        }
+    override fun onGetClubDetailFailure(message: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPatchClubInSuccess() {
+        Toast.makeText(activity, "그룹 수정이 완료되었습니다!", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchClubInFailure(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }

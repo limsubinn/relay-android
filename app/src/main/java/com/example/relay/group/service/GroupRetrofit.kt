@@ -61,4 +61,11 @@ interface GroupRetrofit {
         @Path("clubIdx") clubIdx: Long,
         @Body userInfo: GroupJoinInRequest
     ) : Call<BaseResponse>
+
+    // 그룹 수정
+    @PATCH("/clubs/{clubIdx}")
+    fun patchClub(
+        @Path("clubIdx") clubIdx: Long,
+        @Body clubInfoReq: GroupEditRequest
+    ) : Call<BaseResponse>
 }

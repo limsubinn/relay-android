@@ -209,3 +209,25 @@ class PostNewClubService(val newClubInterface: PostNewClubInterface){
         })
     }
 }
+
+class PatchClubService(val patchClubInterface: PatchClubInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchClub(clubIdx: Long, clubInfo: GroupEditRequest){
+        retrofit.patchClub(clubIdx, clubInfo).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchClubInterface.onPatchClubInSuccess()
+                } else {
+                    patchClubInterface.onPatchClubInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchClub", "failure")
+                t.printStackTrace()
+                patchClubInterface.onPatchClubInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}

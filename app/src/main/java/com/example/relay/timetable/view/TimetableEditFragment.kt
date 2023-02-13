@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -87,8 +88,9 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
         binding.btnBack.setOnClickListener{
             if (serverClubIdx == clubIdx)
                 backToTimetableFragment()
-            else
+            else {
                 backToClubMainFragment()
+            }
         }
 
         clubIdxSetting()
@@ -99,13 +101,17 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     private fun backToClubMainFragment(){
-        (activity as MainActivity).groupFragmentChange(0)
+        parentFragmentManager.setFragmentResult("go_to_main",
+            bundleOf("clubIdx" to clubIdx)
+        )
+        (activity as MainActivity).groupFragmentChange(0) // 그룹 메인으로 이동
     }
 
     private fun clubIdxSetting(){
         setFragmentResultListener("forJoin") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
             Log.d("Timetable", "clubIdxSetting: in edit 1")
+            Log.d("Timetable", "clubIdx: $clubIdx")
         }
 
         setFragmentResultListener(("forNewGroup")) {requestKey, bundle ->
@@ -126,7 +132,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 2008){
+        if (response.code != 4900){
             serverClubIdx = response.result.clubIdx
         }
     }

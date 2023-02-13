@@ -200,6 +200,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 .beginTransaction()
                 .replace(binding.containerFragment.id, MemberRecordFragment())
                 .commitAllowingStateLoss()
+        } else if (index == 9) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(binding.containerFragment.id, GroupEditFragment())
+                .commitAllowingStateLoss()
         }
     }
 

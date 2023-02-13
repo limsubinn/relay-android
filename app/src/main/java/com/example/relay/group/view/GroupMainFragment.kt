@@ -220,6 +220,13 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                         ad?.dismiss()
                     }
                 }
+                "수정하기" -> {
+                    parentFragmentManager.setFragmentResult(
+                        "go_to_edit",
+                        bundleOf(
+                            "clubIdx" to clubIdx, "curDate" to curDate))
+                    mainActivity?.groupFragmentChange(9) // 시간표 편집 페이지 이동
+                }
                 else -> throw IllegalArgumentException("잘못된 값")
             }
         }
@@ -259,7 +266,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 2008) { // 가입한 그룹 존재 o
+        if (response.code != 4900) { // 가입한 그룹 존재 o
             val res = response.result
 
             clubIdx = res.clubIdx
@@ -275,7 +282,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 date = Integer.parseInt(curDate.substring(8, 10))
             }
 
-            // 목록, 메인 -> 그룹페이지
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
             }
@@ -301,17 +307,24 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 year = Integer.parseInt(curDate.substring(0, 4))
                 month = Integer.parseInt(curDate.substring(5, 7))
                 date = Integer.parseInt(curDate.substring(8, 10))
+
+                binding.selCalendar.apply {
+                    setDates(getFutureDatesOfSelectMonth(month, year))
+                    initialPositionIndex = date - 3
+                    init()
+                    select(date - 1) // 날짜 선택
+                }
             }
 
             setFragmentResultListener("go_to_main") {requestKey, bundle ->
                 clubIdx = bundle.getLong("clubIdx", 0L)
-            }
 
-            binding.selCalendar.apply {
-                setDates(getFutureDatesOfSelectMonth(month, year))
-                initialPositionIndex = date - 3
-                init()
-                select(date - 1) // 날짜 선택
+                binding.selCalendar.apply {
+                    setDates(getFutureDatesOfSelectMonth(month, year))
+                    initialPositionIndex = date - 3
+                    init()
+                    select(date - 1) // 날짜 선택
+                }
             }
         }
     }
