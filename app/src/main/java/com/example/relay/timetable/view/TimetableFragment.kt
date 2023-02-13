@@ -106,10 +106,11 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
     override fun onGetMyTimetableSuccess(response: MyTimetableRes) {
         if (response.code == 1000){
             val sList: ArrayList<ScheduleEntity> = ArrayList()
+            val name = prefs.getString("name", "오류")
             for (item in response.result){
                 val schedule = ScheduleEntity(
                     1,
-                    "수정",
+                    name!!,
                     item.day,
                     item.start,
                     item.end,
