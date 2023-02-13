@@ -2,6 +2,7 @@ package com.example.relay.running.view
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -20,6 +21,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.example.relay.ApplicationClass
 import com.example.relay.Constants
 import com.example.relay.Constants.ACTION_PAUSE_SERVICE
 import com.example.relay.Constants.ACTION_STOP_SERVICE
@@ -89,7 +91,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         TedPermissionProvider.context.resources,
         R.drawable.img_marker
     )
-
+    var userProfileIdx = -1L;
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -121,12 +123,13 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
             addAllPolylines()
         }
 
-        RunningService(this).tryGetMySchedules(66)
+        userProfileIdx = ApplicationClass.prefs.getLong("userIdx", -1);
+        RunningService(this).tryGetMySchedules(userProfileIdx);
 
 //        setCustomMarkerView()
 
         binding.btnStart1.setOnClickListener {
-            RunningService(this).tryPostRunStart(66) //달리기 시작 API
+            RunningService(this).tryPostRunStart(userProfileIdx) //달리기 시작 API
             startActivity(Intent(context, RunSplashActivity::class.java))
             binding.layoutTimer.visibility = View.VISIBLE
             binding.layoutBottomSheet.visibility = View.VISIBLE

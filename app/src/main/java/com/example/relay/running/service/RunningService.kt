@@ -5,6 +5,7 @@ import com.example.relay.ApplicationClass
 import com.example.relay.BaseResponse
 import com.example.relay.running.models.*
 import com.example.relay.timetable.models.GroupTimetableRes
+import com.example.relay.timetable.models.MemSchedule
 import com.example.relay.timetable.models.MyTimetableRes
 import com.example.relay.timetable.service.TimetableRetrofit
 import retrofit2.Call
@@ -57,7 +58,10 @@ class RunningService(val runningInterface: RunningInterface) {
         retrofit2.getMyTimetableReq(profileIdx).enqueue((object : retrofit2.Callback<MyTimetableRes>{
             override fun onResponse(call: Call<MyTimetableRes>, response: Response<MyTimetableRes>) {
                 if (response.isSuccessful)  // response.code == 200
+                {
+                    Log.d("tryGetMySchedules", response.body()?.result?.size.toString())
                     runningInterface.onGetMyTimetableSuccess(response.body() as MyTimetableRes)
+                }
                 else
                     Log.d("Timetable", "tryGetMySchedules failure")
             }
