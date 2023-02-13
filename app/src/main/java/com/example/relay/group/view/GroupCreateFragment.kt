@@ -28,7 +28,7 @@ import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
 
-class GroupCreateFragment: Fragment(), GetUserClubInterface {
+class GroupCreateFragment: Fragment() {
     private var _binding: FragmentGroupCreateBinding? = null
     private val binding get() = _binding!!
 
@@ -254,13 +254,19 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             }
         }
 
-
-        // 유저가 속한 그룹의 이름 가져오기
-        val userIdx = prefs.getLong("userIdx", 0L)
-        if (userIdx != 0L) {
-            GetUserClubService(this).tryGetUserClub(userIdx)
-        } else {
-            Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+        // 다음 버튼
+        binding.btnNext.setOnClickListener {
+            parentFragmentManager.setFragmentResult("go_to_edit_for_new_group",
+                bundleOf(
+                    "content" to binding.etInfo.text.toString(),
+                    "name" to binding.etName.text.toString(),
+                    "goalType" to goalTypeToEn(binding.tvGoalType.text.toString()),
+                    "goal" to goal,
+                    "level" to levelToInt(binding.tvRunnerLevel.text.toString()),
+                    "maxNum" to binding.tvPeopleCnt.text.toString().toInt()
+                )
+            )
+            mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
         }
 
         // 취소 버튼
@@ -272,32 +278,6 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        binding.btnNext.setOnClickListener {
-            if (response.code != 2008) {
-                // 가입한 그룹이 있으면 그룹 생성하기 거부
-                mainActivity?.groupFragmentChange(4)
-            } else {
-                // 가입한 그룹 x
-                parentFragmentManager.setFragmentResult("go_to_edit_for_new_group",
-                    bundleOf(
-                        "content" to binding.etInfo.text.toString(),
-                        "name" to binding.etName.text.toString(),
-                        "goalType" to goalTypeToEn(binding.tvGoalType.text.toString()),
-                        "goal" to goal,
-                        "level" to levelToInt(binding.tvRunnerLevel.text.toString()),
-                        "maxNum" to binding.tvPeopleCnt.text.toString().toInt()
-                    )
-                )
-                mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
-            }
-        }
-    }
-
-    override fun onGetUserClubFailure(message: String) {
-        TODO("Not yet implemented")
     }
 
     private fun goalTypeToEn(goalType: String):String{

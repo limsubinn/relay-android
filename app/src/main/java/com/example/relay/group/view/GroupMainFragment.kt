@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.ColorMatrix
 import android.graphics.ColorMatrixColorFilter
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -27,6 +29,7 @@ import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
 import com.michalsvec.singlerowcalendar.calendar.SingleRowCalendarAdapter
 import com.michalsvec.singlerowcalendar.selection.CalendarSelectionManager
 import com.michalsvec.singlerowcalendar.utils.DateUtils
+import kotlinx.android.synthetic.main.dialog_timetable_alert.view.*
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -163,9 +166,28 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
         binding.btnJoinTeam.setOnClickListener{
             when (binding.btnJoinTeam.text){
                 "가입하기" -> {
-                    parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
-                        bundleOf("clubIdx" to clubIdx, "clubName" to binding.profileLayout.profile_team.text))
-                    mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
+                    if (userClubIdx != 0L) {
+                        val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
+                        val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
+
+                        dialogView.tv_no.text = "다른 그룹에 참여중입니다."
+                        alertDialog?.setView(dialogView)
+                        alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        alertDialog?.show()
+
+                        dialogView.btn_check.setOnClickListener{
+                            alertDialog?.dismiss()
+                        }
+                    } else {
+                        parentFragmentManager.setFragmentResult(
+                            "go_to_edit_main_timetable",
+                            bundleOf(
+                                "clubIdx" to clubIdx,
+                                "clubName" to binding.profileLayout.profile_team.text
+                            )
+                        )
+                        mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
+                    }
                 }
                 "탈퇴하기" -> {
 

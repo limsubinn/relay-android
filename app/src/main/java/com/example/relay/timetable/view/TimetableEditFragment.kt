@@ -79,19 +79,6 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
             } else if (serverClubIdx == 0L){
                 Log.d("Timetable", "onViewCreated: 그룹 신청하기")
                 PostClubJoinInService(this).tryPostClubJoinIn(userIdx, clubIdx, scheduleList)
-            } else if ( serverClubIdx != clubIdx ) {
-                val dialogView = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
-                val alertDialog = activity?.let { AlertDialog.Builder(it).create() }
-
-                dialogView.tv_no.text = "다른 그룹에 참여중입니다."
-                alertDialog?.setView(dialogView)
-                alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                alertDialog?.show()
-
-                dialogView.btn_check.setOnClickListener{
-                    alertDialog?.dismiss()
-                    (activity as MainActivity).groupFragmentChange(0)
-                }
             } else {
                 TimetablePostService(this).tryPostMySchedules(userIdx, scheduleList)
             }

@@ -13,16 +13,20 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.relay.ApplicationClass
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupListBinding
+import com.example.relay.group.models.GroupAcceptedResponse
 import com.example.relay.group.models.GroupInfoResult
 import com.example.relay.group.service.GetClubListInterface
 import com.example.relay.group.service.GetClubListService
 import com.example.relay.group.view.adapter.GroupListRVAdapter
 import com.example.relay.group.models.GroupListResponse
+import com.example.relay.group.service.GetUserClubInterface
+import com.example.relay.group.service.GetUserClubService
 import com.example.relay.ui.MainActivity
 
-class GroupListFragment: Fragment(), GetClubListInterface {
+class GroupListFragment: Fragment(), GetClubListInterface, GetUserClubInterface {
     private var _binding: FragmentGroupListBinding? = null
     private val binding get() = _binding!!
 
@@ -76,7 +80,14 @@ class GroupListFragment: Fragment(), GetClubListInterface {
 
         // 그룹 생성 버튼
         binding.btnCreate.setOnClickListener {
-            mainActivity?.groupFragmentChange(3)
+            // 유저가 속한 그룹의 이름 가져오기
+            val userIdx = ApplicationClass.prefs.getLong("userIdx", 0L)
+            if (userIdx != 0L) {
+                GetUserClubService(this).tryGetUserClub(userIdx)
+            } else {
+                Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+            }
+            // mainActivity?.groupFragmentChange(3)
         }
 
     }
@@ -171,5 +182,19 @@ class GroupListFragment: Fragment(), GetClubListInterface {
 
     override fun onGetClubListFailure(message: String) {
         Toast.makeText(activity, "그룹 목록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
+        if (response.code != 2008) {
+            // 가입한 그룹이 있으면 그룹 생성하기 거부
+            mainActivity?.groupFragmentChange(4)
+        } else {
+            // 그룹 생성 페이지로 이동
+            mainActivity?.groupFragmentChange(3)
+        }
+    }
+
+    override fun onGetUserClubFailure(message: String) {
+        TODO("Not yet implemented")
     }
 }
