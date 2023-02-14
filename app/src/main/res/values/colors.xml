@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="background_login">#E2E2E2</color>
+    <color name="background_edit_timetable">#F5F5F5</color>
     <color name="text_background_gray">#F6F6F6</color>
     <color name="main_color_text">#FF0000</color>
     <color name="main_color_btn1">#F54242</color>
