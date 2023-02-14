@@ -16,9 +16,12 @@ interface MyRecordInterface {
 }
 
 interface MySettingInterface {
-    fun onPatchUserMsgSuccess(response: ChangeMsgResponse)
+    fun onPatchUserMsgSuccess()
     fun onPatchUserMsgFailure(message: String)
 
-    fun onPatchUserPwdSuccess(response: ChangePwdResponse)
+    fun onPatchUserPwdSuccess()
     fun onPatchUserPwdFailure(message: String)
+
+    fun onPatchUserImgSuccess()
+    fun onPatchUserImgFailure(message: String)
 }

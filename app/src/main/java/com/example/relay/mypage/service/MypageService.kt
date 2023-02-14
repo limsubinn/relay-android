@@ -2,6 +2,10 @@ package com.example.relay.mypage.service
 
 import android.util.Log
 import com.example.relay.ApplicationClass
+import com.example.relay.BaseResponse
+import com.example.relay.group.models.MemberDeleteRequest
+import com.example.relay.group.service.GroupRetrofit
+import com.example.relay.group.service.PatchMemberInterface
 import com.example.relay.mypage.models.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -86,44 +90,57 @@ class MySettingService(val mySettingInterface: MySettingInterface) {
     private val retrofit: MypageRetrofit = ApplicationClass.sRetrofit.create(MypageRetrofit::class.java)
 
     fun tryPatchUserMsg(statusMsg: String){
-        retrofit.patchUserMsgReq(ChangeMsgRequest(statusMsg)).enqueue(object : Callback<ChangeMsgResponse>{
-            override fun onResponse(call: Call<ChangeMsgResponse>, response: Response<ChangeMsgResponse>) {
-                Log.d("ChangeMsgResponse", "success")
-
-                if (response.code() == 200) {
-                    mySettingInterface.onPatchUserMsgSuccess(response.body() as ChangeMsgResponse)
+        retrofit.patchUserMsgReq(ChangeMsgRequest(statusMsg)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    mySettingInterface.onPatchUserMsgSuccess()
                 } else {
-                    Log.d("ChangeMsgResponse", response.message())
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                    mySettingInterface.onPatchUserMsgFailure(response.message())
                 }
             }
 
-            override fun onFailure(call: Call<ChangeMsgResponse>, t: Throwable) {
-                Log.d("ChangeMsgResponse", "fail")
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchMsg", "failure")
                 t.printStackTrace()
                 mySettingInterface.onPatchUserMsgFailure(t.message ?: "통신 오류")
             }
         })
     }
 
-    fun tryPatchUserPwd(newPwd: String, checkPwd: String){
-        retrofit.patchUserPwdReq(ChangePwdRequest(newPwd, checkPwd)).enqueue(object : Callback<ChangePwdResponse>{
-            override fun onResponse(call: Call<ChangePwdResponse>, response: Response<ChangePwdResponse>) {
-                Log.d("ChangePwdResponse", "success")
-
-                if (response.code() == 200) {
-                    mySettingInterface.onPatchUserPwdSuccess(response.body() as ChangePwdResponse)
+    fun tryPatchUserImg(imgUrl: String){
+        retrofit.patchUserImgReq(ChangeImgRequest(imgUrl)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    mySettingInterface.onPatchUserImgSuccess()
                 } else {
-                    Log.d("ChangePwdResponse", response.message())
-                    // 서버 통신은 성공했으나 오류 코드 받았을 때
+                    mySettingInterface.onPatchUserImgFailure(response.message())
                 }
             }
 
-            override fun onFailure(call: Call<ChangePwdResponse>, t: Throwable) {
-                Log.d("ChangePwdResponse", "fail")
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchImg", "failure")
+                t.printStackTrace()
+                mySettingInterface.onPatchUserImgFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+
+    fun tryPatchUserPwd(newPwd: String, checkPwd: String){
+        retrofit.patchUserPwdReq(ChangePwdRequest(newPwd, checkPwd)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    mySettingInterface.onPatchUserPwdSuccess()
+                } else {
+                    mySettingInterface.onPatchUserPwdFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchPwd", "failure")
                 t.printStackTrace()
                 mySettingInterface.onPatchUserPwdFailure(t.message ?: "통신 오류")
             }
         })
     }
+
 }

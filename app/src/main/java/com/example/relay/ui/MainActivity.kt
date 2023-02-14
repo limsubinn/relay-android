@@ -45,10 +45,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
 
         var bundle = intent.extras
 
-        if (bundle != null) { // 상태메시지 변경 후 Back 버튼
+        if (bundle != null) { // 상태메시지 or 이미지 변경 후 Back 버튼
             val msg = bundle.getString("msg")
+            val img = bundle.getString("img")
 
-            if (msg != null) {
+            if ((msg != null) || (img != null)) {
                 binding.navBottom.selectedItemId = R.id.menu_mypage
                 supportFragmentManager
                     .beginTransaction()
