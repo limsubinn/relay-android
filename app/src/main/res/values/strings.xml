@@ -23,6 +23,7 @@
     <string name="withdrawal">탈퇴하기</string>
 
     <!-- login & signUp & person info & Authentication-->
+    <string name="login_app_name">런닝MENS</string>
     <string name="kakao_app_key">13aaf4215477f1593247ca3f66a3fcc7</string>
     <string name="next">다음</string>
     <string name="back">뒤로</string>
