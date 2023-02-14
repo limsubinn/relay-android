@@ -52,7 +52,11 @@ class TimetablePostService(val timetablePostInterface: TimetablePostInterface){
         retrofit.postMyTimetableReq(profileIdx, MySchedulesReq(scheduleList)).enqueue((object : retrofit2.Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) { // response.code == 200
-                    timetablePostInterface.onPostMyTimetableSuccess()
+                    if (response.body()?.isSuccess == true) {
+                        timetablePostInterface.onPostMyTimetableSuccess()
+                    } else {
+                        timetablePostInterface.onPostMyTimetableFailure(response.body()?.message.toString())
+                    }
                 }else {
                     timetablePostInterface.onPostMyTimetableFailure(response.message())
                 }
