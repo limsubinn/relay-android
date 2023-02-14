@@ -1,6 +1,7 @@
 package com.example.relay.ui
 
 import android.os.Bundle
+import android.os.SystemClock.sleep
 import android.text.TextUtils.replace
 import android.util.Log
 import android.view.View
@@ -56,11 +57,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
                     .commitAllowingStateLoss()
             }
         } else {
-            binding.navBottom.selectedItemId = R.id.menu_running
-            supportFragmentManager
-                .beginTransaction()
-                .replace(binding.containerFragment.id, RunningFragment())
-                .commitAllowingStateLoss()
+
         }
 
         supportActionBar?.elevation = 0f
@@ -262,6 +259,11 @@ class MainActivity : AppCompatActivity(), MainInterface {
         val editor = prefs.edit()
         editor.putLong("userIdx", userIdx)
         editor.apply()
+        binding.navBottom.selectedItemId = R.id.menu_running
+        supportFragmentManager
+            .beginTransaction()
+            .replace(binding.containerFragment.id, RunningFragment())
+            .commitAllowingStateLoss()
     }
 
     override fun onGetProfileListFailure(message: String) {

@@ -111,6 +111,14 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAQqcVd7WpUnsnCOOYfJGalGW_KA-zpe2M"/>
+<!--     FCM -->
+        <service
+            android:name=".fcm.FireBaseService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

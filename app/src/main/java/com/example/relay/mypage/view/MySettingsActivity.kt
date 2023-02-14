@@ -9,20 +9,27 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat.finishAffinity
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMySettingsBinding
+import com.example.relay.fcm.FireBaseClientService
+import com.example.relay.fcm.FireBaseService
+import com.example.relay.fcm.FirebaseInterface
+import com.example.relay.fcm.data.UserDeviceTokenRes
 import com.example.relay.login.view.LoginMainActivity
 import com.example.relay.mypage.service.MySettingInterface
 import com.example.relay.mypage.service.MySettingService
 import com.example.relay.ui.MainActivity
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_my_settings.view.*
 import kotlinx.android.synthetic.main.dialog_change_img.view.*
 import kotlinx.android.synthetic.main.dialog_change_msg.view.*
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
 
-class MySettingsActivity : AppCompatActivity(), MySettingInterface {
+class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInterface {
     private val viewBinding: ActivityMySettingsBinding by lazy{
         ActivityMySettingsBinding.inflate(layoutInflater)
     }
@@ -87,11 +94,15 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
         }
 
         viewBinding.btnLogout.setOnClickListener {
+            FirebaseMessaging.getInstance().token.addOnSuccessListener {
+                FireBaseClientService(this).tryDeleteUserDevice(it);
+
             // 저장된 계정 내용 초기화
             prefs.edit().clear().apply()
             val intent = Intent(this, LoginMainActivity::class.java)
             finishAffinity()        // 스택에 쌓인 액티비티 비우기
             startActivity(intent)
+            }
         }
 
         // 비밀번호 변경하기
@@ -256,5 +267,12 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
 
     override fun onPatchUserAlarmFailure(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPostDeleteDeviceSuccess(response: UserDeviceTokenRes) {
+        prefs.edit().clear().apply()
+        val intent = Intent(this, LoginMainActivity::class.java)
+        finishAffinity()        // 스택에 쌓인 액티비티 비우기
+        startActivity(intent)
     }
 }

@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 @HiltAndroidApp
 class ApplicationClass : Application() {
     val API_URL = "http://3.38.32.124/"
-
+//  val API_URL = "https://eaec-211-196-38-234.jp.ngrok.io"
     // 전역변수
     companion object {
         lateinit var prefs: SharedPreferences
