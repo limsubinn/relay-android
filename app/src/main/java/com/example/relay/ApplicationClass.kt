@@ -13,8 +13,8 @@ import java.util.concurrent.TimeUnit
 // 앱이 실행될때 1번만 실행
 @HiltAndroidApp
 class ApplicationClass : Application() {
-//    val API_URL = "http://3.38.32.124/"
-        val API_URL = "https://319d-218-48-52-82.jp.ngrok.io"
+    val API_URL = "http://3.38.32.124/"
+//        val API_URL = "https://eaec-211-196-38-234.jp.ngrok.io"
     // 전역변수
     companion object {
         lateinit var prefs: SharedPreferences

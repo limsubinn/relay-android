@@ -1,5 +1,6 @@
 package com.example.relay.mypage.service
 
+import com.example.relay.BaseResponse
 import com.example.relay.mypage.models.*
 import retrofit2.Call
 import retrofit2.http.*
@@ -13,12 +14,22 @@ interface MypageRetrofit {
     @PATCH("/users/pwd")
     fun patchUserPwdReq(
         @Body userPwd: ChangePwdRequest
-    ) : Call<ChangePwdResponse>
+    ) : Call<BaseResponse>
 
     @PATCH("/users/changeProfile")
     fun patchUserMsgReq(
         @Body profileReq: ChangeMsgRequest
-    ) : Call<ChangeMsgResponse>
+    ) : Call<BaseResponse>
+
+    @PATCH("/users/changeProfile")
+    fun patchUserImgReq(
+        @Body profileReq: ChangeImgRequest
+    ) : Call<BaseResponse>
+
+    @PATCH("/users/changeAlarm/{profileIdx}")
+    fun patchUserAlarm(
+        @Path("profileIdx") profileIdx: Long
+    ) : Call<BaseResponse>
 
     @GET("/record")
     fun getDailyRes(
