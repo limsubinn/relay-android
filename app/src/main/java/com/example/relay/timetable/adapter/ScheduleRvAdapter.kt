@@ -365,14 +365,14 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
         val dialogView = inflater.inflate(R.layout.dialog_timetable_alert, null)
         val alertDialog = context.let { AlertDialog.Builder(it).create() }
 
-        alertDialog?.setView(dialogView)
-        alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        alertDialog?.show()
+        alertDialog.setView(dialogView)
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
 
         dialogView.tv_no.text = message
 
         dialogView.btn_check.setOnClickListener{
-            alertDialog?.dismiss()
+            alertDialog.dismiss()
         }
     }
 }

@@ -13,4 +13,5 @@ interface TimetableGetInterface {
 interface TimetablePostInterface {
     fun onPostMyTimetableSuccess()
     fun onPostMyTimetableFailure(message: String)
+    fun timetableDuplicated()
 }
