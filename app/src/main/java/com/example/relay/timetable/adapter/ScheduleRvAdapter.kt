@@ -141,6 +141,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 show()
             }
+
             dialogView.tv_timepicker_name.text = "Finish"
             dialogView.timePicker.hour = holder.itemView.btn_end.text.toString().substring(0,2).toInt()
             dialogView.timePicker.minute = holder.itemView.btn_end.text.toString().substring(3).toInt()
@@ -150,6 +151,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 val min = dialogView.timePicker.minute.toString()
 
                 val tempTime = "${hour.padStart(2, '0')}:${min.padStart(2, '0')}:00"
+                Log.d("Timetable", "onBindViewHolder: $tempTime")
                 if (tempTime != "00:00:00" && tempTime <= dataList[position].start )
                     alertWrongInput("잘못된 시작-종료 시간 형식입니다.")
                 else {
@@ -259,13 +261,10 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                     alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     alertDialog.show()
 
-                    val formatter =
-                        NumberPicker.Formatter { value ->
-                            "" + value + "0"
-                        }
+                    val minList = arrayOf("00","10","20","30","40","50")
 
                     with(dialogView){
-                        np_min.setFormatter(formatter)
+                        np_min.displayedValues = minList
 
                         // 최대, 최소값 설정
                         np_hour.minValue = 0
@@ -277,18 +276,18 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
 
                         // 기본값 설정
                         np_hour.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(0, 2))
-                        np_min.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(3, 4))
+                        np_min.value = minList.indexOf(holder.itemView.btn_goal.text.substring(3, 5))
                         np_sec.value = Integer.parseInt(holder.itemView.btn_goal.text.substring(6, 8))
                     }
 
                     // 저장 버튼
                     dialogView.btn_save.setOnClickListener {
                         val hour = alertDialog.np_hour.value.toString().padStart(2, '0')
-                        val min = (alertDialog.np_min.value * 10).toString()
+                        val min = minList[alertDialog.np_min.value]
                         if ((hour == "00" && min == "00")) {
                             Toast.makeText(context, "시간을 설정해주세요!", Toast.LENGTH_SHORT).show()
                         } else {
-                            val goal = alertDialog.np_hour.value * 3600 + alertDialog.np_min.value * 600 + alertDialog.np_sec.value
+                            val goal = alertDialog.np_hour.value * 3600 + min.toInt() * 60 + alertDialog.np_sec.value
                             dataList[position].goal = goal.toFloat()
                             notifyDataSetChanged()
                             alertDialog.dismiss()
