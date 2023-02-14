@@ -79,7 +79,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.5.0"
 
     // Timetable
-    implementation 'com.github.LeeGa00:Android-Timetable:1.0.9'
+    implementation 'com.github.LeeGa00:Android-Timetable:1.1.0'
 
     // Architectural Components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"

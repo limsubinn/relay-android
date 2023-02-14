@@ -149,26 +149,28 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 val hour = dialogView.timePicker.hour.toString()
                 val min = dialogView.timePicker.minute.toString()
 
-                val cal1 = Calendar.getInstance()
-                val cal2 = Calendar.getInstance()
-
-                cal1.set(Calendar.HOUR_OF_DAY, hour.toInt())
-                cal1.set(Calendar.MINUTE, min.toInt())
-
-                val start = holder.itemView.btn_start.text.toString()
-                cal2.set(Calendar.HOUR_OF_DAY, start.substring(0,2).toInt())
-                cal2.set(Calendar.MINUTE, start.substring(3,5).toInt())
-
-                val timeInMillis = cal1.timeInMillis - cal2.timeInMillis
-
-                val timeInHours = timeInMillis / 3600000
-
-                if (cal1.before(cal2)){
+                val tempTime = "${hour.padStart(2, '0')}:${min.padStart(2, '0')}:00"
+                if (tempTime != "00:00:00" && tempTime <= dataList[position].start )
                     alertWrongInput("잘못된 시작-종료 시간 형식입니다.")
-                } else if (timeInHours > 3){
-                    alertWrongInput("1회 최대 3시간")
-                } else {
-                    dataList[position].end = "${hour.padStart(2, '0')}:${min.padStart(2, '0')}:00"
+                else {
+                    val cal1 = Calendar.getInstance()
+                    val cal2 = Calendar.getInstance()
+
+                    cal1.set(Calendar.HOUR_OF_DAY, hour.toInt())
+                    cal1.set(Calendar.MINUTE, min.toInt())
+
+                    val start = holder.itemView.btn_start.text.toString()
+                    cal2.set(Calendar.HOUR_OF_DAY, start.substring(0,2).toInt())
+                    cal2.set(Calendar.MINUTE, start.substring(3,5).toInt())
+
+                    val timeInMillis = cal1.timeInMillis - cal2.timeInMillis
+                    val timeInHours = timeInMillis / 3600000
+
+                    if (timeInHours > 3){
+                        alertWrongInput("1회 최대 3시간")
+                    } else {
+                        dataList[position].end = tempTime
+                    }
                 }
                 notifyDataSetChanged()
                 alertDialog.dismiss()
