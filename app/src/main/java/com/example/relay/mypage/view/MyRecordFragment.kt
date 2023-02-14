@@ -17,7 +17,6 @@ import com.example.relay.mypage.service.MyRecordService
 import com.example.relay.mypage.models.MonthRecordResponse
 import com.example.relay.mypage.view.decorator.*
 import com.example.relay.ui.MainActivity
-import com.prolificinteractive.materialcalendarview.DayViewDecorator
 import java.text.SimpleDateFormat
 
 
@@ -86,6 +85,13 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             binding.barTime.visibility = View.INVISIBLE
             binding.barSpeed.visibility = View.INVISIBLE
 
+            binding.standard1.text = "0~4km"
+            binding.standard2.text = "4~8km"
+            binding.standard3.text = "8~12km"
+            binding.standard4.text = "12~16km"
+            binding.standard5.text = "16~20km"
+            binding.standard6.text = "20+km"
+
             // 월별 기록 불러오기
             MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
@@ -97,6 +103,13 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             binding.barTime.visibility = View.VISIBLE
             binding.barSpeed.visibility = View.INVISIBLE
 
+            binding.standard1.text = "0~20분"
+            binding.standard2.text = "20~40분"
+            binding.standard3.text = "40~60분"
+            binding.standard4.text = "60~80분"
+            binding.standard5.text = "80~100분"
+            binding.standard6.text = "100+분"
+
             // 월별 기록 불러오기
             MyRecordService(this).tryGetDailyRecord(year, month, userIdx)
         }
@@ -107,6 +120,13 @@ class MyRecordFragment: Fragment(), MyRecordInterface {
             binding.barDistance.visibility = View.INVISIBLE
             binding.barTime.visibility = View.INVISIBLE
             binding.barSpeed.visibility = View.VISIBLE
+
+            binding.standard1.text = "0~2km/h"
+            binding.standard2.text = "2~4km/h"
+            binding.standard3.text = "4~6km/h"
+            binding.standard4.text = "6~8km/h"
+            binding.standard5.text = "8~10km/h"
+            binding.standard6.text = "10+km/h"
 
             // 월별 기록 불러오기
             MyRecordService(this).tryGetDailyRecord(year, month, userIdx)

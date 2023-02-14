@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.FragmentGroupCreateBinding
@@ -28,13 +29,15 @@ import kotlinx.android.synthetic.main.dialog_goal_type.view.*
 import kotlinx.android.synthetic.main.dialog_people_cnt.view.*
 import kotlinx.android.synthetic.main.fragment_group_main.view.*
 
-class GroupCreateFragment: Fragment(), GetUserClubInterface {
+class GroupCreateFragment: Fragment() {
     private var _binding: FragmentGroupCreateBinding? = null
     private val binding get() = _binding!!
 
     private var mainActivity: MainActivity? = null
 
     private var goal: Float = 0F
+
+    private val bucketURL = "https://team23-bucket.s3.ap-northeast-2.amazonaws.com/public/club"
 
     override fun onAttach(context: Context) {
         if (context != null) {
@@ -63,19 +66,14 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
         // 모집중 상태
         binding.swRecruitStatus.isChecked = true
 
-        // 스위치 체크
-        binding.swRecruitStatus.setOnCheckedChangeListener { p0, isChecked ->
-            if (isChecked) {
-                binding.tvRecruitStatus.text = "모집중"
-            } else {
-                binding.tvRecruitStatus.text = "모집완료"
-            }
-        }
-
-        // 그룹 삭제하기 화면에 안 보이게
+        // 그룹 삭제하기 & 프로필 변경 버튼 화면에 안 보이게
         binding.line3.visibility = View.GONE
         binding.btnDelete.visibility = View.GONE
 
+        // 이미지
+        Glide.with(binding.imgGroup.context)
+            .load(bucketURL + "/yellow.png")
+            .into(binding.imgGroup)
 
         // 목표치 설정 (type)
         binding.btnGoalType.setOnClickListener {
@@ -103,7 +101,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                 } else if (position == 1) {
                     binding.tvGoalValue.text = "00 : 00 : 00"
                 } else {
-                    binding.tvGoalValue.text = "00 : 00"
+                    binding.tvGoalValue.text = "00.00km"
                 }
                 alertDialog?.dismiss()
             }
@@ -159,7 +157,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                 alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 alertDialog?.show()
 
-                dialogView.tv_title.text = "${binding.tvGoalType.text} / km"
+                dialogView.tv_title.text = "거리 / km"
 
                 // 최대, 최소값 설정
                 dialogView.np1.minValue = 0
@@ -169,7 +167,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
 
                 // 기본값 설정
                 dialogView.np1.value = Integer.parseInt(binding.tvGoalValue.text.substring(0, 2))
-                dialogView.np2.value = Integer.parseInt(binding.tvGoalValue.text.substring(5, 7))
+                dialogView.np2.value = Integer.parseInt(binding.tvGoalValue.text.substring(3, 5))
 
                 // 저장 버튼
                 dialogView.btn_save.setOnClickListener {
@@ -179,8 +177,8 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
                     if ((n1 == "00" && n2 == "00")) {
                         Toast.makeText(activity, "거리를 설정해주세요!", Toast.LENGTH_SHORT).show()
                     } else {
-                        binding.tvGoalValue.text = "${n1} : ${n2}"
-                        goal = (n1 + "." + n2).toFloat()
+                        binding.tvGoalValue.text = "${n1}.${n2}km"
+                        goal = ("$n1.$n2").toFloat()
                         alertDialog?.dismiss()
                     }
                 }
@@ -232,11 +230,11 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             dialogView.tv_people.text = "레벨"
 
             // 최대, 최소값, 기본값 설정
-            val levelList = arrayOf("초보 러너", "중급 러너", "프로 러너")
+            val levelList = arrayOf("모든 러너", "초보 러너", "중급 러너", "프로 러너")
 
             dialogView.np_people.displayedValues = levelList
             dialogView.np_people.minValue = 0
-            dialogView.np_people.maxValue = 2
+            dialogView.np_people.maxValue = 3
 
             val value = binding.tvRunnerLevel.text.toString()
             val index = levelList.indexOf(value)
@@ -254,13 +252,19 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
             }
         }
 
-
-        // 유저가 속한 그룹의 이름 가져오기
-        val userIdx = prefs.getLong("userIdx", 0L)
-        if (userIdx != 0L) {
-            GetUserClubService(this).tryGetUserClub(userIdx)
-        } else {
-            Toast.makeText(activity, "유저 정보를 받아오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+        // 다음 버튼
+        binding.btnNext.setOnClickListener {
+            parentFragmentManager.setFragmentResult("go_to_edit_for_new_group",
+                bundleOf(
+                    "content" to binding.etInfo.text.toString(),
+                    "name" to binding.etName.text.toString(),
+                    "goalType" to goalTypeToEn(binding.tvGoalType.text.toString()),
+                    "goal" to goal,
+                    "level" to levelToInt(binding.tvRunnerLevel.text.toString()),
+                    "maxNum" to binding.tvPeopleCnt.text.toString().toInt()
+                )
+            )
+            mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
         }
 
         // 취소 버튼
@@ -272,32 +276,6 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
     override fun onDestroyView() {
         _binding = null
         super.onDestroyView()
-    }
-
-    override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        binding.btnNext.setOnClickListener {
-            if (response.code != 2008) {
-                // 가입한 그룹이 있으면 그룹 생성하기 거부
-                mainActivity?.groupFragmentChange(4)
-            } else {
-                // 가입한 그룹 x
-                parentFragmentManager.setFragmentResult("go_to_edit_for_new_group",
-                    bundleOf(
-                        "content" to binding.etInfo.text.toString(),
-                        "name" to binding.etName.text.toString(),
-                        "goalType" to goalTypeToEn(binding.tvGoalType.text.toString()),
-                        "goal" to goal,
-                        "level" to levelToInt(binding.tvRunnerLevel.text.toString()),
-                        "maxNum" to binding.tvPeopleCnt.text.toString().toInt()
-                    )
-                )
-                mainActivity?.timetableFragmentChange(1) // 시간표 편집 페이지 이동
-            }
-        }
-    }
-
-    override fun onGetUserClubFailure(message: String) {
-        TODO("Not yet implemented")
     }
 
     private fun goalTypeToEn(goalType: String):String{
@@ -313,7 +291,7 @@ class GroupCreateFragment: Fragment(), GetUserClubInterface {
         return when(level){
             "초보 러너" -> 1
             "중급 러너" -> 2
-            "상급 러너" -> 3
+            "프로 러너" -> 3
             else -> 0
         }
     }

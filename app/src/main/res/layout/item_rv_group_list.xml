@@ -13,11 +13,10 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
+        <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/team_img"
             android:layout_width="45dp"
             android:layout_height="45dp"
-            android:src="@drawable/img_team_profile"
             app:civ_border_overlay="true"
             app:civ_border_width="1dp"
             app:civ_border_color="@color/black"

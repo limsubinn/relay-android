@@ -13,16 +13,12 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import com.bumptech.glide.Glide
-import com.example.relay.ApplicationClass
 import com.example.relay.R
 import com.example.relay.databinding.FragmentMemberPageBinding
-import com.example.relay.group.service.GetClubDailyService
-import com.example.relay.group.service.GetMemberListService
 import com.example.relay.mypage.models.DailyRecordResponse
 import com.example.relay.mypage.models.UserProfileResponse
 import com.example.relay.mypage.service.MypageInterface
 import com.example.relay.mypage.service.MypageService
-import com.example.relay.mypage.view.decorator.SelectDecorator
 import com.example.relay.ui.MainActivity
 import com.michalsvec.singlerowcalendar.calendar.CalendarChangesObserver
 import com.michalsvec.singlerowcalendar.calendar.CalendarViewManager
@@ -83,7 +79,6 @@ class MemberPageFragment: Fragment(), MypageInterface {
         setFragmentResultListener("go_to_member_page") { requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx")
             hostIdx = bundle.getLong("hostIdx")
-            recruitStatus = bundle.getString("recruitStatus", "")
             userIdx = bundle.getLong("userIdx")
 
             // 유저 프로필
@@ -97,7 +92,6 @@ class MemberPageFragment: Fragment(), MypageInterface {
             userIdx = bundle.getLong("userIdx", 0L)
             clubIdx = bundle.getLong("clubIdx", 0L)
             hostIdx = bundle.getLong("hostIdx", 0L)
-            recruitStatus = bundle.getString("recruitStatus", "")
 
             year = Integer.parseInt(curDate.substring(0, 4))
             month = Integer.parseInt(curDate.substring(5, 7))
@@ -118,7 +112,7 @@ class MemberPageFragment: Fragment(), MypageInterface {
         binding.btnRight.setOnClickListener {
             // 멤버 페이지 -> 멤버 리스트
             parentFragmentManager.setFragmentResult("go_to_member_list",
-                bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
+                bundleOf("clubIdx" to clubIdx, "hostIdx" to hostIdx)
             )
 
             mainActivity?.groupFragmentChange(2) // 멤버리스트로 이동
@@ -193,7 +187,7 @@ class MemberPageFragment: Fragment(), MypageInterface {
         binding.btnCalendar.setOnClickListener {
             // 멤버 -> 레코드
             parentFragmentManager.setFragmentResult("go_to_member_record",
-                bundleOf("curDate" to curDate, "userIdx" to userIdx, "clubIdx" to clubIdx, "hostIdx" to hostIdx, "recruitStatus" to recruitStatus)
+                bundleOf("curDate" to curDate, "userIdx" to userIdx, "clubIdx" to clubIdx, "hostIdx" to hostIdx)
             )
             mainActivity?.groupFragmentChange(8) // 기록 페이지로 이동
         }
@@ -264,28 +258,57 @@ class MemberPageFragment: Fragment(), MypageInterface {
             binding.tvNotRecord.visibility = View.GONE
             binding.recordLayout.visibility = View.VISIBLE
 
-            // 거리, 시간, 페이스
-            if ((res.clubName == "그룹에 속하지 않습니다.") || (res.goalType == "목표없음")) {
-                binding.goalValue.visibility = View.GONE
-                binding.goalTarget.text = res.time.toString() // 수정 필요
-                binding.goalTarget.setTextColor(Color.BLACK)
-                binding.goalType.text = "시간"
-            } else {
-                binding.goalType.text = res.goalType
+            var sec = res.time
+            var min = sec / 60
+            val hour = min / 60
+            min %= 60
+            sec %= 60
 
-                if (res.goalType == "시간") {
-                    binding.goalValue.text = res.time.toString() // 수정 필요
-                    binding.goalTarget.text = res.goalValue.toString() // 수정 필요
+            val hh = hour.toInt().toString().padStart(2, '0')
+            val mm = min.toInt().toString().padStart(2, '0')
+            val ss = sec.toInt().toString().padStart(2, '0')
+
+            // 거리, 시간, 페이스
+            if (res.goalType == "NOGOAL") {
+                binding.goalValue.visibility = View.GONE
+                binding.goalTarget.setTextColor(Color.BLACK)
+                binding.goalTarget.text = "${hh} : ${mm} : ${ss}"
+                binding.goalType.text = "시간"
+
+                binding.otherType.text = "거리"
+                binding.otherValue.text = res.distance.toString() + "km"
+            } else {
+                if (res.goalType == "TIME") {
+                    var goalSec = res.goalValue
+                    var goalMin = goalSec / 60
+                    val goalHour = goalMin / 60
+                    goalMin %= 60
+                    goalSec %= 60
+
+                    val goalH = goalHour.toInt().toString().padStart(2, '0')
+                    val goalM = goalMin.toInt().toString().padStart(2, '0')
+                    val goalS = goalSec.toInt().toString().padStart(2, '0')
+
+                    binding.goalValue.visibility = View.VISIBLE
+                    binding.goalValue.text = "${hh} : ${mm} : ${ss}"
+                    binding.goalTarget.setTextColor(Color.RED)
+                    binding.goalTarget.text = "${goalH} : ${goalM} : ${goalS}"
+                    binding.goalType.text = "시간"
+
                     binding.otherType.text = "거리"
                     binding.otherValue.text = res.distance.toString() + "km"
                 } else {
-                    binding.goalValue.text = res.distance.toString() + "km"
-                    binding.goalTarget.text = res.goalValue.toString() + "km"
+                    binding.goalValue.visibility = View.VISIBLE
+                    binding.goalValue.text = res.distance.toString()  + "km"
+                    binding.goalTarget.setTextColor(Color.RED)
+                    binding.goalTarget.text = res.goalValue.toString()
+                    binding.goalType.text = "거리"
+
                     binding.otherType.text = "시간"
-                    binding.otherValue.text = res.time.toString() // 수정 필요
+                    binding.otherValue.text = "${hh} : ${mm} : ${ss}"
                 }
 
-                binding.runningPace.text = res.pace.toString() // 수정 필요
+                binding.runningPace.text = res.pace.toString() + "km/h"
             }
         } else {
             binding.tvNotRecord.visibility = View.VISIBLE
