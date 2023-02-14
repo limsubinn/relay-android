@@ -2,6 +2,7 @@ package com.example.relay.running.view
 
 import android.Manifest
 import android.app.AlertDialog
+import android.app.Application
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -86,7 +87,7 @@ class RunningFragment: Fragment(), EasyPermissions.PermissionCallbacks, RunningI
         TedPermissionProvider.context.resources,
         R.drawable.img_marker
     )
-
+    var userProfileIdx = -1L;
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

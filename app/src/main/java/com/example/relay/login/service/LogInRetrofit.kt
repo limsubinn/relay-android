@@ -7,7 +7,6 @@ import retrofit2.http.*
 interface LogInRetrofit {
     @POST("users/logIn")
     fun postLogInLocalReq(
-        // @Header("Authorization") accessToken: String?,
         @Body Info: LogInLocalReq
     ): Call<LogInLocalRes>
 
@@ -25,18 +24,17 @@ interface LogInRetrofit {
     @POST("users/logIn/Kakao")
     fun logInKakao(): Call<BaseRes>
 
-    @GET("users/findPwd")
+    @PATCH("users/pwd")
     fun findPw(): Call<BaseRes>
-
-    @POST("users/resetPwd")
-    fun resetPw(): Call<BaseRes>
-
-    @PATCH("users/profilePwd")
-    fun changePw(): Call<BaseRes>
 
     @POST("users/profile") // 프로필 신규 생성
     fun postUserProfileReq(
         @Query("name") name: String,
         @Body Info: UserProfileReq
     ): Call<UserProfileRes>
+
+    @POST("users/email")
+    fun sendConfirmCode(
+        @Body email: ConfirmCodeReq
+    ): Call<BaseRes>
 }

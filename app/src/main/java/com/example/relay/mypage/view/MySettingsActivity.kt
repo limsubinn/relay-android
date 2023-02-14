@@ -9,20 +9,27 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat.finishAffinity
 import com.bumptech.glide.Glide
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.R
 import com.example.relay.databinding.ActivityMySettingsBinding
+import com.example.relay.fcm.FireBaseClientService
+import com.example.relay.fcm.FireBaseService
+import com.example.relay.fcm.FirebaseInterface
+import com.example.relay.fcm.data.UserDeviceTokenRes
 import com.example.relay.login.view.LoginMainActivity
 import com.example.relay.mypage.service.MySettingInterface
 import com.example.relay.mypage.service.MySettingService
 import com.example.relay.ui.MainActivity
+import com.google.firebase.FirebaseApp
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_my_settings.view.*
 import kotlinx.android.synthetic.main.dialog_change_img.view.*
 import kotlinx.android.synthetic.main.dialog_change_msg.view.*
 import kotlinx.android.synthetic.main.dialog_change_pw.view.*
 
-class MySettingsActivity : AppCompatActivity(), MySettingInterface {
+class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInterface {
     private val viewBinding: ActivityMySettingsBinding by lazy{
         ActivityMySettingsBinding.inflate(layoutInflater)
     }
@@ -87,11 +94,10 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
         }
 
         viewBinding.btnLogout.setOnClickListener {
-            // 저장된 계정 내용 초기화
-            prefs.edit().clear().apply()
-            val intent = Intent(this, LoginMainActivity::class.java)
-            finishAffinity()        // 스택에 쌓인 액티비티 비우기
-            startActivity(intent)
+            // FCM 토큰 삭제 요청
+            FirebaseMessaging.getInstance().token.addOnSuccessListener {
+                FireBaseClientService(this).tryDeleteUserDevice(it);
+            }
         }
 
         // 비밀번호 변경하기
@@ -99,12 +105,12 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             val dialogView = layoutInflater.inflate(R.layout.dialog_change_pw, null)
             val alertDialog = AlertDialog.Builder(this).create()
 
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
 
             dialogView.btn_pw_cancel.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
 
             dialogView.btn_pw_save.setOnClickListener {
@@ -120,7 +126,7 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
                         Toast.makeText(this, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
                     } else { // 비밀번호 변경 값 전송
                         MySettingService(this).tryPatchUserPwd(newPw, checkPw)
-                        alertDialog?.dismiss()
+                        alertDialog.dismiss()
                     }
                 }
             }
@@ -131,21 +137,21 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             val dialogView = layoutInflater.inflate(R.layout.dialog_change_msg, null)
             val alertDialog = AlertDialog.Builder(this).create()
 
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
 
             dialogView.et_msg.setText(statusMsg) // 현재 상태메시지
             dialogView.et_msg.setSelection(dialogView.et_msg.length()) // 커서 끝에 설정
 
             dialogView.btn_msg_cancel.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
 
             dialogView.btn_msg_save.setOnClickListener {
                 msg = dialogView.et_msg.text.toString()
                 MySettingService(this).tryPatchUserMsg(msg)
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
         }
 
@@ -154,9 +160,9 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             val dialogView = layoutInflater.inflate(R.layout.dialog_change_img, null)
             val alertDialog = AlertDialog.Builder(this).create()
 
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
 
             Glide.with(this)
                 .load(imgUrl)
@@ -198,11 +204,11 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             }
 
             dialogView.btn_img_cancel.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
 
             dialogView.btn_img_save.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
                 MySettingService(this).tryPatchUserImg(img)
             }
         }
@@ -256,5 +262,12 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
 
     override fun onPatchUserAlarmFailure(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPostDeleteDeviceSuccess(response: UserDeviceTokenRes) {
+        prefs.edit().clear().apply()
+        val intent = Intent(this, LoginMainActivity::class.java)
+        finishAffinity()        // 스택에 쌓인 액티비티 비우기
+        startActivity(intent)
     }
 }

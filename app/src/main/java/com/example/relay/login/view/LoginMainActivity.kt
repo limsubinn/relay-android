@@ -7,11 +7,16 @@ import android.widget.Toast
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.ui.MainActivity
 import com.example.relay.databinding.ActivityLoginMainBinding
+import com.example.relay.fcm.FireBaseClientService
+import com.example.relay.fcm.FireBaseService
+import com.example.relay.fcm.FirebaseInterface
+import com.example.relay.fcm.data.UserDeviceTokenRes
 import com.example.relay.login.service.LogInInterface
 import com.example.relay.login.service.LogInService
 import com.example.relay.login.models.LogInLocalRes
+import com.google.firebase.messaging.FirebaseMessaging
 
-class LoginMainActivity : AppCompatActivity(), LogInInterface {
+class LoginMainActivity : AppCompatActivity(), LogInInterface, FirebaseInterface {
     private val viewBinding: ActivityLoginMainBinding by lazy{
         ActivityLoginMainBinding.inflate(layoutInflater)
     }
@@ -51,10 +56,14 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
         }
     }
 
-    override fun onPostLocalLogInSuccess(res: LogInLocalRes) {
+    override fun onPostLocalLogInSuccess(response: LogInLocalRes) {
         Toast.makeText(this@LoginMainActivity,"로컬 로그인 성공", Toast.LENGTH_SHORT).show()
 
-        prefs.edit().putString("accessToken", res.result.accessToken).apply()
+        prefs.edit().putString("accessToken", response.result.accessToken).apply()
+
+        FirebaseMessaging.getInstance().token.addOnSuccessListener {
+            FireBaseClientService(this).tryPostUserDevice(it);
+        }
 
         val intent = Intent(this@LoginMainActivity, MainActivity::class.java)
         startActivity(intent)
@@ -74,5 +83,9 @@ class LoginMainActivity : AppCompatActivity(), LogInInterface {
 
     override fun onPostLocalLogInWrongPwd() {
         Toast.makeText(this@LoginMainActivity,"ID/PW를 확인하세요.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPostDeleteDeviceSuccess(response: UserDeviceTokenRes) {
+        TODO("Not yet implemented")
     }
 }
