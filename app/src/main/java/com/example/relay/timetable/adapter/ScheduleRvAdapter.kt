@@ -13,6 +13,7 @@ import android.widget.NumberPicker
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.get
 import androidx.recyclerview.widget.RecyclerView
 import com.example.relay.R
 import com.example.relay.databinding.ItemRvEditTableBinding
@@ -117,6 +118,15 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 show()
             }
 
+            dialogView.timePicker.setOnTimeChangedListener { timepicker, _, minute ->
+                if (minute == 51)
+                    timepicker.minute = 0
+                else if (minute % 10 == 1)
+                    timepicker.minute = (minute / 10 + 1) * 10
+                else
+                    timepicker.minute = minute / 10 * 10
+            }
+
             dialogView.timePicker.hour = holder.itemView.btn_start.text.toString().substring(0,2).toInt()
             dialogView.timePicker.minute = holder.itemView.btn_start.text.toString().substring(3).toInt()
 
@@ -142,6 +152,15 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 show()
             }
 
+            dialogView.timePicker.setOnTimeChangedListener { timepicker, _, minute ->
+                if (minute == 51)
+                    timepicker.minute = 0
+                else if (minute % 10 == 1)
+                    timepicker.minute = (minute / 10 + 1) * 10
+                else
+                    timepicker.minute = minute / 10 * 10
+            }
+
             dialogView.tv_timepicker_name.text = "Finish"
             dialogView.timePicker.hour = holder.itemView.btn_end.text.toString().substring(0,2).toInt()
             dialogView.timePicker.minute = holder.itemView.btn_end.text.toString().substring(3).toInt()
@@ -151,7 +170,7 @@ class ScheduleRvAdapter (context: Context, private val dataList:MutableList<Sche
                 val min = dialogView.timePicker.minute.toString()
 
                 val tempTime = "${hour.padStart(2, '0')}:${min.padStart(2, '0')}:00"
-                Log.d("Timetable", "onBindViewHolder: $tempTime")
+
                 if (tempTime != "00:00:00" && tempTime <= dataList[position].start )
                     alertWrongInput("잘못된 시작-종료 시간 형식입니다.")
                 else {
