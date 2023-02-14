@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -234,18 +235,18 @@ class MypageFragment: Fragment(), MypageInterface {
     }
 
     private fun moveCameraToUser() {
-        if(pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()){
+        if(latLngList.isNotEmpty()){
             map?.animateCamera(
                 CameraUpdateFactory.newLatLngZoom(
-                    pathPoints.last().last(),
-                    10f
+                    latLngList.last(),
+                    Constants.MAP_ZOOM
                 )
             )
         }
     }
 
     private fun addAllPolylines() {
-        for(latLngList in pathPoints) {
+        for(LatLng in latLngList) {
             val polylineOptions = PolylineOptions()
                 .color(Color.parseColor("#FFFF3E00"))
                 .width(Constants.POLYLINE_WIDTH)
