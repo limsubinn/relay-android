@@ -52,7 +52,11 @@ class TimetablePostService(val timetablePostInterface: TimetablePostInterface){
         retrofit.postMyTimetableReq(profileIdx, MySchedulesReq(scheduleList)).enqueue((object : retrofit2.Callback<BaseResponse> {
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful) { // response.code == 200
-                    timetablePostInterface.onPostMyTimetableSuccess()
+                    when (response.body()?.code){
+                        1000 -> timetablePostInterface.onPostMyTimetableSuccess()
+                        4000 -> timetablePostInterface.timetableDuplicated()
+                        else -> timetablePostInterface.onPostMyTimetableFailure(response.message())
+                    }
                 }else {
                     timetablePostInterface.onPostMyTimetableFailure(response.message())
                 }

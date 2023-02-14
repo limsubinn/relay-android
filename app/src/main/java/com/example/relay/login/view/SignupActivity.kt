@@ -8,14 +8,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.example.relay.ApplicationClass.Companion.prefs
 import com.example.relay.databinding.ActivitySignupBinding
+import com.example.relay.login.service.LogInSNSInterface
+import com.example.relay.login.service.LogInSnsService
 
-class SignupActivity : AppCompatActivity() {
+class SignupActivity : AppCompatActivity(), LogInSNSInterface {
     private val viewBinding: ActivitySignupBinding by lazy {
         ActivitySignupBinding.inflate(layoutInflater)
     }
 
     private lateinit var getResultText: ActivityResultLauncher<Intent>
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,11 +35,10 @@ class SignupActivity : AppCompatActivity() {
         viewBinding.btnNext.setOnClickListener{
             val name = viewBinding.etName.text.toString()
             val email = viewBinding.etEmail.text.toString()
-            val phone = viewBinding.etPhone.text.toString()
             val pw = viewBinding.etPw.text.toString()
             val emailPattern = android.util.Patterns.EMAIL_ADDRESS;
 
-            if (name.isBlank() || email.isBlank() || phone.isBlank() || pw.isBlank() || viewBinding.etCheckPw.text.toString().isBlank())
+            if (name.isBlank() || email.isBlank() || pw.isBlank() || viewBinding.etCheckPw.text.toString().isBlank())
                 Toast.makeText(this, "입력되지 않은 칸이 존재합니다.", Toast.LENGTH_SHORT).show()
             else if (!emailPattern.matcher(email).matches())
                 Toast.makeText(this, "이메일 형식이 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
@@ -52,13 +52,17 @@ class SignupActivity : AppCompatActivity() {
 
                 editor.putString("name", name)
                 editor.putString("email", email)
-                editor.putString("phone", phone)
                 editor.putString("pw", pw)
                 editor.apply()
 
                 // startActivity(intent)
                 getResultText.launch(intent)
             }
+        }
+
+        viewBinding.btnSnsKakao.setOnClickListener{
+            // 카카오와 연결, 서버 연동x
+            LogInSnsService(this).tryKakaoLogIn(this)
         }
     }
 }

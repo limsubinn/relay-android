@@ -5,7 +5,9 @@
     android:layout_height="300dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".timetable.view.TimetableEditFragment"
-    android:background="@drawable/two_rounded_shape">
+    android:background="@drawable/two_rounded_gray_shape"
+    android:elevation="8dp"
+    android:outlineProvider="bounds">
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -16,9 +18,9 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="15dp"
         android:layout_marginHorizontal="5dp"
-        android:orientation ="vertical" />
+        android:orientation ="vertical"
+        android:overScrollMode="never" />
 
     <ImageButton
         android:id="@+id/btn_add"

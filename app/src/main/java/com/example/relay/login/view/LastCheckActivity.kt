@@ -34,13 +34,12 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
                 if (name.isEmpty() || email.isEmpty() || pw.isEmpty())
                     Toast.makeText(this@LastCheckActivity, "prefs 오류" , Toast.LENGTH_SHORT).show()
                 else
-                    SignUpService(this).tryPostLocalSignIn()
-
+                    SignUpService(this).tryPostLocalSignUp()
             }
         }
     }
 
-    override fun onPostLocalSignUpInSuccess(response: SignUpLocalRes) {
+    override fun onPostLocalSignUpSuccess(response: SignUpLocalRes) {
         if (!response.isSuccess) { // 회원가입 실패
             val intent = Intent()
             intent.putExtra("sign-up-fail", response.message)
@@ -71,7 +70,7 @@ class LastCheckActivity : AppCompatActivity(), SignUpInterface {
         }
     }
 
-    override fun onPostLocalSignUpInFailure(message: String) {
+    override fun onPostLocalSignUpFailure(message: String) {
         Toast.makeText(
             this@LastCheckActivity,
             "로컬 회원가입 실패",

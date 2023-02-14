@@ -79,7 +79,7 @@ dependencies {
     kapt "androidx.room:room-compiler:2.5.0"
 
     // Timetable
-    implementation 'com.github.LeeGa00:Android-Timetable:1.0.9'
+    implementation 'com.github.LeeGa00:Android-Timetable:1.1.0'
 
     // Architectural Components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1"
@@ -157,6 +157,10 @@ dependencies {
     implementation "androidx.fragment:fragment:1.5.3"
     implementation "androidx.fragment:fragment-ktx:1.5.3"
 
+    // SNS login
+    implementation 'com.google.android.gms:play-services-auth:20.4.1' // Google
+    implementation "com.kakao.sdk:v2-user:2.11.0" // Kakao
+
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:31.2.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'
@@ -164,3 +168,4 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+

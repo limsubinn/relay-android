@@ -132,6 +132,23 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
         }
     }
 
+    private fun alertWrongInput(message: String){
+        val inflater: LayoutInflater = LayoutInflater.from(context)
+
+        val dialogView = inflater.inflate(R.layout.dialog_timetable_alert, null)
+        val alertDialog = context.let { AlertDialog.Builder(requireContext()).create() }
+
+        alertDialog.setView(dialogView)
+        alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        alertDialog.show()
+
+        dialogView.tv_no.text = message
+
+        dialogView.btn_check.setOnClickListener{
+            alertDialog.dismiss()
+        }
+    }
+
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
         if (response.isSuccess){
             serverClubIdx = response.result.clubIdx
@@ -174,6 +191,10 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     override fun onPostMyTimetableFailure(message: String) {
         Log.d("Timetable", "onPostMyTimetableFailure: ")
         Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun timetableDuplicated() {
+        alertWrongInput("중복된 시간이 존재합니다.")
     }
 
     override fun onPostClubJoinInSuccess() {

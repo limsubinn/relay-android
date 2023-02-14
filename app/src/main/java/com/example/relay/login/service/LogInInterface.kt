@@ -8,3 +8,12 @@ interface LogInInterface {
     fun onPostLocalLogInWrongPwd()
     fun onPostLocalLogInFailure(message: String)
 }
+
+interface LogInSNSInterface{
+
+}
+
+interface ConfirmCodeInterface {
+    fun onPostCodeByEmailSuccess()
+    fun onPostCodeByEmailFailure()
+}
