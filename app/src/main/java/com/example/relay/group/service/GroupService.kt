@@ -297,3 +297,25 @@ class PatchMemberService(val patchMemberInterface: PatchMemberInterface){
         })
     }
 }
+
+class PatchMemberDeleteService(val patchMemberDeleteInterface: PatchMemberDeleteInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchMemeberDelete(clubIdx: Long, userIdx: Long){
+        retrofit.patchMemberDelete(clubIdx, MemberDeleteRequest(userIdx)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchMemberDeleteInterface.onPatchMemberDeleteInSuccess()
+                } else {
+                    patchMemberDeleteInterface.onPatchMemberDeleteInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchMember", "failure")
+                t.printStackTrace()
+                patchMemberDeleteInterface.onPatchMemberDeleteInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}

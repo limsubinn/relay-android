@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterface, GetClubDailyInterface {
+class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterface, GetClubDailyInterface, PatchMemberDeleteInterface {
     private var _binding: FragmentGroupMainBinding? = null
     private val binding get() = _binding!!
 
@@ -203,20 +203,9 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                         alertDialog?.dismiss()
                     }
 
-                    val dv = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
-                    val ad = activity?.let { AlertDialog.Builder(it).create() }
-
-                    dv.tv_no.text = "그룹에서 탈퇴하였습니다."
-                    ad?.setView(dv)
-                    ad?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
                     dialogView.btn_q_ok.setOnClickListener {
                         alertDialog?.dismiss()
-                        ad?.show()
-                    }
-
-                    dv.btn_check.setOnClickListener {
-                        ad?.dismiss()
+                        PatchMemberDeleteService(this).tryPatchMemeberDelete(clubIdx, userIdx)
                     }
                 }
                 "수정하기" -> {
@@ -545,5 +534,14 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     override fun onGetClubDailyFailure(message: String) {
         Toast.makeText(activity, "해당 그룹의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchMemberDeleteInSuccess() {
+        Toast.makeText(activity, "그룹 탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+        mainActivity?.groupFragmentChange(1) // 그룹 리스트 페이지로 이동
+    }
+
+    override fun onPatchMemberDeleteInFailure(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }
