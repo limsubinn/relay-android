@@ -178,6 +178,8 @@ class PostClubJoinInService(val clubJoinInInterface: PostClubJoinInInterface){
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful){
                     clubJoinInInterface.onPostClubJoinInSuccess()
+                } else {
+                    clubJoinInInterface.onPostClubJoinInFailure(response.message())
                 }
             }
 
@@ -197,7 +199,13 @@ class PostNewClubService(val newClubInterface: PostNewClubInterface){
         retrofit.postNewClubReq(clubInfo).enqueue(object : Callback<BaseResponse>{
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if(response.isSuccessful){
-                    newClubInterface.onPostNewClubSuccess()
+                    if (response.body()?.isSuccess == true) {
+                        newClubInterface.onPostNewClubSuccess()
+                    } else {
+                        newClubInterface.onPostNewClubFailure(response.body()?.message.toString())
+                    }
+                } else {
+                    newClubInterface.onPostNewClubFailure(response.message())
                 }
             }
 

@@ -254,7 +254,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 4900) { // 가입한 그룹 존재 o
+        if (response.isSuccess) { // 가입한 그룹 존재 o
             val res = response.result
 
             clubIdx = res.clubIdx
