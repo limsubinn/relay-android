@@ -415,7 +415,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
         if (getDate.equals(curDate)) {
             val getTime = sdf.format(nowDate)
-            Log.d("getTime", getTime)
             h = Integer.parseInt(getTime.substring(0, 2))
             m = Integer.parseInt(getTime.substring(3, 5))
             s = Integer.parseInt(getTime.substring(6, 8))
@@ -506,10 +505,20 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.otherType.text = "거리"
                 binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "TIME") {
+                var goalSec = res.goalValue
+                var goalMin = goalSec / 60
+                val goalHour = goalMin / 60
+                goalMin %= 60
+                goalSec %= 60
+
+                val goalH = goalHour.toInt().toString().padStart(2, '0')
+                val goalM = goalMin.toInt().toString().padStart(2, '0')
+                val goalS = goalSec.toInt().toString().padStart(2, '0')
+
                 binding.goalValue.visibility = View.VISIBLE
                 binding.goalValue.text = "${hh} : ${mm} : ${ss}"
                 binding.goalTarget.setTextColor(Color.RED)
-                binding.goalTarget.text = res.goalValue.toString()
+                binding.goalTarget.text = "${goalH} : ${goalM} : ${goalS}"
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"

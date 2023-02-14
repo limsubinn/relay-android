@@ -383,7 +383,7 @@ class MypageFragment: Fragment(), MypageInterface {
                     binding.goalValue.visibility = View.VISIBLE
                     binding.goalValue.text = res.distance.toString()  + "km"
                     binding.goalTarget.setTextColor(Color.RED)
-                    binding.goalTarget.text = res.goalValue.toString()
+                    binding.goalTarget.text = res.goalValue.toString() + "km"
                     binding.goalType.text = "거리"
 
                     binding.otherType.text = "시간"
