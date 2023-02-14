@@ -178,6 +178,8 @@ class PostClubJoinInService(val clubJoinInInterface: PostClubJoinInInterface){
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if (response.isSuccessful){
                     clubJoinInInterface.onPostClubJoinInSuccess()
+                } else {
+                    clubJoinInInterface.onPostClubJoinInFailure(response.message())
                 }
             }
 
@@ -197,7 +199,13 @@ class PostNewClubService(val newClubInterface: PostNewClubInterface){
         retrofit.postNewClubReq(clubInfo).enqueue(object : Callback<BaseResponse>{
             override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
                 if(response.isSuccessful){
-                    newClubInterface.onPostNewClubSuccess()
+                    if (response.body()?.isSuccess == true) {
+                        newClubInterface.onPostNewClubSuccess()
+                    } else {
+                        newClubInterface.onPostNewClubFailure(response.body()?.message.toString())
+                    }
+                } else {
+                    newClubInterface.onPostNewClubFailure(response.message())
                 }
             }
 
@@ -293,6 +301,28 @@ class PatchMemberService(val patchMemberInterface: PatchMemberInterface){
                 Log.d("patchMember", "failure")
                 t.printStackTrace()
                 patchMemberInterface.onPatchMemberInFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+}
+
+class PatchMemberDeleteService(val patchMemberDeleteInterface: PatchMemberDeleteInterface){
+    private val retrofit: GroupRetrofit = ApplicationClass.sRetrofit.create(GroupRetrofit::class.java)
+
+    fun tryPatchMemeberDelete(clubIdx: Long, userIdx: Long){
+        retrofit.patchMemberDelete(clubIdx, MemberDeleteRequest(userIdx)).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    patchMemberDeleteInterface.onPatchMemberDeleteInSuccess()
+                } else {
+                    patchMemberDeleteInterface.onPatchMemberDeleteInFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchMember", "failure")
+                t.printStackTrace()
+                patchMemberDeleteInterface.onPatchMemberDeleteInFailure(t.message ?: "통신 오류")
             }
         })
     }

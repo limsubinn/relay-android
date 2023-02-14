@@ -38,7 +38,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterface, GetClubDailyInterface {
+class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterface, GetClubDailyInterface, PatchMemberDeleteInterface {
     private var _binding: FragmentGroupMainBinding? = null
     private val binding get() = _binding!!
 
@@ -203,20 +203,9 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                         alertDialog?.dismiss()
                     }
 
-                    val dv = layoutInflater.inflate(R.layout.dialog_timetable_alert, null)
-                    val ad = activity?.let { AlertDialog.Builder(it).create() }
-
-                    dv.tv_no.text = "그룹에서 탈퇴하였습니다."
-                    ad?.setView(dv)
-                    ad?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-
                     dialogView.btn_q_ok.setOnClickListener {
                         alertDialog?.dismiss()
-                        ad?.show()
-                    }
-
-                    dv.btn_check.setOnClickListener {
-                        ad?.dismiss()
+                        PatchMemberDeleteService(this).tryPatchMemeberDelete(clubIdx, userIdx)
                     }
                 }
                 "수정하기" -> {
@@ -265,7 +254,7 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 4900) { // 가입한 그룹 존재 o
+        if (response.isSuccess) { // 가입한 그룹 존재 o
             val res = response.result
 
             clubIdx = res.clubIdx
@@ -415,7 +404,6 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
         if (getDate.equals(curDate)) {
             val getTime = sdf.format(nowDate)
-            Log.d("getTime", getTime)
             h = Integer.parseInt(getTime.substring(0, 2))
             m = Integer.parseInt(getTime.substring(3, 5))
             s = Integer.parseInt(getTime.substring(6, 8))
@@ -506,10 +494,20 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
                 binding.otherType.text = "거리"
                 binding.otherValue.text = res.totalDist.toString() + "km"
             } else if (res.goalType == "TIME") {
+                var goalSec = res.goalValue
+                var goalMin = goalSec / 60
+                val goalHour = goalMin / 60
+                goalMin %= 60
+                goalSec %= 60
+
+                val goalH = goalHour.toInt().toString().padStart(2, '0')
+                val goalM = goalMin.toInt().toString().padStart(2, '0')
+                val goalS = goalSec.toInt().toString().padStart(2, '0')
+
                 binding.goalValue.visibility = View.VISIBLE
                 binding.goalValue.text = "${hh} : ${mm} : ${ss}"
                 binding.goalTarget.setTextColor(Color.RED)
-                binding.goalTarget.text = res.goalValue.toString()
+                binding.goalTarget.text = "${goalH} : ${goalM} : ${goalS}"
                 binding.goalType.text = "시간"
 
                 binding.otherType.text = "거리"
@@ -536,5 +534,14 @@ class GroupMainFragment: Fragment(), GetUserClubInterface, GetClubDetailInterfac
 
     override fun onGetClubDailyFailure(message: String) {
         Toast.makeText(activity, "해당 그룹의 기록을 불러오는 데 실패했습니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchMemberDeleteInSuccess() {
+        Toast.makeText(activity, "그룹 탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
+        mainActivity?.groupFragmentChange(1) // 그룹 리스트 페이지로 이동
+    }
+
+    override fun onPatchMemberDeleteInFailure(message: String) {
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }
