@@ -26,6 +26,11 @@ interface MypageRetrofit {
         @Body profileReq: ChangeImgRequest
     ) : Call<BaseResponse>
 
+    @PATCH("/users/changeAlarm/{profileIdx}")
+    fun patchUserAlarm(
+        @Path("profileIdx") profileIdx: Long
+    ) : Call<BaseResponse>
+
     @GET("/record")
     fun getDailyRes(
         @Query("date") date: String,

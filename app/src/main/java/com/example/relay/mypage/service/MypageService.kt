@@ -143,4 +143,22 @@ class MySettingService(val mySettingInterface: MySettingInterface) {
         })
     }
 
+    fun tryPatchUserAlarm(profileIdx: Long){
+        retrofit.patchUserAlarm(profileIdx).enqueue(object : Callback<BaseResponse>{
+            override fun onResponse(call: Call<BaseResponse>, response: Response<BaseResponse>) {
+                if(response.code() == 200) {
+                    mySettingInterface.onPatchUserAlarmSuccess()
+                } else {
+                    mySettingInterface.onPatchUserAlarmFailure(response.message())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseResponse>, t: Throwable) {
+                Log.d("patchAlarm", "failure")
+                t.printStackTrace()
+                mySettingInterface.onPatchUserAlarmFailure(t.message ?: "통신 오류")
+            }
+        })
+    }
+
 }

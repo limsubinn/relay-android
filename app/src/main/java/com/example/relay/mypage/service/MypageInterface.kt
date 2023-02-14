@@ -24,4 +24,7 @@ interface MySettingInterface {
 
     fun onPatchUserImgSuccess()
     fun onPatchUserImgFailure(message: String)
+
+    fun onPatchUserAlarmSuccess()
+    fun onPatchUserAlarmFailure(message: String)
 }

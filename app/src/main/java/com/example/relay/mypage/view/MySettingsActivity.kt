@@ -27,6 +27,7 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
         ActivityMySettingsBinding.inflate(layoutInflater)
     }
 
+    private var userIdx = prefs.getLong("userIdx", 0L)
     private var imgUrl = ""
     private var name = ""
     private var email = ""
@@ -46,6 +47,7 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
     private var msgCheck = false
     private var img = ""
     private var imgCheck = false
+    private var alarmCheck = false
 
     @SuppressLint("CommitPrefEdits", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -76,10 +78,9 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
 
 
         viewBinding.btnBack.setOnClickListener {
-            if ((msgCheck) || (imgCheck)) { // 상태메시지 or 이미지 변경
+            if ((msgCheck) || (imgCheck) || (alarmCheck)) { // 상태메시지 or 이미지 변경
                 val intent = Intent(this, MainActivity::class.java)
-                if (msgCheck) intent.putExtra("msg", msg)
-                if (imgCheck) intent.putExtra("img", img)
+                intent.putExtra("check", true)
                 startActivity(intent)
             }
             finish()
@@ -206,6 +207,13 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
             }
         }
 
+        // 알림 허용 변경
+        viewBinding.swAlarm.setOnCheckedChangeListener { compoundButton, b ->
+            MySettingService(this).tryPatchUserAlarm(userIdx)
+            isAlarmOn = if (b) "y"
+            else "n"
+        }
+
     }
 
     override fun onPatchUserMsgSuccess() {
@@ -235,6 +243,18 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface {
     }
 
     override fun onPatchUserImgFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onPatchUserAlarmSuccess() {
+        if (isAlarmOn == "y")
+            Toast.makeText(this, "알림이 허용되었습니다.", Toast.LENGTH_SHORT).show()
+        else
+            Toast.makeText(this, "알림이 비허용되었습니다.", Toast.LENGTH_SHORT).show()
+        alarmCheck = true
+    }
+
+    override fun onPatchUserAlarmFailure(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }
