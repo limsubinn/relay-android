@@ -61,7 +61,7 @@ class TimetableFragment: Fragment(), TimetableGetInterface, GetUserClubInterface
 
         binding.btnEdit.setOnClickListener{
             parentFragmentManager.setFragmentResult("go_to_edit_main_timetable",
-                bundleOf("clubIdx" to clubIdx, "clubName" to clubName)
+                bundleOf("clubIdx" to clubIdx, "clubName" to clubName, "hasGroup" to true)
             )
             (activity as MainActivity).timetableFragmentChange(1)
         }

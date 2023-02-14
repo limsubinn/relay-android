@@ -17,7 +17,6 @@ import com.example.relay.timetable.service.TimetableGetInterface
 import com.example.relay.timetable.service.TimetableGetService
 import com.example.relay.ui.MainActivity
 import com.islandparadise14.mintable.model.ScheduleEntity
-import kotlinx.android.synthetic.main.fragment_group_main.view.*
 
 class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private var _binding: FragmentTimetableEditMainBinding ?= null
@@ -26,7 +25,9 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private val day = arrayOf("일", "월", "화", "수", "목", "금", "토")
     private val colorCode =  arrayOf("#FE0000", "#01A6EA", "#FFAD01", "#FFDD00", "#BBDA00", "#F71873", "#6DD0E7", "#84C743")
     private var userIdx = prefs.getLong("userIdx", 0L)
-    private var clubIdx = 0L
+    private var clubIdx = -1L
+    private var clubName = "팀 시간표"
+    private var hasGroup = false
 
     private var mainActivity: MainActivity? = null
 
@@ -56,10 +57,22 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
         super.onViewCreated(view, savedInstanceState)
 
         binding.btnMyTimetable.setOnClickListener{
-            if (binding.tvTitle.text != "개인 시간표")
+            if (binding.tvTitle.text != "개인 시간표") {
+                binding.tvTitle.text = "개인 시간표"
                 TimetableGetService(this).tryGetMySchedules(userIdx)
-            else
+            } else {
+                binding.tvTitle.text = clubName
                 TimetableGetService(this).tryGetGroupSchedules(clubIdx)
+            }
+        }
+
+        binding.btnBack.setOnClickListener{
+            if (clubIdx == -1L) // 새로 만들다가 뒤로가기
+                (activity as MainActivity).groupFragmentChange(3)
+            else if (!hasGroup) // 그룹 가입하다가 뒤로가기
+                (activity as MainActivity).groupFragmentChange(1)
+            else
+                (activity as MainActivity).timetableFragmentChange(0)
         }
 
         clubIdxSetting()
@@ -73,10 +86,12 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
     private fun clubIdxSetting(){
         setFragmentResultListener("go_to_edit_main_timetable") {requestKey, bundle ->
             clubIdx = bundle.getLong("clubIdx", 0L)
+            hasGroup = bundle.getBoolean("hasGroup", false)
             childFragmentManager.setFragmentResult("forJoin",
                 bundleOf("clubIdx" to clubIdx)
             )
-            binding.tvTitle.text = bundle.getString("clubName", "오류") + " 팀"
+            clubName = bundle.getString("clubName", "오류") + " 팀"
+            binding.tvTitle.text = clubName
             TimetableGetService(this).tryGetGroupSchedules(clubIdx)
         }
 
@@ -92,7 +107,7 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
                     "maxNum" to bundle.getInt("maxNum", 8)
                 )
             )
-            Log.d("Timetable", "clubIdxSetting: for new group /")
+            binding.btnMyTimetable.visibility = View.GONE
         }
     }
 
@@ -141,7 +156,8 @@ class TimetableEditMainFragment : Fragment(), TimetableGetInterface {
                 sList.add(schedule)
             }
             binding.timetable.updateSchedules(sList)
-        }
+        } else
+            binding.timetable.initTable(day)
     }
 
     override fun onGetMyTimetableFailure(message: String) {
