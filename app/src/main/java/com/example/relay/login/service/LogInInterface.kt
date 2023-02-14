@@ -12,3 +12,8 @@ interface LogInInterface {
 interface LogInSNSInterface{
 
 }
+
+interface ConfirmCodeInterface {
+    fun onPostCodeByEmailSuccess()
+    fun onPostCodeByEmailFailure()
+}

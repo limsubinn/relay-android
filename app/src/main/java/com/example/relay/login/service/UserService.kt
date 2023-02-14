@@ -119,7 +119,7 @@ class SignUpService(val signUpInterface: SignUpInterface) {
                     if (response.code() == 200) {
                         Log.d("SignUpLocal","accessToken : ${response.body()?.result?.accessToken}")
                         Log.d("SignUpLocal","refreshToken : ${response.body()?.result?.refreshToken}")
-                        signUpInterface.onPostLocalSignUpInSuccess(response.body() as SignUpLocalRes)
+                        signUpInterface.onPostLocalSignUpSuccess(response.body() as SignUpLocalRes)
                     } else {
                         Log.d("SignUpLocal", "failure")
                     }
@@ -127,7 +127,7 @@ class SignUpService(val signUpInterface: SignUpInterface) {
                 override fun onFailure(call: Call<SignUpLocalRes>, t: Throwable) {
                     Log.d("태그", t.message!!)
                     t.printStackTrace()
-                    signUpInterface.onPostLocalSignUpInFailure(t.message ?: "통신 오류")
+                    signUpInterface.onPostLocalSignUpFailure(t.message ?: "통신 오류")
                 }
             }))
         }
@@ -157,4 +157,25 @@ class SignUpService(val signUpInterface: SignUpInterface) {
 //        }))
 //    }
 
+}
+
+class ConfirmCodeService(val confirmCodeInterface: ConfirmCodeInterface) {
+    private val retrofit: LogInRetrofit = sRetrofit.create(LogInRetrofit::class.java)
+
+    fun tryPostConfirmCodeEmail(email: String){
+        retrofit.sendConfirmCode(ConfirmCodeReq(email)).enqueue((object : Callback<BaseRes>{
+            override fun onResponse(call: Call<BaseRes>, response: Response<BaseRes>) {
+                if (response.isSuccessful)
+                    confirmCodeInterface.onPostCodeByEmailSuccess()
+                else
+                    Log.d("인증코드", "onResponse: ERROR CODE = ${response.code()}")
+            }
+
+            override fun onFailure(call: Call<BaseRes>, t: Throwable) {
+                Log.d("인증코드", t.message!!)
+                t.printStackTrace()
+                confirmCodeInterface.onPostCodeByEmailFailure()
+            }
+        }))
+    }
 }

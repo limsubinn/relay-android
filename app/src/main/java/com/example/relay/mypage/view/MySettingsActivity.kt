@@ -94,14 +94,9 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInte
         }
 
         viewBinding.btnLogout.setOnClickListener {
+            // FCM 토큰 삭제 요청
             FirebaseMessaging.getInstance().token.addOnSuccessListener {
                 FireBaseClientService(this).tryDeleteUserDevice(it);
-
-            // 저장된 계정 내용 초기화
-            prefs.edit().clear().apply()
-            val intent = Intent(this, LoginMainActivity::class.java)
-            finishAffinity()        // 스택에 쌓인 액티비티 비우기
-            startActivity(intent)
             }
         }
 
@@ -110,12 +105,12 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInte
             val dialogView = layoutInflater.inflate(R.layout.dialog_change_pw, null)
             val alertDialog = AlertDialog.Builder(this).create()
 
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
 
             dialogView.btn_pw_cancel.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
 
             dialogView.btn_pw_save.setOnClickListener {
@@ -131,7 +126,7 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInte
                         Toast.makeText(this, "새 비밀번호와 비밀번호 확인이 일치하지 않습니다.", Toast.LENGTH_SHORT).show()
                     } else { // 비밀번호 변경 값 전송
                         MySettingService(this).tryPatchUserPwd(newPw, checkPw)
-                        alertDialog?.dismiss()
+                        alertDialog.dismiss()
                     }
                 }
             }
@@ -142,21 +137,21 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInte
             val dialogView = layoutInflater.inflate(R.layout.dialog_change_msg, null)
             val alertDialog = AlertDialog.Builder(this).create()
 
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
 
             dialogView.et_msg.setText(statusMsg) // 현재 상태메시지
             dialogView.et_msg.setSelection(dialogView.et_msg.length()) // 커서 끝에 설정
 
             dialogView.btn_msg_cancel.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
 
             dialogView.btn_msg_save.setOnClickListener {
                 msg = dialogView.et_msg.text.toString()
                 MySettingService(this).tryPatchUserMsg(msg)
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
         }
 
@@ -165,9 +160,9 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInte
             val dialogView = layoutInflater.inflate(R.layout.dialog_change_img, null)
             val alertDialog = AlertDialog.Builder(this).create()
 
-            alertDialog?.setView(dialogView)
-            alertDialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            alertDialog?.show()
+            alertDialog.setView(dialogView)
+            alertDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
 
             Glide.with(this)
                 .load(imgUrl)
@@ -209,11 +204,11 @@ class MySettingsActivity : AppCompatActivity(), MySettingInterface, FirebaseInte
             }
 
             dialogView.btn_img_cancel.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
             }
 
             dialogView.btn_img_save.setOnClickListener {
-                alertDialog?.dismiss()
+                alertDialog.dismiss()
                 MySettingService(this).tryPatchUserImg(img)
             }
         }
