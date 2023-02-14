@@ -16,7 +16,7 @@ class TimetableGetService(val timetableGetInterface: TimetableGetInterface) {
                 if (response.isSuccessful)  // response.code == 200
                     timetableGetInterface.onGetGroupTimetableSuccess(response.body() as GroupTimetableRes)
                 else
-                    Log.d("Timetable", "tryGetGroupSchedules failure")
+                    timetableGetInterface.onGetGroupTimetableFailure(response.message())
             }
 
             override fun onFailure(call: Call<GroupTimetableRes>, t: Throwable) {
@@ -33,7 +33,7 @@ class TimetableGetService(val timetableGetInterface: TimetableGetInterface) {
                 if (response.isSuccessful)  // response.code == 200
                     timetableGetInterface.onGetMyTimetableSuccess(response.body() as MyTimetableRes)
                 else
-                    Log.d("Timetable", "tryGetMySchedules failure")
+                    timetableGetInterface.onGetMyTimetableFailure(response.message())
             }
 
             override fun onFailure(call: Call<MyTimetableRes>, t: Throwable) {
@@ -54,7 +54,7 @@ class TimetablePostService(val timetablePostInterface: TimetablePostInterface){
                 if (response.isSuccessful) { // response.code == 200
                     timetablePostInterface.onPostMyTimetableSuccess()
                 }else {
-                    Log.d("Timetable", "failure")
+                    timetablePostInterface.onPostMyTimetableFailure(response.message())
                 }
             }
 

@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -132,7 +133,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onGetUserClubSuccess(response: GroupAcceptedResponse) {
-        if (response.code != 4900){
+        if (response.isSuccess){
             serverClubIdx = response.result.clubIdx
         }
     }
@@ -172,6 +173,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
 
     override fun onPostMyTimetableFailure(message: String) {
         Log.d("Timetable", "onPostMyTimetableFailure: ")
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onPostClubJoinInSuccess() {
@@ -179,7 +181,7 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onPostClubJoinInFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onPostNewClubSuccess() {
@@ -187,6 +189,6 @@ class TimetableEditFragment : Fragment(), TimetableGetInterface, TimetablePostIn
     }
 
     override fun onPostNewClubFailure(message: String) {
-        TODO("Not yet implemented")
+        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
     }
 }

@@ -88,4 +88,11 @@ interface GroupRetrofit {
         @Path("clubIdx") clubIdx: Long,
         @Body patchDeleteMemberReq: MemberDeleteRequest
     ) : Call<BaseResponse>
+
+    // 그룹 탈퇴
+    @PATCH("/clubs/member-status/{clubIdx}")
+    fun patchMemberDelete(
+        @Path("clubIdx") clubIdx: Long,
+        @Body patchDeleteMemberReq: MemberDeleteRequest
+    ) : Call<BaseResponse>
 }

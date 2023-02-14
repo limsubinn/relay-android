@@ -62,3 +62,8 @@ interface PatchMemberInterface {
     fun onPatchMemberInSuccess()
     fun onPatchMemberInFailure(message: String)
 }
+
+interface PatchMemberDeleteInterface {
+    fun onPatchMemberDeleteInSuccess()
+    fun onPatchMemberDeleteInFailure(message: String)
+}
