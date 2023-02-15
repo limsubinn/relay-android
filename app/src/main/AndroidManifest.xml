@@ -83,6 +83,8 @@
 
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter>
                 <data android:host="oauth"
                     android:scheme="kakao$13aaf4215477f1593247ca3f66a3fcc7" />
             </intent-filter>
