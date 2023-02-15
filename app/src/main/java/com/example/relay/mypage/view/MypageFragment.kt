@@ -236,24 +236,28 @@ class MypageFragment: Fragment(), MypageInterface {
 
     private fun moveCameraToUser() {
         if(latLngList.isNotEmpty()){
-            map?.animateCamera(
+            map?.moveCamera(
                 CameraUpdateFactory.newLatLngZoom(
                     latLngList.last(),
-                    Constants.MAP_ZOOM
+                    12f
                 )
             )
         }
     }
 
     private fun addAllPolylines() {
+        map?.clear()
+
         for(LatLng in latLngList) {
             val polylineOptions = PolylineOptions()
                 .color(Color.parseColor("#FFFF3E00"))
-                .width(Constants.POLYLINE_WIDTH)
+                .width(20f)
                 .addAll(latLngList)
             map?.addPolyline(polylineOptions)
 
         }
+
+        latLngList.clear()
     }
 
     override fun onResume() {
@@ -407,3 +411,4 @@ class MypageFragment: Fragment(), MypageInterface {
         TODO("Not yet implemented")
     }
 }
+
